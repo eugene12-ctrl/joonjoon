@@ -292,12 +292,12 @@ const DaliRules = (function () {
     const pos = sym => m.pos.find(p => p.sym === sym);
     if (sc === "month") {
       const closed = C.trades.filter(t => t.sell && t.sell.startsWith("10/")), wins = closed.filter(t => t.pct > 0).length;
-      cards.push({ k: "month", score: 100, top: "10월 마감", big: fmtWon(C.month.realized), title: `10월에 판 ${closed.length}번, ${wins}번 수익이에요`,
+      cards.push({ k: "month", score: 100, top: "10월 마감", big: fmtWon(C.month.realized), title: "10월 실현 손익",
         sub: `보유 ${m.pos.length}종목 평가 ${fmtWon(m.pnl)}`, btns: [["journal", "", "매매일지"]], line: `10월 실현 ${fmtWon(C.month.realized)}` });
     }
     if (m.filled && sc !== "month") {
       const p = pos(pd.sym), before = C.positions.find(x => x.sym === pd.sym);
-      cards.push({ k: "fill", score: 90, top: `체결 ${M[sc].fillAt || ""}`.trim(), big: won(pd.price), title: `어제 걸어 둔 ${pd.sym} ${pd.qty}주, 체결됐어요`,
+      cards.push({ k: "fill", score: 90, top: `체결 ${M[sc].fillAt || ""}`.trim(), big: won(pd.price), title: `${pd.sym} ${pd.qty}주 체결됐어요`,
         sub: `이제 ${p.qty}주, 평단 ${before.avg.toLocaleString("ko-KR")} → ${won(p.avg)}`, sym: pd.sym,
         btns: [["journal", "", "매매일지"], ["news", pd.sym, `${pd.sym} 보기`]], line: `${pd.sym} ${pd.qty}주 ${won(pd.price)} 체결` });
     }
@@ -307,7 +307,7 @@ const DaliRules = (function () {
     if (!m.filled) {
       const now = nowPrice(pd.sym, sc), gap = (now / pd.price - 1) * 100;
       // 장 시작 전 아침엔 걸어 둔 주문이 맨 위, 장중엔 크게 움직인 종목 다음
-      cards.push({ k: "wait", score: sc === "morning" ? 95 : 70, top: "걸어 둔 주문", big: won(pd.price), title: `${pd.sym} ${pd.qty}주 매수 주문이 기다리고 있어요`,
+      cards.push({ k: "wait", score: sc === "morning" ? 95 : 70, top: "걸어 둔 주문", big: won(pd.price), title: `${pd.sym} ${pd.qty}주 매수 대기 중`,
         sub: `${sc === "morning" ? "어제 종가" : "지금"} ${won(now)}, 주문가보다 ${gap.toFixed(1)}% 위`, sym: pd.sym,
         btns: [["order", pd.sym, "주문 보기"], ["news", pd.sym, `${pd.sym} 보기`]], line: `${pd.sym} ${pd.qty}주 ${won(pd.price)} 매수 대기` });
     }
