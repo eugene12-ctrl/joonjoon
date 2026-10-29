@@ -69,11 +69,11 @@
     const share = app === "stock" && typeof DaliRules !== "undefined" ? Math.round(DaliRules.money(s).pos.find(p => p.sym === e.sym).value / DaliRules.money(s).total * 100) : 0;
     const look = { art: art(e), bg: e.bg };
     if (st === "wait") return { k: "event", score: 99, ...look, top: app === "fut" ? "내 관심 종목에 영향 줄 이벤트" : "내 종목에 영향 줄 이벤트", big: app === "fut" ? e.kind.replace(/ \(.*\)/, "") : `${e.sym} ${e.kind}`,
-      title: `${e.when}. ${share ? `내 돈의 ${share}%가 이 종목이고, ` : `${e.sym}은 `}지난 ${e.past.length}번 발표 다음 날 평균 ±${avgAbs(e).toFixed(1)}% 움직였어요`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
+      title: `${e.when}, ${share ? `내 돈의 ${share}%가 걸린 일` : `${e.sym}에 걸린 일`}`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
     if (st === "live" && r) return { k: "event", score: 99, ...look, top: `${who} 발표 뒤`, big: pct(r.val),
-      title: `${nowP ? `${won(nowP)}, ` : ""}${m ? m.qty : ""}. 가장 닮은 때(${pct(an[0].next)})와 ${Math.sign(r.val) === Math.sign(an[0].next) ? "같은" : "다른"} 방향이에요`, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
+      title: nowP && m ? `${won(nowP)}, ${m.qty}` : e.sym, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     if (st === "done" && r) return { k: "event", score: 92, ...look, top: `${who} 뒤 ${r.label}`, big: pct(r.val),
-      title: `${e.past.length + 1}번째 결과로 남았어요. 닮은 때 ${two}와 ${Math.sign(r.val) === Math.sign(an[0].next) ? "같은" : "다른"} 방향이에요`, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
+      title: nowP && m ? `${won(nowP)}, ${m.qty}` : e.sym, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     return null;
   }
 
