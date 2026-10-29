@@ -18,7 +18,8 @@
   const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
   const tone = n => (n > 0 ? "up" : n < 0 ? "down" : "flat");
 
-  const pro = { on: false, sc: "morning", under: null, open: {} };
+  // legacy: 달이 2.0 첫 화면(히어로, 내 돈, 관심 목록). 3.0에선 꺼 두고 코드만 남긴다
+  const pro = { on: false, sc: "morning", under: null, open: {}, legacy: false, why: false, rep: null };
   const SCENES = [["morning", "07:00 아침"], ["intraday", "장중 급변"], ["close", "15:40 마감"], ["month", "월말"]];
 
   /* --- 탭 하나 더하기: 맨 앞 "오늘" --- */
@@ -135,7 +136,40 @@
 
   const newsOf = sym => DALI_NEWS.find(n => n.sym === sym);
 
+  /* ---------- 달이 3.0 첫 화면: 해달 얼굴과 한 문장 ----------
+     "샀을 때랑 같아요." 또는 "현대차, 샀을 때랑 달라요." 그리고 언제부터 보고 있는지 한 줄. 숫자는 없다.
+     문장을 누르면 종목마다 근거 3줄이 펼쳐지고, 다시 누르면 접힌다. 고객이 고르거나 치는 것은 없다 */
+  const sentence = w => w.state === "same" ? "샀을 때랑 같아요."
+    : w.syms.length === 1 ? `${w.syms[0]}, 샀을 때랑 달라요.` : `${w.syms.length}종목이 샀을 때랑 달라요.`;
+  function snapFirst() {
+    const w = R.word(pro.sc), off = memo().alertOff;
+    const since = w.since.map(([sym, d]) => `${sym} ${d}`).join(", ");
+    const why = pro.why ? `<div class="dali-snap-why">${C.positions.map(p => {
+      const a = R.alive(p.sym, pro.sc);
+      return `<section><h3>${p.sym}<small class="${a.same ? "" : "changed"}">${a.same ? "같아요" : "달라요"}</small></h3>
+        <ul>${R.why(p.sym, pro.sc).map((l, i) => `<li class="${!a.same && i < a.diff.length ? "diff" : ""}">${paintNums(l)}</li>`).join("")}</ul></section>`;
+    }).join("")}</div>` : "";
+    return `<section class="dali-snap-first ${w.state}">
+        <img class="dali-snap-face" src="${FACE_S}" alt="달이">
+        <button type="button" class="dali-snap-word" data-snap="why" aria-expanded="${pro.why}">${sentence(w)}</button>
+        <p class="dali-snap-since">${since}부터 보고 있어요</p>
+        ${why}
+        <p class="dali-snap-alert">${off ? "달라져도 알리지 않아요" : `달라지면 알려 드려요<button type="button" data-snap="off">끄기</button>`}</p>
+      </section>`;
+  }
+  // 월말: 10월 리포트로 바로. 판 매매 목록 하나, 줄을 누르면 산 순간과 판 순간 사진 두 칸
+  function snapReport() {
+    return `<section class="dali-snap-report"><h2>10월 리포트</h2>
+      ${window.DaliSnap ? DaliSnap.report({ act: "rep", id: t => String(t.id), open: pro.rep }) : ""}</section>`;
+  }
+  // 달라요가 생긴 장면이면 달이 느낌표를 켠다 (끄기 했으면 안 켬)
+  function paintBang() {
+    const on = !pro.legacy && pro.sc !== "month" && R.word(pro.sc).state === "changed" && !memo().alertOff;
+    fab.classList.toggle("has-snap", on);
+  }
+
   function html() {
+    if (!pro.legacy) return `<div class="dali-pro dali-pro-list2 ready">${pro.sc === "month" ? snapReport() : snapFirst()}</div>`;
     return `<div class="dali-pro dali-pro-list2 ready">${hero()}
       <section class="dali-pro-card dali-pro-foot">
         <button type="button" data-pro="grow">달이 키우기<span>›</span></button>
@@ -180,6 +214,20 @@
   window.dali.open = tab => { pro.on = !tab || tab === "today"; openOrig(pro.on ? null : tab); if (pro.on) { pro.play = true; paint(); } };
 
   body.addEventListener("click", e => {
+    const sn = e.target.closest("[data-snap]");
+    if (sn) {
+      if (sn.dataset.snap === "why") pro.why = !pro.why;
+      else if (sn.dataset.snap === "off") { remember("alertOff", true); paintBang(); }
+      paint();
+      return;
+    }
+    const rp = e.target.closest('[data-act="rep"]');
+    if (rp && body.querySelector(".dali-snap-report")) {
+      e.stopPropagation();
+      pro.rep = pro.rep === rp.dataset.id ? null : rp.dataset.id;
+      paint();
+      return;
+    }
     const n = e.target.closest("[data-pro-news]");
     if (n) { window.dali.openNews(n.dataset.proNews); return; }
     const g = e.target.closest("[data-go]");
@@ -223,14 +271,19 @@
       pro.sc = b.dataset.scene;
       pro.open = {};
       pro.more = false;
+      pro.why = false;
+      pro.rep = null;
+      paintBang();
       pro.play = true;
       box.querySelectorAll("[data-scene]").forEach(x => x.classList.toggle("on", x === b));
       if (pro.on && sheet.classList.contains("open")) { body.scrollTop = 0; paint(); }
       else {
         fab.classList.add("pulse");
         setTimeout(() => fab.classList.remove("pulse"), 1200);
-        const d = R.diff(pro.sc);
-        toast(d.todo.length ? `지금 할 일이 ${d.todo.length}개 있어요` : `${d.hours}시간 동안 ${d.lines.length}가지가 바뀌었어요`);
+        if (pro.legacy) {
+          const d = R.diff(pro.sc);
+          toast(d.todo.length ? `지금 할 일이 ${d.todo.length}개 있어요` : `${d.hours}시간 동안 ${d.lines.length}가지가 바뀌었어요`);
+        } else if (pro.sc !== "month" && R.word(pro.sc).state === "changed" && !memo().alertOff) toast(sentence(R.word(pro.sc)));
       }
     });
     demo.querySelector('[data-demo="reset"]')?.addEventListener("click", () => { try { sessionStorage.removeItem(KEY); } catch (e) { /* 무시 */ } }, true);

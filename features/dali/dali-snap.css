@@ -1,0 +1,64 @@
+/* ===== 달이 3.0: 첫 화면 한 문장, 산 순간 사진 두 칸, 10월 리포트 (dali-snap.js, dali-pro.js) =====
+   색은 둘뿐: 같음은 앱 머리와 같은 청록, 다름은 회색. 빨강과 파랑은 펼친 안쪽 숫자에만 */
+.phone .dali-sheet:has(.dali-tabs button.on[data-tab="today"]) .dali-body:has(> .dali-pro .dali-snap-first) { background: #fff; }
+
+.dali-snap-first { padding: 44px 24px 28px; text-align: center; word-break: keep-all; }
+.dali-snap-face { display: block; width: 96px; height: 96px; margin: 0 auto 18px; border-radius: 50%; object-fit: cover; }
+.dali-snap-word {
+  display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 27px; font-weight: 800; line-height: 1.35; letter-spacing: -.6px; color: var(--d-brand2, #1B5F6B);
+}
+.dali-snap-first.changed .dali-snap-word { color: #6B7684; }
+.dali-snap-since { margin: 10px 0 0; font-size: 14px; color: #8B95A1; }
+.dali-snap-alert { margin: 26px 0 0; font-size: 13px; color: #8B95A1; }
+.dali-snap-alert button { margin-left: 6px; padding: 0; border: 0; background: none; font: inherit; color: #4E5968; text-decoration: underline; cursor: pointer; }
+
+/* 펼친 근거: 종목마다 최대 3줄 */
+.dali-snap-why { margin: 24px 0 0; text-align: left; }
+.dali-snap-why section + section { margin-top: 18px; }
+.dali-snap-why h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 15px; font-weight: 800; color: #191F28; }
+.dali-snap-why h3 small { font-size: 12.5px; font-weight: 700; color: var(--d-brand2, #1B5F6B); }
+.dali-snap-why h3 small.changed { color: #6B7684; }
+.dali-snap-why ul { margin: 0; padding: 0; list-style: none; }
+.dali-snap-why li { padding: 9px 0; border-top: 1px solid #EEF1F3; font-size: 14.5px; line-height: 1.45; color: #333D4B; }
+.dali-snap-why li.diff { font-weight: 700; color: #191F28; }
+.dali-snap-why .up { color: #E5484D; } .dali-snap-why .down { color: #3E7BFA; }
+
+/* 종목 로고 동그라미 */
+.dali-snap-logo { position: relative; display: inline-grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; overflow: hidden;
+  background: #F2F4F6; font-style: normal; font-size: 13px; font-weight: 800; color: #4E5968; }
+.dali-snap-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* 10월 리포트: 줄 하나씩 */
+.dali-snap-report { padding: 22px 0 24px; }
+.dali-snap-report > h2 { margin: 0 20px 6px; font-size: 22px; font-weight: 800; letter-spacing: -.4px; color: #191F28; }
+.dali-snap-rep { margin: 0; padding: 0 16px; list-style: none; }
+.dali-snap-rep li { border-bottom: 1px solid #EEF1F3; }
+.dali-snap-line { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 4px; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+.dali-snap-line .dt { width: 40px; font-size: 13px; color: #8B95A1; }
+.dali-snap-line .nm { flex: 1; font-size: 15.5px; font-weight: 700; color: #191F28; }
+.dali-snap-line b { font-size: 15.5px; font-weight: 800; }
+.dali-snap-line b.up, .dali-snap-later b.up { color: #E5484D; } .dali-snap-line b.down, .dali-snap-later b.down { color: #3E7BFA; }
+.dali-snap-more { padding: 0 4px 16px; }
+
+/* 사진 두 칸 */
+.dali-snap-cells { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dali-snap-col { padding: 12px 12px 6px; border-radius: 14px; background: #F7F8FA; }
+.dali-snap-col > p { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 6px; font-size: 13.5px; font-weight: 800; color: #191F28; }
+.dali-snap-col > p small { font-size: 12px; font-weight: 600; color: #8B95A1; }
+.dali-snap-col ul { margin: 0; padding: 0; list-style: none; }
+.dali-snap-col li { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; color: #8B95A1; }
+.dali-snap-col li b { font-weight: 600; color: #6B7684; }
+.dali-snap-col li.diff span, .dali-snap-col li.diff b { font-weight: 800; color: #191F28; }
+.dali-snap-later { margin: 10px 0 0; font-size: 13.5px; color: #6B7684; }
+
+/* 매매일지 한 줄에 붙는 짧은 말 */
+.dali-jsnap { display: block; margin-top: 2px; font-size: 12px; color: #8B95A1; }
+.dali-jsnap em { font-style: normal; font-weight: 700; color: #6B7684; }
+
+/* 달라요가 생기면 달이 느낌표 (기존 알림 모양 그대로) */
+.dali-fab.has-snap .dali-alert { transform: scale(1); }
+
+/* 3.0 시연에서 빼는 것: 시트 머리 조약돌, 발표자 상자 조약돌 주기 (코드는 남김) */
+.phone .dali-sheet .dali-pebbles { display: none; }
+.dali-demo [data-demo="pebble"] { display: none; }
