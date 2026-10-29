@@ -9,7 +9,6 @@
 
   const KEY = "dali-intro-seen";
   const BASE = document.currentScript.src.replace(/[^/]*$/, "");
-  const IMG = n => `${BASE}img/${n}.png`;
   const seen = () => { try { return localStorage.getItem(KEY) === "1"; } catch (e) { return false; } };
   const mark = v => { try { v ? localStorage.setItem(KEY, "1") : localStorage.removeItem(KEY); } catch (e) { /* 무시 */ } };
 
@@ -20,25 +19,20 @@
   pop.innerHTML = `
     <div class="dali-intro-card">
       <div class="dali-intro-sea">
-        <img class="dali-intro-spark s1" src="${IMG("sparkles")}" alt="">
-        <img class="dali-intro-spark s2" src="${IMG("sparkles")}" alt="">
         <div class="dali-intro-otter">
           <img class="dali-intro-body" src="${BASE}dali-body.png" alt="달이">
-          <img class="dali-intro-ribbon" src="${IMG("ribbon")}" alt="">
-          <img class="dali-intro-hand" src="${IMG("waving_hand")}" alt="">
         </div>
-        <img class="dali-intro-heart" src="${IMG("red_heart")}" alt="">
         <div class="dali-intro-water"></div>
       </div>
-      <h2>안녕하세요, 저는 달이예요!</h2>
-      <p class="dali-intro-sub">홍길동님 옆에서 조용히 도와줄게요</p>
+      <h2>안녕하세요, 저는 달이예요</h2>
+      <p class="dali-intro-sub">앱을 닫은 사이에도 홍길동님 종목을 봐 둘게요</p>
       <ul>
-        <li><img src="${IMG("newspaper")}" alt=""><span>아침마다 내 종목 소식을 한 줄로</span></li>
-        <li><img src="${IMG("memo")}" alt=""><span>매매일지는 제가 알아서 적어요</span></li>
-        <li><img src="${IMG("tree")}" alt=""><span>같이 읽고 걸으면 제가 자라요</span></li>
+        <li><span>다시 열면 달라진 것부터 말씀드려요</span></li>
+        <li><span>지금 할 일이 있는지 먼저 답해요</span></li>
+        <li><span>매매일지는 제가 알아서 적어요</span></li>
       </ul>
-      <button type="button" class="dali-intro-go">달이랑 시작하기</button>
-      <p class="dali-intro-foot">평소엔 오른쪽 아래에 조용히 있을게요</p>
+      <button type="button" class="dali-intro-go">시작하기</button>
+      <p class="dali-intro-foot">평소엔 오른쪽 아래에 있어요</p>
     </div>`;
   phone.appendChild(pop);
   const card = pop.querySelector(".dali-intro-card");

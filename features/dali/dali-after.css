@@ -1,0 +1,67 @@
+/* ===== 달이와 3개월 뒤 (dali-after.js) =====
+   앱과 같은 흰 바탕, 목록 줄과 회색 띠. 전은 회색 막대, 뒤는 청록 막대. 빨강 파랑은 쓰지 않음 */
+.dali-after {
+  position: absolute; inset: 0; z-index: 25; display: flex; flex-direction: column; background: #fff; color: #1A1D1F;
+  transform: translateX(100%); transition: transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+.dali-after.show { transform: none; }
+.dali-after-head { display: flex; align-items: center; gap: 8px; padding: 14px 14px 12px; border-bottom: 1px solid #EEF0F2; }
+.dali-after-head div { display: flex; flex-direction: column; }
+.dali-after-head strong { font-size: 17px; }
+.dali-after-head span { font-size: 12.5px; color: #646F7C; }
+.dali-after-body { flex: 1; overflow-y: auto; scrollbar-width: none; padding-bottom: 28px; }
+.dali-after-body::-webkit-scrollbar { display: none; }
+.dali-after-ai { margin: 16px 20px 20px; }
+.dali-after section { padding: 20px; border-top: 10px solid #F4F6F8; }
+.dali-after h3 { margin: 0 0 12px; font-size: 17px; }
+.dali-after h3 i, .dali-after-legend i { font-style: normal; font-weight: 500; font-size: 12px; color: #646F7C; }
+
+.dali-after-legend { display: flex; align-items: center; gap: 6px; margin: -4px 0 8px; font-size: 12px; color: #646F7C; }
+.dali-after-legend span { width: 10px; height: 6px; border-radius: 3px; }
+.dali-after-legend span + span, .dali-after-legend .now { margin-left: 8px; }
+.was { background: #C9D1D6; }
+.now { background: #1B5F6B; }
+
+.dali-after-list { list-style: none; margin: 0; padding: 0; }
+.dali-after-list li { padding: 12px 0; border-top: 1px solid #EEF0F2; }
+.dali-after-list li:first-child { border-top: 0; }
+.dali-after-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14.5px; }
+.dali-after-row b { font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dali-after-row i { font-style: normal; color: #646F7C; font-weight: 400; }
+.dali-after-row em { font-style: normal; }
+.dali-after-row em.good { color: #1B5F6B; }
+.dali-after-bars { display: flex; flex-direction: column; gap: 3px; margin: 8px 0 6px; }
+.dali-after-bars span { display: block; height: 6px; border-radius: 3px; min-width: 3px; }
+.dali-after-list small { font-size: 12.5px; color: #646F7C; }
+
+.dali-after-big { margin: 0 0 8px; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: #1B5F6B; font-variant-numeric: tabular-nums; }
+.dali-after-big small { font-size: 13px; font-weight: 500; color: #646F7C; }
+.dali-after-money { list-style: none; margin: 0; padding: 0; }
+.dali-after-money li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid #EEF0F2; font-size: 14.5px; }
+.dali-after-money li span { display: flex; flex-direction: column; gap: 2px; }
+.dali-after-money small { font-size: 12px; color: #646F7C; }
+.dali-after-money b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dali-after-money.biz b { color: #1A1D1F; }
+.dali-after-note { margin: 12px 0 0; font-size: 13px; line-height: 1.55; color: #4E5968; word-break: keep-all; }
+
+@media (prefers-reduced-motion: reduce) { .dali-after { transition: none; } }
+
+/* 3개월 띠: 매매 점. 이익은 빨강, 손실은 파랑(시세 방향과 같은 약속), 급등한 날 산 건 잉크 테두리 */
+.dali-after-strips { padding: 4px 20px 16px; border-top: 0; }
+.dali-after-strip + .dali-after-strip { margin-top: 6px; }
+.dali-after-strip-l { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 2px; font-size: 13.5px; }
+.dali-after-strip-l span { font-size: 12.5px; color: #646F7C; font-variant-numeric: tabular-nums; }
+.dali-after-strip.after .dali-after-strip-l b { color: #1B5F6B; }
+.dali-after-strip svg { display: block; width: 100%; height: auto; }
+.dali-after-axis { stroke: #E5E8EB; stroke-width: 1; }
+.dali-after-lab { font-size: 10.5px; fill: #646F7C; font-family: inherit; }
+.dali-after-dot { stroke: #fff; stroke-width: 2; }
+.dali-after-dot.up { fill: #C8202C; }
+.dali-after-dot.down { fill: #2F5BD3; }
+.dali-after-dot.spike { stroke: #1A1D1F; stroke-width: 2.5; }
+.dali-after-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 8px 0 0; font-size: 12px; color: #646F7C; }
+.dali-after-key i { width: 10px; height: 10px; border-radius: 50%; margin-left: 6px; box-shadow: 0 0 0 2px #fff; }
+.dali-after-key i:first-child { margin-left: 0; }
+.dali-after-key i.up { background: #C8202C; }
+.dali-after-key i.down { background: #2F5BD3; }
+.dali-after-key i.spike { background: #C9D1D6; box-shadow: 0 0 0 2px #1A1D1F; }

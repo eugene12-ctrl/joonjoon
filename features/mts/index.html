@@ -15,6 +15,9 @@
 <link rel="stylesheet" href="../dali/dali-plus.css">
 <link rel="stylesheet" href="../dali/dali-intro.css">
 <link rel="stylesheet" href="../dali/dali-move.css">
+<link rel="stylesheet" href="../dali/dali-pro.css">
+<link rel="stylesheet" href="../dali/dali-ai.css">
+<link rel="stylesheet" href="../dali/dali-after.css">
 </head>
 <body>
 
@@ -30,12 +33,17 @@
 <script src="js/main.js"></script>
 <!-- 달이(AI 비서): 화면 틀이 만들어진 뒤에 얹습니다 -->
 <script src="../dali/dali-data.js"></script>
+<script src="../dali/dali-customer.js"></script>
+<script src="../dali/dali-rules.js"></script>
 <script src="../dali/dali-feed.js"></script>
 <script src="../dali/dali-chart.js"></script>
 <script src="../dali/dali.js"></script>
+<script src="../dali/dali-pro.js"></script>
 <script src="../dali/dali-plus.js"></script>
 <script src="../dali/dali-intro.js"></script>
 <script src="../dali/dali-move.js"></script>
+<script src="../dali/dali-ai.js"></script>
+<script src="../dali/dali-after.js"></script>
 <script>
   // 달이에서 종목 이름을 누르면 이 앱의 주문 화면으로 (그 종목, 수량 1, 현재가)
   window.DALI_ORDER = name => { const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) App.go("order", c); };

@@ -177,24 +177,15 @@
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
   function tradeCard(t) {
     const closed = !!t.sell;
-    const editing = state.editing === t.id;
     const side = (label, x) => `
       <div class="dali-side-box"><p class="dali-side-label">${label} <span>${x ? x.date : ""}</span></p>
         ${x ? `<p>${x.news}</p><p class="dali-mood">${x.mood}</p>` : `<p class="dali-mood">아직 보유 중</p>`}</div>`;
-    const memo = editing
-      ? `<textarea class="dali-input" rows="2" placeholder="그때 왜 그랬는지, 지금 생각은 어떤지 (안 써도 돼요)">${t.memo}</textarea>
-         <div class="dali-row"><button type="button" class="dali-btn small" data-act="save" data-id="${t.id}">저장</button><button type="button" class="dali-btn small ghost" data-act="cancel">닫기</button></div>`
-      : t.memo
-        ? `<p class="dali-mine">메모: ${t.memo} <button type="button" class="dali-link" data-act="edit" data-id="${t.id}">고치기</button></p>`
-        : `<button type="button" class="dali-link" data-act="edit" data-id="${t.id}">메모 남기기 (선택)</button>`;
     return `
       <article class="dali-trade${t.live ? " new" : ""}">
         <header><b>${t.sym}</b><span>${t.qty}</span><span class="dali-state ${closed ? "done" : "hold"}">${closed ? "매매 완료" : "보유 중"}</span></header>
         <p class="dali-pnl ${tone(t.pnl)}">${closed ? "" : "<small>지금 평가</small> "}${won(t.pnl)} <span>${pct(t.pct)}</span></p>
         ${DaliChart.trade(t)}
         <div class="dali-sides">${side("살 때", t.buy)}${side("팔 때", t.sell)}</div>
-        ${memo}
-        <button type="button" class="dali-link pb" data-act="pb" data-id="${t.id}">${t.pb ? "담당 PB와 공유 중" : "담당 PB에게 보여 주기 (동의 시)"}</button>
       </article>`;
   }
   function journalHTML() {
@@ -218,20 +209,6 @@
       <div class="dali-row-m${done ? " done" : ""}">
         <img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>${right}
       </div>`;
-  }
-  // 이번 주 한 문제: 평소엔 한 줄, 눌러야 문제가 펼쳐짐. 한 번에 하나만
-  function quizRow() {
-    const qs = DALI_MISSIONS.filter(m => m.quiz);
-    const m = qs.find(x => x.id === state.lastQuiz) || qs.find(x => !state.done[x.id]);
-    if (!m) return `<div class="dali-row-m done"><img src="${IMG("light_bulb")}" alt=""><span>이번 주 문제 다 풀었어요</span><span class="dali-check">✓</span></div>`;
-    const done = state.done[m.id];
-    const head = `
-      <div class="dali-row-m${done ? " done" : ""}"><img src="${IMG(m.icon)}" alt=""><span>한 문제, ${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>
-        ${done ? `<span class="dali-check">✓</span>` : state.quizOpen ? `<span class="dali-reward">+${m.reward}</span>` : `<button type="button" class="dali-btn small" data-act="quiz-open">풀기</button>`}</div>`;
-    if (done) return head + `<p class="dali-say">${m.quiz.after}</p>`;
-    if (!state.quizOpen) return head;
-    return head + `<p class="dali-q">${m.quiz.q}</p>` + m.quiz.options.map((o, i) =>
-      `<button type="button" class="dali-opt${state.quiz[m.id] === i ? " wrong" : ""}" data-act="quiz" data-id="${m.id}" data-i="${i}">${o}</button>`).join("");
   }
   // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
   function seaHTML() {
@@ -299,7 +276,6 @@
       <article class="dali-card">
         <h3>오늘 달이랑</h3>
         ${DALI_MISSIONS.filter(m => !m.quiz && !m.hidden).map(missionRow).join("")}
-        ${quizRow()}
       </article>`;
   }
   // 달이 키우기 자세히 (관리 탭의 다음 선물 줄을 누르면): 단계별 선물, 숲, 옷장
@@ -534,27 +510,11 @@
     if (act === "back") { state.page = null; render(); }
     else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
-    else if (act === "edit") { state.editing = id; render(); sheet.querySelector(".dali-input")?.focus(); }
-    else if (act === "cancel") { state.editing = null; render(); }
-    else if (act === "save") {
-      t.memo = sheet.querySelector(".dali-input").value.trim();
-      state.editing = null;
-      if (t.memo) complete("m-comment");
-      render();
-    }
-    else if (act === "pb") { t.pb = !t.pb; say(t.pb ? "담당 PB가 이 매매를 볼 수 있어요. 언제든 끌 수 있어요." : "공유를 껐어요."); render(); }
     else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
     else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
-    else if (act === "quiz-open") { state.quizOpen = true; render(); }
     else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
     else if (act === "pet") pet(b);
     else if (act === "mission") { complete(id); render(); }
-    else if (act === "quiz") {
-      const m = DALI_MISSIONS.find(x => x.id === id);
-      if (m.quiz.pick || +b.dataset.i === m.quiz.answer) { complete(id); state.lastQuiz = id; }
-      else { state.quiz[id] = +b.dataset.i; say("괜찮아요, 다른 걸 골라 보세요."); }
-      render();
-    }
   });
   sheet.addEventListener("pointermove", DaliChart.hover);
   sheet.addEventListener("pointerleave", () => DaliChart.unhover(sheet));

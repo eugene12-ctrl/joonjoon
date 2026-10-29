@@ -1,0 +1,233 @@
+/* ===== 달이 2.0 "오늘" 탭 (dali-pro.js 짝) =====
+   앱과 같은 흰 바탕, 잉크색 글자, 포인트는 청록 하나. 빨강과 파랑은 등락에만.
+   구역은 목록 줄, 가는 구분선, 10px 회색 띠로 나눔. 그림자 카드, 칩, 이모지 없음.
+   되돌리려면 이 파일과 dali-pro.js를 불러오는 줄을 지우면 됩니다. */
+.dali-sheet { height: 100%; border-radius: 0; } /* 열면 화면 끝까지 */
+.dali-pro { display: flex; flex-direction: column; color: var(--d-ink); font-variant-numeric: tabular-nums; word-break: keep-all; }
+.dali-pro b.up, .dali-pro .up { color: var(--d-up); }
+.dali-pro b.down, .dali-pro .down { color: var(--d-down); }
+.dali-pro b.flat { color: var(--d-sub); }
+
+/* ---------- 맨 위: 앱 머리와 같은 짙은 청록 띠. 내 시간 띠 한 장과 지금 할 일 ---------- */
+.dali-pro-night {
+  position: relative; padding: 18px 20px 22px; color: #fff; overflow: hidden;
+  background: linear-gradient(180deg, #0B2F3C 0%, #0E3A4A 55%, #134B5A 100%);
+}
+.dali-pro-night .dali-pro-since { margin: 0; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, .72); }
+.dali-pro-night h2 { margin: 18px 0 6px; font-size: 30px; font-weight: 700; letter-spacing: -.03em; }
+.dali-pro-night h2.todo { color: #9FE3EA; }
+.dali-pro-why { margin: 0; font-size: 15px; line-height: 1.55; color: rgba(255, 255, 255, .86); }
+.dali-pro-night .up, .dali-pro-night b.up { color: #FF9AA0; }
+.dali-pro-night .down, .dali-pro-night b.down { color: #A9C2FF; }
+
+/* 내 시간 띠 */
+.dali-pro-strip { position: relative; height: 124px; margin: 14px 26px 22px 0; }
+.dali-pro-strip svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dali-pro-zl { stroke: rgba(255, 255, 255, .18); stroke-width: 1; stroke-dasharray: 3 4; }
+.dali-pro-line { fill: none; stroke: #7FD1D9; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.dali-pro-ev { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; }
+.dali-pro-ev i { width: 9px; height: 9px; border-radius: 50%; background: #0E3A4A; border: 2px solid #fff; }
+.dali-pro-ev b {
+  position: absolute; bottom: 14px; white-space: nowrap; font-size: 11.5px; font-weight: 600;
+  color: #fff; background: rgba(255, 255, 255, .12); padding: 3px 7px; border-radius: 6px;
+}
+.dali-pro-face {
+  position: absolute; width: 46px; height: 46px; transform: translate(-50%, -50%); border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 4px rgba(127, 209, 217, .35), 0 8px 18px -6px rgba(0, 0, 0, .5);
+}
+.dali-pro-now { position: absolute; left: 100%; transform: translate(-50%, calc(-50% - 36px)); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.dali-pro-now.low { transform: translate(-50%, calc(-50% + 34px)); }
+.dali-pro-from, .dali-pro-to, .dali-pro-what { position: absolute; bottom: -20px; font-size: 11.5px; color: rgba(255, 255, 255, .6); }
+.dali-pro-from { left: 0; }
+.dali-pro-to { right: -26px; color: #fff; font-weight: 600; }
+.dali-pro-what { top: -2px; bottom: auto; left: 0; font-weight: 600; color: rgba(255, 255, 255, .8); }
+.dali-pro-what em { font-style: normal; font-weight: 500; margin-left: 8px; color: rgba(255, 255, 255, .55); }
+
+/* 월말: 매매 20건이 점으로 */
+.dali-pro-zero { position: absolute; left: 0; right: 0; height: 1px; background: rgba(255, 255, 255, .2); }
+.dali-pro-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; transform: translate(-50%, -50%); }
+.dali-pro-dot.gain { background: #FF9AA0; }
+.dali-pro-dot.loss { background: #A9C2FF; }
+.dali-pro-dot.spike { box-shadow: 0 0 0 3px #0E3A4A, 0 0 0 5px rgba(255, 255, 255, .85); }
+
+/* 열 때와 장면 바꿀 때만: 선이 왼쪽부터 그려지고, 점이 차례로 찍히고, 해달이 끝에 닿음 */
+.dali-pro-night.play .dali-pro-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: dali-pro-draw 1.4s cubic-bezier(.4, 0, .2, 1) .15s forwards; }
+.dali-pro-night.play .dali-pro-area { opacity: 0; animation: dali-pro-fade .6s ease 1.2s forwards; }
+.dali-pro-night.play .dali-pro-ev, .dali-pro-night.play .dali-pro-dot { opacity: 0; animation: dali-pro-pop .4s cubic-bezier(.3, 1.5, .5, 1) forwards; animation-delay: calc(.35s + var(--i) * .35s); }
+.dali-pro-night.play .dali-pro-dot { animation-delay: calc(.1s + var(--i) * .06s); }
+.dali-pro-night.play .dali-pro-face { animation: dali-pro-swim 1.5s cubic-bezier(.4, 0, .2, 1) .1s both; }
+.dali-pro-night.play .dali-pro-now { opacity: 0; animation: dali-pro-fade .4s ease 1.5s forwards; }
+.dali-pro-night.play h2, .dali-pro-night.play .dali-pro-why { animation: dali-pro-rise .5s ease 1.3s both; }
+@keyframes dali-pro-draw { to { stroke-dashoffset: 0; } }
+@keyframes dali-pro-fade { to { opacity: 1; } }
+@keyframes dali-pro-pop { from { opacity: 0; scale: .3; } to { opacity: 1; scale: 1; } }
+@keyframes dali-pro-swim { from { left: 0 !important; opacity: 0; } 20% { opacity: 1; } }
+@keyframes dali-pro-rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .dali-pro-night * { animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important; } }
+
+/* 달이가 본 것 세 줄: 굵은 제목 하나, 아래 회색 문장 */
+.dali-pro-seen { list-style: none; margin: 0; padding: 4px 20px 0; }
+.dali-pro-seen li { padding: 15px 0; border-bottom: 1px solid var(--d-line); }
+.dali-pro-seen li:last-child { border-bottom: 0; }
+.dali-pro-seen b { display: block; font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+.dali-pro-seen b b { display: inline; }
+.dali-pro-seen p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--d-sub); }
+.dali-pro-seen p b { display: inline; font-size: inherit; font-weight: 600; }
+.dali-pro-unfold {
+  margin: 4px 20px 8px; padding: 14px; border-radius: 12px; background: var(--d-band);
+  font-size: 14.5px; font-weight: 600; color: var(--d-ink);
+}
+
+/* 카드 = 회색 띠로 나눈 구역 */
+.dali-pro-card { padding: 20px; border-top: 10px solid var(--d-band); }
+.dali-pro-card h3 { margin: 0 0 10px; font-size: 17px; font-weight: 700; }
+.dali-pro-card h4 { margin: 20px 0 4px; font-size: 14px; font-weight: 700; color: var(--d-ink2); }
+.dali-pro-big { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+.dali-pro-big.brand { color: var(--d-brand2); }
+.dali-pro-sub { margin: 4px 0 0; font-size: 13px; color: var(--d-sub); }
+.dali-pro-sub b { font-weight: 600; margin-left: 4px; }
+.dali-pro-sub span { margin-left: 12px; }
+.dali-pro-note { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--d-line); font-size: 13.5px; line-height: 1.5; color: var(--d-ink2); }
+
+/* 자산 구성 막대 */
+.dali-pro-stack { display: flex; height: 10px; margin: 16px 0 10px; border-radius: 5px; overflow: hidden; gap: 2px; }
+.dali-pro-stack i, .dali-pro-legend i { display: block; }
+.dali-pro .s0 { background: var(--d-brand2); }
+.dali-pro .s1 { background: #6FA3AB; }
+.dali-pro .s2 { background: #C9D9DC; }
+.dali-pro .s3 { background: #DDE1E5; }
+.dali-pro-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--d-ink2); }
+.dali-pro-legend li { display: flex; align-items: center; gap: 5px; }
+.dali-pro-legend i { width: 8px; height: 8px; border-radius: 2px; }
+.dali-pro-legend b { font-weight: 600; color: var(--d-ink); }
+
+/* 종목 줄 */
+.dali-pro-list { list-style: none; margin: 0 -20px; padding: 0; }
+.dali-pro-sym {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; width: 100%; padding: 13px 20px; text-align: left;
+  border-bottom: 1px solid var(--d-line); color: var(--d-ink);
+}
+.dali-pro-list li:last-child .dali-pro-sym { border-bottom: 0; }
+.dali-pro-l b { font-size: 15.5px; font-weight: 700; }
+.dali-pro-l small { margin-left: 6px; font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-r { text-align: right; font-size: 14px; font-weight: 600; }
+.dali-pro-r b { margin-left: 4px; }
+.dali-pro-r small { margin-left: 8px; font-size: 12px; font-weight: 500; color: var(--d-sub); }
+.dali-pro-sym em { grid-column: 1 / -1; font-style: normal; font-size: 13px; line-height: 1.45; color: var(--d-sub); }
+.dali-pro-sym em.ink { color: var(--d-ink2); font-size: 14px; }
+
+/* 일정 */
+.dali-pro-cal { list-style: none; margin: 0; padding: 0; }
+.dali-pro-cal li { display: grid; grid-template-columns: 48px 1fr; gap: 8px; padding: 12px 0; border-top: 1px solid var(--d-line); }
+.dali-pro-cal li:first-child { border-top: 0; padding-top: 2px; }
+.dali-pro-cal span { font-size: 14px; font-weight: 700; color: var(--d-brand2); }
+.dali-pro-cal p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.dali-pro-cal b { font-size: 14.5px; font-weight: 600; }
+.dali-pro-cal small { font-size: 12.5px; line-height: 1.45; color: var(--d-sub); }
+
+/* 장부: 왼쪽 무엇, 오른쪽 금액 */
+.dali-pro-ledger { list-style: none; margin: 8px 0 0; padding: 0; }
+.dali-pro-ledger li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--d-line); }
+.dali-pro-ledger span { display: flex; flex-direction: column; gap: 2px; font-size: 14.5px; }
+.dali-pro-ledger small { font-size: 12.5px; line-height: 1.45; color: var(--d-sub); }
+.dali-pro-ledger b { flex: 0 0 auto; font-size: 14.5px; font-weight: 700; }
+.dali-pro-ledger li.sum span { font-weight: 700; }
+
+/* 맨 아래: PB, 달이 키우기 */
+.dali-pro-foot { padding: 4px 20px 8px; }
+.dali-pro-foot button { display: flex; justify-content: space-between; width: 100%; padding: 15px 0; font-size: 15px; font-weight: 500; color: var(--d-ink); border-bottom: 1px solid var(--d-line); }
+.dali-pro-foot button:last-child { border-bottom: 0; }
+.dali-pro-foot button span { color: var(--d-sub); }
+
+/* 발표자 상자의 시연 시각 버튼 */
+.dali-pro-scenes { flex-wrap: wrap; }
+
+/* 더 보기 */
+.dali-pro-more button { width: 100%; padding: 12px 0 0; text-align: center; font-size: 13.5px; font-weight: 600; color: var(--d-brand2); }
+.dali-pro-list .dali-pro-more button { padding: 12px 20px 0; }
+.dali-pro-cal .dali-pro-more { display: block; border-top: 1px solid var(--d-line); }
+.dali-pro-ledger .dali-pro-more { display: block; }
+
+/* ---------- 다른 탭도 "오늘" 머리와 같은 바다색으로 (관리 탭 바다, 첫 인사) ----------
+   밝은 살구 하늘과 하늘색 물결 대신 앱 머리의 짙은 청록 밤바다. 해 그림은 밤바다에 안 맞아 숨김 */
+.phone .dali-sea, .phone .dali-sea.st3 { background: linear-gradient(180deg, #0B2F3C 0%, #0E3A4A 55%, #134B5A 100%); }
+.phone .dali-prop.sun { display: none; }
+.phone .dali-wave.far { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='300'%3E%3Cpath d='M0 14 Q30 0 60 14 T120 14 V300 H0Z' fill='%231B5F6B'/%3E%3C/svg%3E"); }
+.phone .dali-wave.near { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='300'%3E%3Cpath d='M0 12 Q22 0 45 12 T90 12 V300 H0Z' fill='%237FD1D9' fill-opacity='.55'/%3E%3C/svg%3E"); }
+.phone .dali-intro-sea { background: linear-gradient(180deg, #0B2F3C 0%, #0E3A4A 60%, #134B5A 100%); }
+.phone .dali-intro-water { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='300'%3E%3Cpath d='M0 12 Q22 0 45 12 T90 12 V300 H0Z' fill='%237FD1D9' fill-opacity='.55'/%3E%3C/svg%3E"); }
+
+/* ---------- "더 보기" 아래 카드 다듬기: 숫자는 굵고 크게, 설명은 한 단계 작고 연하게, 글만 있는 카드엔 그림 하나 ---------- */
+.dali-pro-card { padding: 22px 20px; border-top-width: 8px; }
+.dali-pro-card h3 { font-size: 17px; margin-bottom: 12px; }
+.dali-pro-big { font-size: 30px; }
+.dali-pro-sub { font-size: 12.5px; }
+
+/* 내 종목: 이름 / 가격과 등락, 오른쪽에 하루 흐름 선 */
+.dali-pro-stk {
+  display: grid; grid-template-columns: 1fr 64px; grid-template-rows: auto auto; gap: 3px 12px; align-items: center;
+  width: 100%; padding: 14px 20px; text-align: left; color: var(--d-ink); border-bottom: 1px solid var(--d-line);
+}
+.dali-pro-list li:last-child .dali-pro-stk { border-bottom: 0; }
+.dali-pro-stk-name b { font-size: 16px; font-weight: 700; }
+.dali-pro-stk-name small { margin-left: 6px; font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-stk-price { grid-row: 2; font-size: 14px; font-weight: 600; color: var(--d-ink2); }
+.dali-pro-stk-price b { margin-left: 8px; font-weight: 700; }
+.dali-pro-mini { grid-column: 2; grid-row: 1 / span 2; width: 64px; height: 34px; overflow: visible; }
+.dali-pro-mini line { stroke: var(--d-line); stroke-width: 1; stroke-dasharray: 2 3; }
+.dali-pro-mini path { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dali-pro-mini.up path { stroke: var(--d-up); }
+.dali-pro-mini.down path { stroke: var(--d-down); }
+.dali-pro-mini.flat path { stroke: var(--d-sub); }
+
+/* 내 종목 소식: 이름과 시각 / 왜 / 내 계좌로 보면 */
+.dali-pro-news { display: flex; flex-direction: column; gap: 5px; width: 100%; padding: 15px 20px; text-align: left; color: var(--d-ink); border-bottom: 1px solid var(--d-line); }
+.dali-pro-list li:last-child .dali-pro-news { border-bottom: 0; }
+.dali-pro-news-top b { font-size: 16px; font-weight: 700; }
+.dali-pro-news-top small { margin-left: 8px; font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-news-why { font-size: 14px; line-height: 1.5; }
+.dali-pro-news-me { padding-left: 10px; border-left: 2px solid var(--d-brand2); font-size: 12.5px; line-height: 1.5; color: var(--d-sub); }
+.dali-pro-news-me b { font-weight: 600; }
+
+/* 다음 2주: 날짜 칸 */
+.dali-pro-cal li { grid-template-columns: 44px 1fr; gap: 12px; align-items: start; }
+.dali-pro-date {
+  display: flex; flex-direction: column; align-items: center; padding: 5px 0 6px; border-radius: 10px;
+  border: 1.5px solid var(--d-brand2); color: var(--d-brand2); line-height: 1.1;
+}
+.dali-pro-date small { font-size: 10.5px; font-weight: 600; }
+.dali-pro-date b { font-size: 18px; font-weight: 700; color: var(--d-brand2) !important; }
+.dali-pro-cal p b { font-size: 15px; }
+
+/* 지켜준 돈: 항목별 가로 막대 */
+.dali-pro-bars { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.dali-pro-bars li { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: baseline; }
+.dali-pro-bars-k { font-size: 14px; }
+.dali-pro-bars-k small { margin-left: 6px; font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-bars b { font-size: 14.5px; font-weight: 700; }
+.dali-pro-bars i { grid-column: 1 / -1; display: block; height: 8px; border-radius: 4px; background: var(--d-brand2); min-width: 6px; }
+.dali-pro-fee { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--d-line); }
+.dali-pro-fee span { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.dali-pro-fee small { font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-fee b { font-size: 15px; font-weight: 700; }
+
+/* 습관 거울: 매매 20건 점 띠(월말 띠, 3개월 뒤 화면과 같은 모양) + 0을 가운데 둔 막대 */
+.dali-pro-dotband { position: relative; height: 96px; margin: 14px 0 6px; border-radius: 12px; background: var(--d-band); }
+.dali-pro-dotband .dali-pro-zero { top: 50%; background: #D5D9DD; }
+.dali-pro-dotband .dali-pro-dot.gain { background: var(--d-up); }
+.dali-pro-dotband .dali-pro-dot.loss { background: var(--d-down); }
+.dali-pro-dotband .dali-pro-dot.spike { box-shadow: 0 0 0 2.5px var(--d-band), 0 0 0 4.5px var(--d-ink); }
+.dali-pro-hab { list-style: none; margin: 8px 0 0; padding: 0; }
+.dali-pro-hab li { display: grid; grid-template-columns: 1fr 72px 58px; gap: 10px; align-items: center; padding: 12px 0; border-top: 1px solid var(--d-line); }
+.dali-pro-hab-k { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.dali-pro-hab-k small { font-size: 12.5px; color: var(--d-sub); }
+.dali-pro-hab-bar { position: relative; height: 8px; border-radius: 4px; background: var(--d-band); }
+.dali-pro-hab-bar::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: #C9CED4; }
+.dali-pro-hab-bar i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+.dali-pro-hab-bar i.up { background: var(--d-up); }
+.dali-pro-hab-bar i.down { background: var(--d-down); }
+.dali-pro-hab b { text-align: right; font-size: 15px; font-weight: 700; }
+
+/* 작은 표시: 꽉 찬 원 대신 청록 테두리 */
+.dali-pro-more button { color: var(--d-brand2); }
+.dali-pro-unfold { border: 1.5px solid var(--d-brand2); background: #fff; color: var(--d-brand2); }

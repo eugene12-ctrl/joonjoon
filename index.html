@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="features/dali/dali-plus.css">
 <link rel="stylesheet" href="features/dali/dali-intro.css">
 <link rel="stylesheet" href="features/dali/dali-move.css">
+<link rel="stylesheet" href="features/dali/dali-pro.css">
+<link rel="stylesheet" href="features/dali/dali-ai.css">
+<link rel="stylesheet" href="features/dali/dali-after.css">
 </head>
 <body>
 
@@ -41,12 +44,17 @@
 <script src="src/js/main.js"></script>
 <!-- 달이: 전체메뉴 화면이 만들어진 뒤에 얹습니다 -->
 <script src="features/dali/dali-data.js"></script>
+<script src="features/dali/dali-customer.js"></script>
+<script src="features/dali/dali-rules.js"></script>
 <script src="features/dali/dali-feed.js"></script>
 <script src="features/dali/dali-chart.js"></script>
 <script src="features/dali/dali.js"></script>
+<script src="features/dali/dali-pro.js"></script>
 <script src="features/dali/dali-plus.js"></script>
 <script src="features/dali/dali-intro.js"></script>
 <script src="features/dali/dali-move.js"></script>
+<script src="features/dali/dali-ai.js"></script>
+<script src="features/dali/dali-after.js"></script>
 <script>
   // 달이에서 종목 이름을 누르면 국내주식 MTS 주문 화면으로 (features/mts, 그 종목)
   window.DALI_ORDER = name => { const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) location.href = "features/mts/index.html#order/" + c; };
