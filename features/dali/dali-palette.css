@@ -1,0 +1,48 @@
+/* ===== 달이 색: Color Hunt 팔레트 #005461 #0C7779 #249E94 #3BC1A8 (좋아요 3,478, "토스와 비슷") =====
+   features/palette-lab에서 고른 팔레트를 실제 화면에 입힘. 모든 달이 CSS 뒤에 불러온다.
+   역할은 실험실과 같은 기준: 포인트와 히어로는 가장 짙은 #005461, 바탕은 흰색 그대로.
+   밝은 민트 #3BC1A8은 실험실에선 바탕 틴트로 썼지만 넓은 면엔 세서 작은 강조(막대, 칩)에만 쓰고,
+   넓은 틴트 바탕은 그 색을 흰색에 옅게 섞은 #E6F7F3으로 둔다.
+   되돌리려면 각 페이지에서 이 파일을 불러오는 <link> 한 줄만 지우면 된다. */
+
+/* 공통 변수 (dali-theme.css, dali-renew.css, dali-report.css의 값을 덮음) */
+.phone, .dali-demo { --d-brand: #005461; --d-brand2: #005461; --d-brand-tint: #E6F7F3; }
+.phone .dali-sheet { --r-brand: #005461; --r-brand-d: #003D47; --r-tint: #E6F7F3; }
+.dali-page .dr { --t-point: #005461; --t-point-tint: #E6F7F3; --t-point-deep: #003D47; }
+
+/* 오늘 탭 히어로: 장면과 상관없이 짙은 청록 하나 (실험실과 같음) */
+.phone .dali-pro-act, .phone .dali-pro-act.sc-morning, .phone .dali-pro-act.sc-intraday,
+.phone .dali-pro-act.sc-close, .phone .dali-pro-act.sc-month { background: #005461; }
+.phone .dali-pro-act .dali-pro-act-btns button:first-child,
+.phone .dali-pro-act.sc-intraday .dali-pro-act-btns button:first-child,
+.phone .dali-pro-act.sc-close .dali-pro-act-btns button:first-child,
+.phone .dali-pro-act.sc-month .dali-pro-act-btns button:first-child { color: #005461; }
+.phone .dali-tabs button.on, .phone .dali-pebbles { color: #005461; }
+
+/* 밤바다 띠와 관리 탭 바다: 팔레트의 짙은 쪽 셋으로 */
+.phone .dali-pro-night,
+.phone .dali-sea, .phone .dali-sea.st3 { background: linear-gradient(180deg, #003D47 0%, #005461 55%, #0C7779 100%); }
+.phone .dali-pro-ev i { background: #005461; }
+.phone .dali-pro-dot.spike { box-shadow: 0 0 0 3px #005461, 0 0 0 5px rgba(255, 255, 255, .85); }
+.phone .dali-pro-us .mix span.hot { background: #3BC1A8; color: #003D47; }
+
+/* 매매일지 합계 카드, 달이 키우기 히어로, 진행 막대, 사다리 */
+.phone .dali-sheet .dali-sum { background: linear-gradient(145deg, #003D47 0%, #005461 100%); box-shadow: 0 12px 24px -16px rgba(0, 61, 71, .7); }
+.phone .dali-sheet .dali-ghero { background: linear-gradient(145deg, #005461, #0C7779); }
+.phone .dali-sheet .dali-bar > i, .phone .dali-sheet .dali-bar > span { background: linear-gradient(90deg, #3BC1A8, #0C7779); }
+.phone .dali-sheet .dali-ladder li.past > img, .phone .dali-sheet .dali-ladder li.now > img { box-shadow: 0 0 0 2px #005461; }
+.phone .dali-sheet .dali-ladder .dali-link { background: #E6F7F3; color: #005461; }
+
+/* 매매일지 달력, 종목 이름 옆 작은 글자 */
+.phone .dali-sheet .dali-jday.today { box-shadow: inset 0 0 0 1.5px #005461; }
+.phone .dali-sheet .dali-jday.today i { color: #005461; }
+.phone .dali-sheet .dali-jname em { color: #005461; }
+
+/* 3개월 뒤 화면, AI 생각 중 표시, 첫 인사 */
+.phone .now { background: #005461; }
+.phone .dali-after-row em.good, .phone .dali-after-big, .phone .dali-after-strip.after .dali-after-strip-l b { color: #005461; }
+.phone .dali-ai-head, .phone .dali-ai-steps li.done::before { color: #005461; }
+.phone .dali-ai-dot, .phone .dali-ai-text.typing::after { background: #005461; }
+.phone .dali-ai-steps li::before { border-top-color: #005461; }
+.phone .dali-intro-find { background: #E6F7F3; color: #003D47; }
+.phone .dali-intro-go { background: #005461; }
