@@ -238,3 +238,6 @@
 .phone .dali-sheet .dali-symlink > b, .phone .dali-sheet .dali-symlink { white-space: nowrap; }
 .phone .dali-sheet .dali-row-m > span:first-of-type::before { display: none; }
 .phone .dali-sheet .dali-next { padding-left: 18px; }
+
+/* 관리 탭 카드가 세로로 눌려 잘리던 것: 본문이 flex 세로 줄이라 카드가 줄어들면서 overflow로 잘렸음 */
+.phone .dali-sheet .dali-body > * { flex-shrink: 0; }
