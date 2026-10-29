@@ -712,10 +712,10 @@ function openTopRow(tk,d){const i=SYMS.findIndex(s=>s.tk===tk);if(i<0){toast(tk+
   openDetail(i);dirIdx={up:0,dn:1,vol:2,side:3}[d]??0;renderDirs()}
 $$('#legSeg button').forEach(b=>b.onclick=()=>{$$('#legSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');leg=b.dataset.leg;renderTop()});
 
-// 오른다 → XSP 숏 콜 스프레드, 내린다 → XSP 숏 풋 스프레드 옵션체인으로 바로 감
+// 오른다 → XSP 숏 풋 스프레드, 내린다 → XSP 숏 콜 스프레드 옵션체인으로 바로 감 (전략 목록의 방향과 같게)
 function vote(btn,d){$$('.vote button').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');$('#voteRes').style.display='block';
   openDetail(1);dirIdx=d==='up'?0:1;renderDirs();
-  if(d==='up')openSpread('scs','숏 콜 스프레드');else openSpread('sps','숏 풋 스프레드')}
+  if(d==='up')openSpread('sps','숏 풋 스프레드');else openSpread('scs','숏 콜 스프레드')}
 
 function symRow(s){const i=SYMS.indexOf(s);return `
     <div class="it" onclick="openDetail(${i})">

@@ -159,9 +159,11 @@
 .phone .dali-sheet .dali-body > .dali-card.grow.compact { padding: 0; }
 .phone .dali-sheet .dali-card.grow.compact .dali-sea { border-radius: 22px 22px 0 0; }
 .phone .dali-sheet .dali-card h3 { margin: 0 0 6px; font-size: 18px; font-weight: 800; letter-spacing: -.3px; color: var(--r-ink); }
-.phone .dali-sheet .dali-next { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px 18px 18px; border: 0; background: #fff; text-align: left; }
-.phone .dali-sheet .dali-next > img { width: 40px; height: 40px; padding: 6px; border-radius: 12px; background: var(--r-tint); }
-.phone .dali-sheet .dali-next > span { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+/* margin 0, border-box: dali-theme.css가 주는 margin 16px 20px과 width 100%가 겹쳐 줄이 오른쪽으로 넘치던 것 */
+.phone .dali-sheet .dali-next { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0; box-sizing: border-box; padding: 16px 18px 18px; border: 0; background: #fff; text-align: left; }
+.phone .dali-sheet .dali-next > img { width: 40px; height: 40px; padding: 6px; border-radius: 12px; background: var(--r-tint); flex: 0 0 auto; }
+.phone .dali-sheet .dali-next > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.phone .dali-sheet .dali-next > em { flex: 0 0 auto; }
 .phone .dali-sheet .dali-next small { font-size: 12.5px; color: var(--r-sub); }
 .phone .dali-sheet .dali-next b { font-size: 16px; font-weight: 800; color: var(--r-ink); }
 .phone .dali-sheet .dali-next em { font-style: normal; font-size: 20px; color: var(--r-sub); }
