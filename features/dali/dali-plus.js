@@ -145,7 +145,9 @@
   placePill(false);
   addEventListener("resize", () => placePill(false));
 
-  let swipe = null, swallowClick = false;
+  // 밀기 직후 브라우저가 만드는 클릭만 버린다. 터치는 밀면 클릭이 안 생기므로
+  // 깃발 방식이면 다음 정상 터치까지 삼켜 버린다. 그래서 시각으로 제한한다.
+  let swipe = null, swallowUntil = 0;
   body.addEventListener("pointerdown", e => {
     if (e.target.closest("textarea, input, .dali-chart")) return;
     swipe = { x: e.clientX, y: e.clientY };
@@ -158,11 +160,11 @@
     const btns = tabBtns(), i = btns.findIndex(b => b.classList.contains("on"));
     const next = btns[i + (dx < 0 ? 1 : -1)];
     if (!next) return;
-    swallowClick = true;
+    swallowUntil = performance.now() + 350;
     next.click();
   });
   body.addEventListener("click", e => {
-    if (swallowClick) { swallowClick = false; e.stopPropagation(); e.preventDefault(); }
+    if (performance.now() < swallowUntil) { swallowUntil = 0; e.stopPropagation(); e.preventDefault(); }
   }, true);
 
   /* 4. 손익 숫자 세기: 이익만 0부터 올라감. 손실은 그대로 조용히 */
