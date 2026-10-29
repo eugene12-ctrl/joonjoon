@@ -146,7 +146,7 @@
     return `
       <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${s}</i>`).join("")}</div>` +
       sorted.map(newsRow).join("") +
-      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.</p>`;
+      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.<br>시세와 뉴스는 시연용 가상 데이터예요.</p>`;
   }
 
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
@@ -176,7 +176,7 @@
     const closed = list.filter(t => t.sell);
     const total = closed.reduce((a, t) => a + t.pnl, 0);
     return `
-      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건</small></div>
+      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small></div>
       <p class="dali-hint">살 때와 팔 때의 뉴스, 분위기는 달이가 알아서 적어요. 메모는 쓰고 싶을 때만.</p>` +
       list.map(tradeCard).join("");
   }
@@ -227,7 +227,7 @@
         <button type="button" class="dali-symlink" data-act="order" data-sym="${n.sym}">${n.sym} ${quote(n.sym)}<span class="dali-go">주문 ›</span></button></header>
       <div class="dali-page-body">
         <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
-        <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">가상 뉴스, ${n.time}</p><p>${txt.body}</p></article>
+        <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">시연용 가상 뉴스, ${n.time}</p><p>${txt.body}</p></article>
       </div>`;
   }
 
