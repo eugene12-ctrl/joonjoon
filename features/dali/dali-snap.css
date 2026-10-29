@@ -62,3 +62,7 @@
 /* 3.0 시연에서 빼는 것: 시트 머리 조약돌, 발표자 상자 조약돌 주기 (코드는 남김) */
 .phone .dali-sheet .dali-pebbles { display: none; }
 .dali-demo [data-demo="pebble"] { display: none; }
+
+/* 매매일지 월간(10월 리포트)도 일간, 주간과 같은 흰 바탕 */
+.phone .dali-sheet .dali-body:has(> .dali-snap-report) { background: #fff; padding: 0 0 24px; }
+.phone .dali-sheet .dali-body:has(> .dali-snap-report) > .dali-jseg { margin-top: 12px; }
