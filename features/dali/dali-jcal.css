@@ -20,3 +20,14 @@
 .phone .dali-sheet .dali-jday.down i, .phone .dali-sheet .dali-jday.down b { color: #3182F6; }
 .phone .dali-sheet .dali-jday.today { box-shadow: inset 0 0 0 1.5px #1B5F6B; }
 .phone .dali-sheet .dali-jday.today i { font-weight: 800; color: #1B5F6B; }
+
+/* 일간, 주간, 월간 전환 */
+.phone .dali-sheet .dali-jseg { display: flex; gap: 2px; margin: 16px 20px 0; padding: 4px; border-radius: 12px; background: #F2F4F6; }
+.phone .dali-sheet .dali-jseg button { flex: 1; height: 34px; border: 0; border-radius: 9px; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #6B7684; }
+.phone .dali-sheet .dali-jseg button.on { background: #fff; color: #191F28; font-weight: 800; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.phone .dali-sheet .dali-jseg + .dali-jsum { padding-top: 16px; }
+/* 주간: 다섯 칸, 조금 크게 */
+.phone .dali-sheet .dali-jgrid.w5 { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.phone .dali-sheet .dali-jgrid.w5 .dali-jday { height: 58px; padding-top: 9px; gap: 4px; }
+.phone .dali-sheet .dali-jgrid.w5 .dali-jday i { font-size: 12px; }
+.phone .dali-sheet .dali-jgrid.w5 .dali-jday b { font-size: 12.5px; }

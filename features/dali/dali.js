@@ -210,30 +210,58 @@
       </li>`;
   }
   // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
+  // 매매일지 일간, 주간, 월간. 오늘은 10월 29일(목), 이번 주는 10/26(월)부터 10/30(금)
+  const J_TODAY = 29, J_WEEK = [26, 27, 28, 29, 30];
+  const jday = t => { const [m, d] = (t.sell.date === "오늘" ? "10/29" : t.sell.date).split("/").map(Number); return m === 10 ? d : 0; };
+  const jshort = n => { if (state.app === "fut") return `${n > 0 ? "+" : n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`; const v = n / 10000; return `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(v) >= 10 ? Math.round(Math.abs(v)) : Math.abs(v).toFixed(1).replace(".0", "")}만`; };
+  function jcell(d, l, label) {
+    const sum = l ? l.reduce((a, t) => a + t.pnl, 0) : 0, today = d === J_TODAY ? " today" : "";
+    return l
+      ? `<button type="button" class="dali-jday ${tone(sum)}${today}" data-act="jday" data-id="${l[0].id}"><i>${label || d}</i><b>${jshort(sum)}</b></button>`
+      : `<span class="dali-jday${today}"><i>${label || d}</i></span>`;
+  }
+  function byDayOf(closed) { const m = {}; closed.forEach(t => { const d = jday(t); if (d) (m[d] = m[d] || []).push(t); }); return m; }
+  // 월간: 10월 달력
   function jcalHTML(closed) {
-    const byDay = {};
-    closed.forEach(t => { const [m, d] = (t.sell.date === "오늘" ? "10/29" : t.sell.date).split("/").map(Number); if (m !== 10) return; (byDay[d] = byDay[d] || []).push(t); });
-    const short = n => { if (state.app === "fut") return `${n > 0 ? "+" : n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`; const v = n / 10000; return `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(v) >= 10 ? Math.round(Math.abs(v)) : Math.abs(v).toFixed(1).replace(".0", "")}만`; };
-    const first = new Date(2026, 9, 1).getDay(), today = 29, cells = [];
+    const byDay = byDayOf(closed), first = new Date(2026, 9, 1).getDay(), cells = [];
     for (let i = 0; i < first; i++) cells.push("<span></span>");
-    for (let d = 1; d <= 31; d++) {
-      const l = byDay[d], sum = l ? l.reduce((a, t) => a + t.pnl, 0) : 0;
-      cells.push(l
-        ? `<button type="button" class="dali-jday ${tone(sum)}${d === today ? " today" : ""}" data-act="jday" data-id="${l[0].id}"><i>${d}</i><b>${short(sum)}</b></button>`
-        : `<span class="dali-jday${d === today ? " today" : ""}"><i>${d}</i></span>`);
-    }
+    for (let d = 1; d <= 31; d++) cells.push(jcell(d, byDay[d]));
     return `<div class="dali-jcal"><div class="dali-jweek">${"일월화수목금토".split("").map(w => `<i>${w}</i>`).join("")}</div><div class="dali-jgrid">${cells.join("")}</div></div>`;
   }
+  // 주간: 이번 주 다섯 날
+  function jweekHTML(closed) {
+    const byDay = byDayOf(closed);
+    return `<div class="dali-jcal"><div class="dali-jgrid w5">${J_WEEK.map((d, i) => jcell(d, byDay[d], `${"월화수목금"[i]} ${d}`)).join("")}</div></div>`;
+  }
+  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 돈과 같은 계산)
+  const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return v * (q.chg || 0) / (100 + (q.chg || 0)); };
   function journalHTML() {
     const list = mine(state.trades), held = list.filter(t => !t.sell);
     // 판 날짜가 최근인 것부터 (방금 판 "오늘"은 맨 위)
     const key = t => (t.sell.date === "오늘" ? "99/99" : t.sell.date), closed = list.filter(t => t.sell).sort((a, b) => key(b).localeCompare(key(a)));
-    const total = closed.reduce((a, t) => a + t.pnl, 0);
+    const view = state.jview || "month";
+    const inView = view === "day" ? closed.filter(t => jday(t) === J_TODAY) : view === "week" ? closed.filter(t => J_WEEK.includes(jday(t))) : closed;
+    const total = inView.reduce((a, t) => a + t.pnl, 0), wins = inView.filter(t => t.pnl > 0).length;
     const group = (title, l) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(tradeRow).join("")}</ul>` : "";
+    const tabs = [["day", "일간"], ["week", "주간"], ["month", "월간"]]
+      .map(([k, l]) => `<button type="button" class="${view === k ? "on" : ""}" data-act="jview" data-v="${k}">${l}</button>`).join("");
+    let head, body, closedTitle;
+    if (view === "day") {
+      const today = held.reduce((a, t) => a + heldToday(t), 0);
+      head = `<span>오늘 10월 29일</span><b class="${tone(today)}">${won(today)}</b><small>${inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘 판 건 없어요. 보유 종목은 어제보다 이만큼 움직였어요"}</small>`;
+      body = ""; closedTitle = "오늘 판 것";
+    } else if (view === "week") {
+      head = `<span>이번 주 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>${inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"}</small>`;
+      body = jweekHTML(closed); closedTitle = "이번 주에 판 것";
+    } else {
+      head = `<span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${inView.length}번 중 ${wins}번 수익</small>`;
+      body = jcalHTML(closed); closedTitle = "10월에 판 것";
+    }
     return `
-      <div class="dali-jsum"><span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${closed.length}번 중 ${closed.filter(t => t.pnl > 0).length}번 수익</small></div>
-      ${jcalHTML(closed)}
-      ${group("보유 중", held)}${group("10월에 판 것", closed)}`;
+      <div class="dali-jseg">${tabs}</div>
+      <div class="dali-jsum">${head}</div>
+      ${body}
+      ${group("보유 중", held)}${group(closedTitle, inView)}`;
   }
 
   /* --- 관리 탭 --- */
@@ -598,6 +626,7 @@
     else if (act === "order") openOrder(b.dataset.sym);
     else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
     else if (act === "trade") { state.openTrade = state.openTrade === id ? null : id; render(); }
+    else if (act === "jview") { state.jview = b.dataset.v; state.openTrade = null; render(); }
     else if (act === "jday") { state.openTrade = id; render(); sheet.querySelector(".dali-jrow.open")?.scrollIntoView({ block: "center", behavior: "smooth" }); }
     else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
     else if (act === "report") { state.page = { type: "report", from: state.page }; render(); }
