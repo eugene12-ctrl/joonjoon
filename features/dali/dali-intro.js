@@ -23,7 +23,7 @@
         <img class="dali-intro-spark s1" src="${IMG("sparkles")}" alt="">
         <img class="dali-intro-spark s2" src="${IMG("sparkles")}" alt="">
         <div class="dali-intro-otter">
-          <img class="dali-intro-body" src="${BASE}dali-otter.png" alt="달이">
+          <img class="dali-intro-body" src="${BASE}dali-body.png" alt="달이">
           <img class="dali-intro-ribbon" src="${IMG("ribbon")}" alt="">
           <img class="dali-intro-hand" src="${IMG("waving_hand")}" alt="">
         </div>

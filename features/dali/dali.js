@@ -8,7 +8,8 @@
 
   // 이미지 경로는 이 파일 위치 기준 (index.html, features/mts/index.html 어디서 불러도 맞도록)
   const BASE = document.currentScript.src.replace(/[^/]*$/, "");
-  const FACE = `${BASE}dali-otter.png`;
+  const FACE = `${BASE}dali-face.png`; // 버튼, 시트 머리: 얼굴만
+  const BODY = `${BASE}dali-body.png`; // 관리 탭 바다: 전신
   const IMG = n => `${BASE}img/${n}.png`;
   const state = {
     app: window.DALI_PAGE_APP || "stock",
@@ -245,7 +246,7 @@
         <button type="button" class="dali-float" data-act="pet" aria-label="달이 쓰다듬기" style="--s:${s.scale}">
           <span class="dali-ripple"></span>
           <span class="dali-otterbox">
-            <img class="dali-body3d" src="${FACE}" alt="">
+            <img class="dali-body3d" src="${BODY}" alt="">
             ${state.wear ? `<img class="dali-wear ${state.wear}" src="${IMG(state.wear)}" alt="">` : ""}
           </span>
         </button>

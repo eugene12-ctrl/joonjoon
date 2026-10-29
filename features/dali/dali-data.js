@@ -128,7 +128,6 @@ const DALI_STAGES = [
 const DALI_WEARS = [
   { id: "ribbon", name: "빨간 리본", stage: 0 },
   { id: "hibiscus", name: "바다 꽃", stage: 1 },
-  { id: "glasses", name: "뉴스 안경", stage: 2 },
   { id: "graduation_cap", name: "학사모", stage: 3 },
 ];
 
