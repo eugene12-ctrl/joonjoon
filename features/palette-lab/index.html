@@ -3,6 +3,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Pretendard,"Malgun Gothic",sans-serif;background:#F2F4F6;color:#1A1D1F;display:flex;height:100vh}
+/* 페이지 전체 글자를 드래그해도 선택 영역이 생기지 않게 (앱처럼). 입력칸만 예외 */
+body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{user-select:text;-webkit-user-select:text}
 .left{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding:12px 20px;background:#E9ECEF}
 .stage{width:375px;height:780px;transform-origin:top center}
 .left iframe{width:375px;height:780px;border:0;border-radius:34px;background:#fff;box-shadow:0 20px 40px -20px rgba(11,51,64,.5);display:block}
