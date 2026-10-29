@@ -12,7 +12,7 @@
 .feed-tab.on { background: #1B5F6B; color: #fff; font-weight: 700; }
 
 .feed-list { flex: 1 1 auto; overflow-y: auto; padding: 4px 16px 12px; }
-.feed-item { display: block; padding: 12px 0; border-bottom: 1px solid #EEF1F2; color: inherit; text-decoration: none; }
+.feed-item { display: block; width: 100%; padding: 12px 0; border: 0; border-bottom: 1px solid #EEF1F2; background: none; color: inherit; font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
 .feed-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5E6E74; }
 .feed-meta strong { color: #1A1D1F; font-size: 13px; }
 .feed-meta .date { margin-left: auto; }
@@ -20,6 +20,13 @@
 .feed-title { margin: 6px 0 2px; font-size: 14.5px; font-weight: 700; line-height: 1.4; }
 .feed-sub { margin: 0; font-size: 12.5px; color: #5E6E74; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .feed-empty { padding: 40px 0; text-align: center; color: #5E6E74; font-size: 13.5px; }
+
+/* 뉴스 본문 (목록 자리에 대신 나옴) */
+.feed-detail { flex: 1 1 auto; overflow-y: auto; padding: 8px 16px 16px; }
+.feed-detail-back { padding: 6px 0 10px; border: 0; background: none; color: #1B5F6B; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.feed-detail-title { margin: 8px 0 12px; font-size: 17px; font-weight: 700; line-height: 1.4; color: #0E2F3A; }
+.feed-detail-body p { margin: 0 0 10px; font-size: 14px; line-height: 1.65; color: #1A1D1F; word-break: keep-all; }
+.feed-hint { margin: 12px 0 0; font-size: 12px; color: #6B7378; }
 
 .feed-foot { flex: 0 0 auto; padding: 8px 16px 14px; border-top: 1px solid #EEF1F2; font-size: 11.5px; color: #6B7378; }
 .feed-foot p { margin: 2px 0; }
