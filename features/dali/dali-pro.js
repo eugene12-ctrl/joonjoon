@@ -238,5 +238,6 @@
     demo.querySelector('[data-demo="pebble"]')?.addEventListener("click", () => { pro.on = false; }, true);
   }
 
-  window.daliPro = { show, scene: k => demo?.querySelector(`[data-scene="${k}"]`)?.click() };
+  // sc: 지금 장면 이름. 다른 탭(뉴스 등)이 오늘 탭과 같은 시각의 가격을 쓰려면 DaliRules.nowPrice(sym, daliPro.sc)로 읽는다
+  window.daliPro = { show, scene: k => demo?.querySelector(`[data-scene="${k}"]`)?.click(), get sc() { return pro.sc; } };
 })();
