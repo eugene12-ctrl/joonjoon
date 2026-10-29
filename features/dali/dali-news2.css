@@ -21,6 +21,8 @@
 .dali-n2-slide h2 { margin-top: 8px; }
 
 /* 몇 번째 장인지 */
+/* 장 여백은 오늘 히어로와 같게 위 16px, 아래는 점 줄 자리 18px (dali-pro.css의 22px 0 규칙보다 앞서게) */
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding: 16px 20px 18px; }
 /* 몇 번째 장인지: 띠 바닥에 겹쳐 두어 높이를 안 차지함 */
 .dali-n2-dots { position: absolute; left: 0; right: 0; bottom: 7px; display: flex; justify-content: center; gap: 6px; margin: 0; }
 .dali-n2-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .3); transition: width .2s ease; }
