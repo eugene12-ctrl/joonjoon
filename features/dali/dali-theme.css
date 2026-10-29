@@ -180,3 +180,29 @@
 .dali-spark { width: 54px; }
 .dali-body, .dali-page-body, .dali-mts-body { scrollbar-width: none; }
 .dali-body::-webkit-scrollbar, .dali-page-body::-webkit-scrollbar, .dali-mts-body::-webkit-scrollbar { display: none; }
+
+/* ---------- 첫 인사 (dali-intro): 가운데 장식 카드 대신 아래에서 올라오는 시트 ----------
+   dali-intro.css가 뒤에 불러와지므로 .phone을 붙여 우선함 */
+.phone .dali-intro { padding: 0; place-items: end stretch; background: rgba(0, 0, 0, .4); }
+.phone .dali-intro-card {
+  max-width: none; border-radius: 20px 20px 0 0; padding: 0 20px 20px; background: #fff;
+  text-align: left; color: var(--d-ink); box-shadow: none;
+  animation: dali-intro-up .5s cubic-bezier(.2, .8, .2, 1);
+}
+@keyframes dali-intro-up { from { transform: translateY(100%); } }
+.phone .dali-intro-sea { height: 150px; margin: 0 -20px 20px; background: linear-gradient(#F4F6F8 0%, #EAF2F3 62%); }
+.phone .dali-intro-otter { top: 10px; width: 140px; height: 140px; margin-left: -70px; }
+.phone .dali-intro-spark, .phone .dali-intro-heart, .phone .dali-intro-hand { display: none; }
+.phone .dali-intro-card h2 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.phone .dali-intro-sub { margin: 6px 0 16px; font-size: 14px; color: var(--d-sub); }
+.phone .dali-intro-card ul { gap: 0; margin: 0 0 20px; border-top: 1px solid var(--d-line); }
+.phone .dali-intro-card li {
+  padding: 14px 0; border-radius: 0; background: none; box-shadow: none;
+  border-bottom: 1px solid var(--d-line); font-size: 15px; font-weight: 500; color: var(--d-ink);
+}
+.phone .dali-intro-card li img { display: none; }
+.phone .dali-intro-card li::before {
+  content: ""; flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: var(--d-brand2);
+}
+.phone .dali-intro-go { border-radius: 12px; padding: 15px; font-size: 16px; font-weight: 700; background: var(--d-brand2); }
+.phone .dali-intro-foot { text-align: center; color: var(--d-sub); font-size: 12.5px; }
