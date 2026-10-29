@@ -11,9 +11,10 @@
 
   const app = window.DALI_PAGE_APP === "fut" ? "fut" : "stock";
   const BASE = document.currentScript.src.replace(/[^/]*$/, "");
-  // 맨 위 그림: 종목 로고(흰 동그라미)나 이벤트 그림(img/<이름>.png, 없으면 .svg)
+  // 맨 위 그림: 종목 로고(흰 동그라미)나 이벤트 그림. art에 확장자까지 적으면(ev-fomc.svg) 그 파일만, 이름만 적으면 img/<이름>.png, 없으면 .svg
   const art = e => e.art === "logo" && DALI_SYMS[e.sym].code
     ? { cls: "logo", img: `${BASE}img/logo-${DALI_SYMS[e.sym].code}.png` }
+    : /\.(png|svg)$/.test(e.art || "") ? { cls: "pic", img: `${BASE}img/${e.art}` }
     : e.art ? { cls: "pic", img: `${BASE}img/${e.art}.png`, alt: `${BASE}img/${e.art}.svg` } : null;
   const pageEl = sheet.querySelector(".dali-page");
   const tabs = sheet.querySelector(".dali-tabs");

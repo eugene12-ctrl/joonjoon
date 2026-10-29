@@ -391,7 +391,7 @@
         ${seaHTML()}
         <button type="button" class="dali-next" data-act="grow-page">
           <img src="${IMG((n || s).icon)}" alt="">
-          <span><small>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 달이가` : "다 자란 달이가"}</small><b>${n ? n.gift : s.gift}</b>
+          <span><small>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 달이가 주는 선물` : "다 자란 달이가 주는 선물"}</small><b>${n ? n.gift : s.gift}</b>
             <i class="dali-bar"><i style="width:${p}%"></i></i></span>
           <em>›</em>
         </button>
