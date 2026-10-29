@@ -413,15 +413,32 @@
       </div>`;
   }
 
-  /* --- 뉴스 읽기 화면 (헤더의 종목 이름을 누르면 주문창) --- */
+  /* --- 읽기 화면 맨 위 띠: 오늘 탭 히어로와 같은 틀. 숫자 하나(그 소식에 걸린 내 돈, 관심 종목은 등락), AI 요약 한 줄.
+     가격은 오늘 탭과 같은 장면 시각(daliPro.sc)으로 읽어서 두 탭의 숫자가 어긋나지 않게 --- */
+  function readBand(sym, time, why) {
+    const s = DALI_SYMS[sym], R = typeof DaliRules !== "undefined" ? DaliRules : null, sc = window.daliPro ? window.daliPro.sc : "morning";
+    const stock = s.app === "stock" && R, now = stock ? R.nowPrice(sym, sc) : s.price, chg = stock ? R.todayPct(sym, sc) : s.chg;
+    let top = `${sym} 관심`, big = pct(chg);
+    const p = s.app === "stock" && typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.positions.find(x => x.sym === sym) : null;
+    const t = s.app === "fut" && typeof DALI_TRADES !== "undefined" ? DALI_TRADES.find(x => x.sym === sym && !x.sell) : null;
+    if (p) { top = `${sym} ${p.qty}주`; big = won(p.qty * now * chg / (100 + chg), "stock"); }
+    else if (t) { top = `${sym} ${t.qty.replace(/^\S+\s/, "")}`; big = won(t.pnl, "fut"); }
+    return `<div class="dali-pro dali-read"><section class="dali-pro-act dali-read-act">
+        <p class="dali-pro-act-top"><i class="dali-pro-logo">${sym[0]}${symImg(sym)}</i>${top}<span>${time}</span></p>
+        <p class="dali-pro-act-big">${big}</p>
+        ${why ? `<h2>${why}</h2>` : ""}
+      </section></div>`;
+  }
+  const readHead = sym => `<header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
+        <button type="button" class="dali-symlink" data-act="order" data-sym="${sym}">${sym} 주문<span class="dali-go">›</span></button></header>`;
+
+  /* --- 뉴스 읽기 화면 (오른쪽 위 "주문"을 누르면 주문창) --- */
   function newsPage(id) {
     const n = state.news.find(x => x.id === id), txt = DALI_NEWS_TEXT[id];
     return `
-      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
-        <button type="button" class="dali-symlink" data-act="order" data-sym="${n.sym}">${n.sym} ${quote(n.sym)}<span class="dali-go">주문 ›</span></button></header>
+      ${readHead(n.sym)}
       <div class="dali-page-body">
-        ${DaliChart.day(n.sym, fmt)}
-        <div class="dali-ctx"><p><em>AI 요약</em> ${n.why}</p></div>
+        ${readBand(n.sym, n.time, n.why)}
         <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">${n.time}</p><p>${txt.body}</p></article>
         ${feedHTML(n.sym, n.id)}
       </div>`;
@@ -436,11 +453,11 @@
           ${a.body.map(t => `<p>${t}</p>`).join("")}
           ${a.full ? "" : `<p class="dali-hint">본문은 아직 받지 못해 앞부분만 보여 줘요.</p>`}</article>`
       : `<p class="dali-hint center dali-feed-empty">이 기사는 더 이상 볼 수 없어요. 아래에서 다른 기사를 골라 보세요.</p>`;
+    const latest = state.news.find(x => x.sym === p.sym);
     return `
-      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
-        <button type="button" class="dali-symlink" data-act="order" data-sym="${p.sym}">${p.sym} ${quote(p.sym)}<span class="dali-go">주문 ›</span></button></header>
+      ${readHead(p.sym)}
       <div class="dali-page-body">
-        ${DaliChart.day(p.sym, fmt)}
+        ${readBand(p.sym, a ? a.time : "", latest ? latest.why : "")}
         ${article}
         ${feedHTML(p.sym, p.id)}
       </div>`;
