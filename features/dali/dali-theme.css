@@ -1,0 +1,80 @@
+/* ===== 달이 색 역할 정리 (dali.css 위에 덮어씀) =====
+   되돌리려면 각 페이지에서 이 파일을 불러오는 <link> 한 줄만 지우면 됩니다.
+   1) 빨강, 파랑은 시세 방향(상승, 하락)과 주문에만 씀
+   2) 달이 자체 동작(배지, 칩, 버튼, 진행)은 바다색, 보상(조약돌)은 코랄
+   3) 보조 글자색과 초록을 명도 대비 4.5 이상으로 올림
+   4) 바뀌는 숫자는 폭 고정 */
+.phone, .dali-demo {
+  --dali-ink: #2A1416;
+  --dali-muted: #7A655F;   /* 크림 5.1, 모래 4.6 (기존 #8A7670은 4.0, 3.6) */
+  --dali-sea: #1F7A8C;     /* 크림 4.7 */
+  --dali-sea-deep: #16606E;/* 흰 글씨 7.2 */
+  --dali-sea-tint: #EAF4F6;
+  --dali-sea-line: #B9DCE2;
+  --dali-coral: #B4482F;   /* 보상 강조, 흰 글씨 5.4 */
+  --dali-coral-tint: #FFF1EE;
+  --dali-green: #2E7D4A;   /* 크림 4.75 (기존 #3E8E5A는 3.8) */
+}
+
+/* 1. 달이 자체 신호: 빨강 대신 바다색 */
+.dali-alert, .dali-bang { background: var(--dali-sea-deep); }
+.dali-bubble { border-color: var(--dali-sea); }
+.dali-chips button.on { background: var(--dali-sea-deep); }
+.dali-card.news.unseen, .dali-news.unseen, .dali-card.trade.new, .dali-trade.new { border-color: var(--dali-sea); }
+.dali-card.news.flag { border-color: var(--dali-sea-line); }
+.dali-type.hot { border-color: var(--dali-sea); color: var(--dali-sea-deep); }
+.dali-link { color: var(--dali-sea-deep); }
+.dali-link.pb { color: #5A4A45; }
+.dali-btn { background: var(--dali-sea-deep); }
+.dali-btn.ghost { background: #F3EAE2; color: var(--dali-ink); }
+/* 주문 버튼은 시세 색 그대로 (클래스 두 개라 위 규칙보다 우선) */
+.dali-btn.buy { background: #C8202C; }
+.dali-btn.sell { background: #2F5BD3; }
+
+/* 달이 말풍선, 맥락 박스: 붉은 기 대신 옅은 바다색 */
+.dali-say, .dali-ctx, .dali-mts-note, .dali-symlink { background: var(--dali-sea-tint); }
+.dali-why em, .dali-ctx em { color: var(--dali-sea-deep); }
+.dali-why em { background: var(--dali-sea-tint); }
+.dali-mts-note em { color: var(--dali-sea-deep); }
+.dali-symlink .dali-go { color: var(--dali-sea-deep); }
+
+/* 관리 탭 진행: 바다색 */
+.dali-path li.past span { background: var(--dali-sea-tint); border-color: var(--dali-sea-line); }
+.dali-path li.now span { border-color: var(--dali-sea); box-shadow: 0 0 0 4px var(--dali-sea-tint); }
+.dali-path li.now small { color: var(--dali-sea-deep); }
+.dali-steps li.on span { background: var(--dali-sea-deep); border-color: var(--dali-sea-deep); }
+.dali-steps li.now span { box-shadow: 0 0 0 4px var(--dali-sea-tint); }
+.dali-closet button.on { border-color: var(--dali-sea); background: var(--dali-sea-tint); }
+.dali-bar span { background: var(--dali-sea); }
+.dali-bar.green span { background: var(--dali-green); }
+
+/* 보상(조약돌)은 코랄 */
+.dali-pebbles { color: var(--dali-coral); background: var(--dali-coral-tint); }
+.dali-reward { color: var(--dali-coral); }
+.dali-plus { background: var(--dali-coral); }
+.dali-grew b { color: var(--dali-coral); }
+
+/* 2. 보조 글자색, 초록 대비 올림 */
+.dali-where, .dali-close, .dali-tabs button, .dali-card.mini small, .dali-meta, .dali-foot,
+.dali-type, .dali-hint, .dali-path small, .dali-opt.wrong, .dali-go, .dali-time,
+.dali-trade header span, .dali-side-label span, .dali-mood, .dali-pnl small, .dali-sum small,
+.dali-axisrow, .dali-steps li, .dali-mts-head small, .dali-fut-list small, .dali-fut-note, .dali-demo-note,
+.dali-row-m.done > span:first-of-type, .dali-left, .dali-tag, .dali-quote.flat {
+  color: var(--dali-muted);
+}
+.dali-tabs button.on { color: #fff; }
+.dali-axis { fill: var(--dali-muted); }
+.dali-mission.done .dali-mission-top span:first-child, .dali-track span, .dali-check { color: var(--dali-green); }
+.dali-track span::before { background: var(--dali-green); }
+.dali-state.hold { color: var(--dali-green) !important; }
+
+/* 3. 바뀌는 숫자는 폭 고정 */
+.dali-pnl, .dali-sum b, .dali-quote, .dali-move, .dali-pebbles, .dali-qty b,
+.dali-mts-price, .dali-left, .dali-field, .dali-barrow .val {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 관리 탭 성장 사다리 (나중에 추가된 클래스) */
+.dali-ladder small, .dali-ladder li.lock b { color: var(--dali-muted); }
+.dali-ladder li.now { background: var(--dali-sea-tint); }
+.dali-ladder li.now small, .dali-ladder li.next .dali-left { color: var(--dali-sea-deep); }
