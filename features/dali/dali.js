@@ -6,8 +6,10 @@
   const phone = document.querySelector(".phone");
   if (!phone) return;
 
-  const FACE = "features/dali/dali-otter.png";
-  const IMG = n => `features/dali/img/${n}.png`;
+  // 이미지 경로는 이 파일 위치 기준 (index.html, features/mts/index.html 어디서 불러도 맞도록)
+  const BASE = document.currentScript.src.replace(/[^/]*$/, "");
+  const FACE = `${BASE}dali-otter.png`;
+  const IMG = n => `${BASE}img/${n}.png`;
   const state = {
     app: "stock",
     pebbles: 7,
