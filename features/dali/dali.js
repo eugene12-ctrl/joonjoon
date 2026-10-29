@@ -181,7 +181,7 @@
   const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
   const sgn = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
   const FLOW = { buy: "순매수", sell: "순매도", flat: "보합" };
-  const SECT = { up: "5일째 오름세", flat: "5일째 보합", down: "5일째 내림세" };
+  const SECT = { up: "5일 흐름 오름세", flat: "5일 흐름 보합", down: "5일 흐름 내림세" };
   function market(sym, sn) {
     if (!sn) return "";
     const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "";
