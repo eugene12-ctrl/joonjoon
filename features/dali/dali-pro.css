@@ -396,7 +396,7 @@
 
 /* ===== 히어로는 앱, 장면, 탭이 달라도 같은 크기: 높이 고정, 버튼은 맨 아래 =====
    큰 글 아래는 두 줄(제목)과 한 줄(설명, 특징뉴스)까지만 */
-.phone .dali-sheet .dali-pro-act:not(.dali-read-act) { box-sizing: border-box; height: 256px; display: flex; flex-direction: column; }
+.phone .dali-sheet .dali-pro-act:not(.dali-read-act) { box-sizing: border-box; height: 224px; padding-top: 16px; padding-bottom: 16px; display: flex; flex-direction: column; }
 .phone .dali-sheet .dali-pro-act:not(.dali-read-act) > .dali-pro-act-btns { margin-top: auto; }
 .phone .dali-sheet .dali-pro-act h2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .phone .dali-sheet .dali-pro-act-sub, .phone .dali-sheet .dali-pro-act-feat { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -404,7 +404,7 @@
 .phone .dali-sheet .dali-n2-act .dali-n2-slide { display: flex; flex-direction: column; padding: 22px 20px 0; }
 .phone .dali-sheet .dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-top: auto; }
 /* 히어로 글자도 한 벌: 라벨 13.5, 큰 글 30, 제목 16.5, 한 줄 14. 이벤트, 뉴스, 장면 모두 같음 */
-.phone .dali-sheet .dali-pro-act .dali-pro-act-top { margin: 0 0 12px; font-size: 13.5px; line-height: 26px; }
+.phone .dali-sheet .dali-pro-act .dali-pro-act-top { margin: 0 0 8px; font-size: 13.5px; line-height: 26px; }
 .phone .dali-sheet .dali-pro-act .dali-pro-act-big { margin: 0; font-size: 30px; line-height: 1.2; letter-spacing: -.02em; white-space: nowrap; }
 .phone .dali-sheet .dali-pro-act .dali-pro-act-big small { font-size: 16px; }
 .phone .dali-sheet .dali-pro-act h2, .phone .dali-sheet .dali-n2-slide h2 { min-height: 0; margin: 8px 0 0; font-size: 16.5px; line-height: 1.4; }
