@@ -103,17 +103,26 @@
       </div>`;
   }
   // 그때 뉴스가 지금과 같은 이야기였던 때가 있으면 한 줄, 없으면 줄 없음
+  // 달이가 쓰는 한 줄: 최근 4번을 결과(서프라이즈, 쇼크, 동결 등)별로 묶어 다음 날 등락을 말한다. 숫자는 데이터에서, 문장만 달이가
   function aiLine(e, an) {
-    const hit = an.filter(a => a.tag === e.now.tag);
-    return hit.length ? `${hit.map(a => a.at).join(", ")}에도 발표 전에 "${e.now.tag}" 뉴스가 있었어요` : "";
+    const by = {};
+    an.forEach(a => { (by[a.res[0]] = by[a.res[0]] || []).push(a); });
+    const parts = Object.entries(by).map(([k, l]) => {
+      const avg = l.reduce((s, a) => s + a.next, 0) / l.length;
+      return l.length > 1 ? `${k} ${l.length}번은 다음 날 평균 ${pct(avg)}` : `${k}${(k.charCodeAt(k.length - 1) - 0xAC00) % 28 ? "이었던" : "였던"} ${l[0].at}은 ${pct(l[0].next)}`;
+    });
+    const against = an.filter(a => (a.res[1] === "up" && a.next < 0) || (a.res[1] === "down" && a.next > 0));
+    const text = `최근 ${an.length}번 중 ${parts.join(", ")}이었어요.${against.length ? ` 결과와 반대로 움직인 때가 ${against.length}번 있어요.` : ""}`;
+    return { key: `ev-${e.sym}-${sc()}`, steps: [`최근 ${an.length}번 발표 결과와 다음 날 등락 읽는 중`], text,
+      basis: `최근 ${an.length}번 발표의 결과와 발표 다음 날 등락을 보고 썼어요.` };
   }
   function paint(e) {
     pageEl.innerHTML = page(e);
     pageEl.dataset.id = "event";
     pageEl.hidden = false;
-    const ai = pageEl.querySelector(".dali-ev-ai"), t = aiLine(e, analogs(e));
-    if (t) ai.innerHTML = `<p class="dali-ai-text">${esc(t)}</p>`;
-    else ai.remove();
+    const ai = pageEl.querySelector(".dali-ev-ai"), o = aiLine(e, analogs(e));
+    if (window.DaliAI) window.DaliAI.write(ai, o);
+    else ai.innerHTML = `<p class="dali-ai-text">${esc(o.text)}</p>`;
   }
   function open(sym) {
     const e = events().find(x => x.sym === sym) || current();
