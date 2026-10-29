@@ -194,15 +194,17 @@
     const s = DALI_SYMS[sym], src = s.code ? IMG(`logo-${s.code}`) : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
     return src ? `<img src="${src}" alt="" onerror="this.remove()">` : "";
   }
-  function tradeRow(t) {
-    const open = state.openTrade === t.id, add = addInfo(t);
+  // mode "day": 일간 화면의 보유 줄은 산 뒤 전체 손익 대신 그날 하루 움직인 금액과 등락
+  function tradeRow(t, mode) {
+    const open = state.openTrade === t.id, add = addInfo(t), day = mode === "day" && !t.sell;
+    const val = day ? heldToday(t) : t.pnl, valPct = day ? (DALI_SYMS[t.sym].chg || 0) : t.pct;
     const sub = t.sell ? `${t.sell.date} 팜, ${t.qty}` : t.qty;
     return `
       <li class="dali-jrow${open ? " open" : ""}${t.live ? " new" : ""}">
         <button type="button" class="dali-jline" data-act="trade" data-id="${t.id}" aria-expanded="${open}">
           <i class="dali-jlogo${DALI_SYMS[t.sym].icon ? " icon" : ""}">${t.sym[0]}${symImg(t.sym)}</i>
           <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
-          <span class="dali-jval ${tone(t.pnl)}"><b>${won(t.pnl)}</b><small>${pct(t.pct)}</small></span>
+          <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
         ${open ? `<div class="dali-jmore">${DaliChart.trade(t)}
           <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
@@ -242,13 +244,14 @@
     const view = state.jview || "month";
     const inView = view === "day" ? closed.filter(t => jday(t) === J_TODAY) : view === "week" ? closed.filter(t => J_WEEK.includes(jday(t))) : closed;
     const total = inView.reduce((a, t) => a + t.pnl, 0), wins = inView.filter(t => t.pnl > 0).length;
-    const group = (title, l) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(tradeRow).join("")}</ul>` : "";
+    const group = (title, l, mode) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(t => tradeRow(t, mode)).join("")}</ul>` : "";
     const tabs = [["day", "일간"], ["week", "주간"], ["month", "월간"]]
       .map(([k, l]) => `<button type="button" class="${view === k ? "on" : ""}" data-act="jview" data-v="${k}">${l}</button>`).join("");
     let head, body, closedTitle;
     if (view === "day") {
       const today = held.reduce((a, t) => a + heldToday(t), 0);
-      head = `<span>오늘 10월 29일</span><b class="${tone(today)}">${won(today)}</b><small>${inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘 판 건 없어요. 보유 종목은 어제보다 이만큼 움직였어요"}</small>`;
+      // 시세는 10월 28일 마감 기준이라, 하루 변동은 "어제"로 적음 (오늘 탭 아침과 같은 말)
+      head = `<span>어제 10월 28일, 보유 종목</span><b class="${tone(today)}">${won(today)}</b><small>${inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘은 아직 판 게 없어요"}</small>`;
       body = ""; closedTitle = "오늘 판 것";
     } else if (view === "week") {
       head = `<span>이번 주 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>${inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"}</small>`;
@@ -261,7 +264,7 @@
       <div class="dali-jseg">${tabs}</div>
       <div class="dali-jsum">${head}</div>
       ${body}
-      ${group("보유 중", held)}${group(closedTitle, inView)}`;
+      ${group("보유 중", held, view)}${group(closedTitle, inView)}`;
   }
 
   /* --- 관리 탭 --- */
