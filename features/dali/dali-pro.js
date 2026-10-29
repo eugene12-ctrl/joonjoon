@@ -310,5 +310,22 @@
   }
 
   // sc: 지금 장면 이름. 다른 탭(뉴스 등)이 오늘 탭과 같은 시각의 가격을 쓰려면 DaliRules.nowPrice(sym, daliPro.sc)로 읽는다
-  window.daliPro = { show, scene: k => demo?.querySelector(`[data-scene="${k}"]`)?.click(), get sc() { return pro.sc; } };
+  /* --- MTS에서 별(관심 등록)을 누르면 달이 관심에도 들어옴 ---
+     DALI_CATALOG의 종목을 DALI_SYMS와 장면별 등락에 넣고 C.watch에 더한다. localStorage "dali-watch"에 남겨 다시 열어도 그대로.
+     window.daliPro.addWatch(sym)로 부른다. 이미 보는 종목이면 아무 일도 없다 */
+  const WKEY = "dali-watch";
+  function addWatch(sym, quiet) {
+    if (typeof DALI_CATALOG === "undefined" || !DALI_CATALOG[sym] || DALI_SYMS[sym]) return false;
+    const k = DALI_CATALOG[sym];
+    DALI_SYMS[sym] = { app: k.app, kind: "watch", price: k.price, chg: k.chg, code: k.code, name: k.name };
+    Object.keys(k.pct).forEach(s => { if (M[s]) { M[s].pct[sym] = k.pct[s]; if (M[s].feat) M[s].feat[sym] = k.feat[s]; } });
+    if (!C.watch.includes(sym)) C.watch.push(sym);
+    try { const l = JSON.parse(localStorage.getItem(WKEY) || "[]"); if (!l.includes(sym)) { l.push(sym); localStorage.setItem(WKEY, JSON.stringify(l)); } } catch (e) { /* 무시 */ }
+    if (!quiet) { toast(`달이도 ${sym}을 볼게요`); if (pro.on && sheet.classList.contains("open")) paint(); }
+    return true;
+  }
+  try { JSON.parse(localStorage.getItem(WKEY) || "[]").forEach(s => addWatch(s, true)); } catch (e) { /* 무시 */ }
+  demo?.querySelector('[data-demo="reset"]')?.addEventListener("click", () => { try { localStorage.removeItem(WKEY); } catch (e) { /* 무시 */ } }, true);
+
+  window.daliPro = { show, scene: k => demo?.querySelector(`[data-scene="${k}"]`)?.click(), get sc() { return pro.sc; }, addWatch };
 })();

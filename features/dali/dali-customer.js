@@ -242,3 +242,17 @@ const DALI_MOMENT_NEWS = {
   }));
   DALI_TRADES.splice(at < 0 ? DALI_TRADES.length : at, 0, ...cards);
 })();
+
+// MTS에서 별(관심 등록)을 누르면 달이 관심에 들어오는 종목. 아직 달이가 안 보는 종목만 여기 둔다. 값은 가상
+// pct는 장면별 오늘 등락, feat는 장면별 특징뉴스 한 줄
+const DALI_CATALOG = {
+  "유진투자증권": { app: "stock", kind: "watch", price: 3850, chg: 0.9, code: "001200", name: "유진투자증권",
+    pct: { morning: 0.9, intraday: 0.4, close: 1.3, month: 0.5 },
+    feat: { morning: "증권주 보합권, 유진 AX 고객경험 해커톤 진행 중", intraday: "증권주 보합권 등락", close: "증권주 소폭 올라 마감", month: "증권주 보합권 마감" } },
+  "카카오": { app: "stock", kind: "watch", price: 58400, chg: 1.2, code: "035720", name: "카카오",
+    pct: { morning: 1.2, intraday: 0.8, close: 1.5, month: 0.4 },
+    feat: { morning: "플랫폼주 어제 소폭 올라 마감", intraday: "플랫폼주 보합권 등락", close: "플랫폼주 소폭 올라 마감", month: "플랫폼주 보합권 마감" } },
+  "LG에너지솔루션": { app: "stock", kind: "watch", price: 412000, chg: -0.7, code: "373220", name: "LG에너지솔루션",
+    pct: { morning: -0.7, intraday: -1.1, close: -0.3, month: 0.6 },
+    feat: { morning: "이차전지주 어제 약보합 마감", intraday: "이차전지주 약세", close: "이차전지주 낙폭 줄여 마감", month: "이차전지주 보합권 마감" } },
+};
