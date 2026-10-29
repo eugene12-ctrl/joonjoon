@@ -166,7 +166,6 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 <body>
 <div class="phone">
   <div class="status"><span>14:08</span><div class="island"></div><span style="font-size:12px">LTE ▮79</span></div>
-  <div class="demo">시연용 가상 화면</div>
 
   <!-- HOME / WATCH -->
   <section class="screen active" id="s-main">
@@ -187,11 +186,11 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
     <div class="scroll" id="tab-home">
       <div class="card asset">
         <div class="lbl">자산현황</div>
-        <div class="amt">$0.00</div>
+        <div class="amt" id="aTotal"></div>
         <div class="row">
-          <div>주문가능금액<b class="r">$0.00</b></div>
-          <div>오늘 실현손익<b>$0.00</b></div>
-          <div>평가손익<b class="r">$0.00</b></div>
+          <div>주문가능금액<b id="aCash"></b></div>
+          <div>오늘 실현손익<b class="r" id="aReal"></b></div>
+          <div>평가손익<b class="r" id="aEval"></b></div>
         </div>
       </div>
       <div class="btn2">
@@ -207,7 +206,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
           <button class="up" onclick="vote(this,'up')">오른다</button>
           <button class="dn" onclick="vote(this,'dn')">내린다</button>
         </div>
-        <div class="vote-res" id="voteRes">참여 완료 · 오른다 <b class="up-c">58%</b> / 내린다 <b class="dn-c">42%</b> (가상 집계)</div>
+        <div class="vote-res" id="voteRes">참여 완료 · 오른다 <b class="up-c">58%</b> / 내린다 <b class="dn-c">42%</b></div>
       </div>
       <div class="card">
         <div class="sec-t">거래량 TOP <span class="q">?</span></div>
@@ -269,7 +268,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
   <!-- HOLD / MY -->
   <section class="screen" id="s-hold">
     <div class="hdr"><div class="hdr-top"><div class="brand">내 보유</div></div></div>
-    <div class="scroll"><div class="card"><div class="empty">보유중인 종목이 없어요.</div><button class="ybtn" onclick="openDetail(0)">옵션 전략 선택하기</button></div></div>
+    <div class="scroll"><div class="card wl" id="holdList" style="padding:4px 16px"></div><button class="ybtn" onclick="openDetail(0)">옵션 전략 선택하기</button></div>
     <nav class="nav" data-nav></nav>
   </section>
   <section class="screen" id="s-my">
@@ -375,7 +374,7 @@ function renderDirs(){
   $('#dirs').innerHTML=DIRS.map((d,i)=>`<button class="${i===dir?'on '+(d.k==='up'?'u':''):''}" onclick="dir=${i};renderDirs()"><svg viewBox="0 0 24 24">${d.ic}</svg></button>`).join('');
   const d=DIRS[dir];$('#dirTitle').textContent=d.t;
   $('#stratList').innerHTML=d.s.map(s=>`
-    <div class="s" onclick="${s[4]?`openSpread('${s[4]}','${s[0]}')`:`toast('${s[0]} 주문 화면 (목업)')`}">
+    <div class="s" onclick="${s[4]?`openSpread('${s[4]}','${s[0]}')`:`openSingle('${s[0]}')`}">
       <div class="h">${s[0]}<span>›</span></div><div class="en">${s[1]}</div><div class="ds">${s[2]}</div>
       ${s[3]?`<div class="tags">${s[3].map(t=>`<span class="tag ${t[1]}">${t[0]}</span>`).join('')}</div>`:''}
     </div>`).join('');
@@ -451,11 +450,49 @@ function openOrder(a,b,p,txt){
    <div class="kv"><span>최대 수익 (1계약)</span><b class="up-c">${fmt(maxG)}</b></div>
    <div class="kv"><span>최대 손실 (1계약)</span><b class="dn-c">${fmt(maxL)}</b></div>
    <div class="kv"><span>손익분기</span><b>만기 때, ${txt}</b></div>
-   <button class="ybtn" onclick="$('#sheet').classList.remove('on');toast('시연용 화면으로 실제 주문되지 않아요')">주문하기</button>
-   <div class="note">※ 시연용 가상 화면입니다. 표시된 가격·손익은 가상 데이터이며 투자 권유가 아닙니다.</div>`;
+   <button class="ybtn" onclick="fillOrder('${$('#spName').textContent.replace('?','').trim()}',${p},${cfg.credit})">주문하기</button>`;
   $('#sheet').classList.add('on');
 }
 
+/* ===== 돈과 체결 (목업용 숫자) ===== */
+let CASH = 24350, REAL = 185;
+const HOLD = [{ tk: 'XSP', name: '숏 풋 스프레드', qty: 1, cost: -68, eval: 42 }];
+const money = n => (n < 0 ? '-' : '') + fmt(Math.abs(n));
+function renderAsset() {
+  const ev = HOLD.reduce((a, h) => a + h.eval, 0);
+  $('#aTotal').textContent = fmt(CASH + HOLD.reduce((a, h) => a + h.cost + h.eval, 0));
+  $('#aCash').textContent = fmt(CASH);
+  $('#aReal').textContent = (REAL >= 0 ? '+' : '') + money(REAL);
+  $('#aEval').textContent = (ev >= 0 ? '+' : '') + money(ev);
+  $('#aEval').className = ev >= 0 ? 'r' : 'dn-c';
+  $('#holdList').innerHTML = HOLD.length ? HOLD.map(h => `
+    <div class="it"><div><div class="tk">${h.tk}<span>${h.name} ${h.qty}계약</span></div>
+    <div class="cp">평가손익 <b class="${h.eval >= 0 ? 'up-c' : 'dn-c'}">${h.eval >= 0 ? '+' : ''}${money(h.eval)}</b></div></div><div class="bm"></div></div>`).join('')
+    : '<div class="empty">보유중인 종목이 없어요.</div>';
+}
+// 프리미엄은 1계약 = 100배. 받는 전략은 현금이 늘고, 내는 전략은 줄어듦
+function fillOrder(name, prem, credit) {
+  const amt = Math.round(prem * 100 * 100) / 100;
+  CASH += credit ? amt : -amt;
+  HOLD.unshift({ tk: sym.tk, name, qty: 1, cost: credit ? -amt : amt, eval: 0 });
+  $('#sheet').classList.remove('on');
+  renderAsset();
+  go('s-hold');
+  toast(`${sym.tk} ${name} 1계약 체결 (${credit ? '받은' : '낸'} 프리미엄 ${fmt(amt)})`);
+  if (window.dali) window.dali.record(sym.tk, `${name} 1계약`, '매수');
+}
+function openSingle(name) {
+  const prem = Math.max(0.5, Math.round(sym.p * 0.012 * 20) / 20);
+  $('#sheetBody').innerHTML = `<h4>${name} · ${sym.tk}</h4>
+   <div class="kv"><span>만기일</span><b>${EXPS[1][0]}</b></div>
+   <div class="kv"><span>행사가</span><b>${fmt(Math.round(sym.p))}</b></div>
+   <div class="kv"><span>낼 프리미엄</span><b class="up-c">${fmt(prem)}</b></div>
+   <div class="kv"><span>1계약 금액</span><b>${fmt(prem * 100)}</b></div>
+   <div class="kv"><span>주문가능금액</span><b>${fmt(CASH)}</b></div>
+   <button class="ybtn" onclick="fillOrder('${name}', ${prem}, false)">주문하기</button>`;
+  $('#sheet').classList.add('on');
+}
+renderAsset();
 renderTop();renderWatch();
 
 /* ===== 달이 연결 =====

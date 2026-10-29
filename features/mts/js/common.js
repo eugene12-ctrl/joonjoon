@@ -59,7 +59,6 @@ const App = {
   init(host) {
     host.innerHTML = `
       <div class="phone mts">
-        <div class="demo-band">시연용 가상 화면 · 숫자는 자리표시</div>
         <div class="mts-screen"></div>
         <div class="index-bar" aria-live="off"></div>
         <nav class="mts-nav" aria-label="하단 메뉴">

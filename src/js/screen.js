@@ -18,7 +18,6 @@ function screenHTML() {
 
   return `
   <div class="menu">
-    <div class="demo-band">시연용 가상 화면</div>
     <header class="app-head">
       <div class="who"><strong>홍길동님</strong>
         <div class="mode" role="group" aria-label="화면 모드"><button type="button" class="on">기본</button><button type="button">간편</button></div>
@@ -56,7 +55,6 @@ function screenHTML() {
     </nav>
   </div>
   <section class="sub" aria-label="${NEW_FEATURE_TITLE}" inert>
-    <div class="demo-band">시연용 가상 화면</div>
     <header class="sub-head">
       <button type="button" class="back" aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
       <h1>${NEW_FEATURE_TITLE}</h1>

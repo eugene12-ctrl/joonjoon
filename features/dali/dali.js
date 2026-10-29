@@ -64,7 +64,6 @@
   fut.className = "dali-fut";
   fut.setAttribute("aria-label", "유진투자선물 시연 화면");
   fut.innerHTML = `
-    <div class="demo-band">시연용 가상 화면</div>
     <header class="dali-fut-head"><strong>유진투자선물</strong><span>홍길동님</span></header>
     <nav class="dali-fut-tabs"><button class="on" type="button">해외선물</button><button type="button">국내선물</button><button type="button">야간</button><button type="button">옵션</button></nav>
     <ul class="dali-fut-list">
@@ -167,7 +166,7 @@
     return `
       <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${s}</i>`).join("")}</div>` +
       sorted.map(newsRow).join("") +
-      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.<br>주가는 10월 28일 종가 수준이고, 뉴스는 시연용 가상 요약이에요.</p>`;
+      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.</p>`;
   }
 
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
@@ -198,7 +197,7 @@
     const closed = list.filter(t => t.sell);
     const total = closed.reduce((a, t) => a + t.pnl, 0);
     return `
-      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small>${DaliChart.pnlBars(list, won)}</div>
+      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건.</small>${DaliChart.pnlBars(list, won)}</div>
       <p class="dali-hint">살 때와 팔 때의 뉴스, 분위기는 달이가 알아서 적어요. 메모는 쓰고 싶을 때만.</p>` +
       list.map(tradeCard).join("");
   }
@@ -307,7 +306,7 @@
       <div class="dali-page-body">
         ${DaliChart.day(n.sym, fmt)}
         <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
-        <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">시연용 가상 뉴스, ${n.time}</p><p>${txt.body}</p></article>
+        <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">${n.time}</p><p>${txt.body}</p></article>
       </div>`;
   }
 
@@ -335,18 +334,17 @@
       `<tr class="${k > 0 ? "ask" : "bid"}${k === 0 ? " now" : ""}"><td>${k > 0 ? vols[i].toLocaleString() : ""}</td><td>${fmt(o.sym, s.price + k * t)}</td><td>${k <= 0 ? vols[i].toLocaleString() : ""}</td></tr>`).join("");
     const unit = s.app === "fut" ? "계약" : "주";
     return `
-      <div class="demo-band">시연용 가상 화면</div>
       <header class="dali-mts-head"><button type="button" class="dali-back" data-mts="back" aria-label="뒤로">‹</button>
         <div><strong>${o.sym}</strong><small>${DALI_APPS[s.app].name} 주문</small></div></header>
       <div class="dali-mts-price">${quote(o.sym)}</div>
       <nav class="dali-mts-tabs">${["매수", "매도", "정정/취소", "체결"].map(x => `<button type="button" data-mts="side" data-v="${x}" class="${o.side === x ? "on " + (x === "매수" ? "buy" : "sell") : ""}">${x}</button>`).join("")}</nav>
       <div class="dali-mts-body">
-        <table class="dali-hoga" aria-label="호가 (가상)"><tbody>${rows}</tbody></table>
+        <table class="dali-hoga" aria-label="호가"><tbody>${rows}</tbody></table>
         <div class="dali-mts-form">
           <label>주문 유형<span class="dali-field">시장가</span></label>
           <label>수량<span class="dali-field qty"><button type="button" data-mts="qty" data-v="-1" aria-label="수량 줄이기">−</button><b>${o.qty}</b><button type="button" data-mts="qty" data-v="1" aria-label="수량 늘리기">+</button></span></label>
           <label>주문 가격<span class="dali-field">${priceText(o.sym)}</span></label>
-          <p class="dali-hint">${o.qty}${unit}, 주가는 10월 28일 종가 수준, 호가는 가상</p>
+          <p class="dali-hint">${o.qty}${unit}</p>
         </div>
       </div>
       <div class="dali-mts-foot"><button type="button" class="dali-btn wide ${o.side === "매도" ? "sell" : "buy"}" data-mts="fill">${o.side === "매도" ? "매도" : "매수"}</button></div>`;
@@ -371,6 +369,22 @@
     state.order = { sym, side: "매수", qty: 1 };
     renderMts();
   }
+  function record(sym, qtyText, side) {
+    const s = DALI_SYMS[sym];
+    const latest = state.news.find(n => n.sym === sym);
+    const ctx = {
+      date: "오늘",
+      news: latest ? latest.why : "특별한 소식 없음",
+      mood: latest && isFlag(latest) ? "큰 소식이 나온 직후" : "평소와 비슷한 날",
+    };
+    const openTrade = state.trades.find(t => t.sym === sym && !t.sell);
+    if (side === "매도" && openTrade) { openTrade.sell = ctx; openTrade.live = true; }
+    else state.trades.unshift({ id: "live" + Date.now(), app: s.app, sym, qty: qtyText, buy: ctx, sell: null, pnl: 0, pct: 0, memo: "", live: true });
+    state.tab = "journal";
+    fab.classList.add("pulse"); setTimeout(() => fab.classList.remove("pulse"), 1200);
+    say(`${sym} ${qtyText} 체결됐어요. 그때 상황을 일지에 적어 뒀어요.`);
+    render();
+  }
   function fill() {
     const o = state.order, s = DALI_SYMS[o.sym];
     const latest = state.news.find(n => n.sym === o.sym);
@@ -387,7 +401,7 @@
     state.tab = "journal";
     renderMts();
     fab.classList.add("pulse"); setTimeout(() => fab.classList.remove("pulse"), 1200);
-    say(`${o.sym} ${o.qty}${unit} ${o.side} 주문이 접수됐어요 (가상). 그때 상황을 일지에 적어 뒀어요.`);
+    say(`${o.sym} ${o.qty}${unit} ${o.side} 주문이 체결됐어요. 그때 상황을 일지에 적어 뒀어요.`);
   }
   mts.addEventListener("click", e => {
     const b = e.target.closest("[data-mts]");
@@ -471,6 +485,7 @@
   demo.className = "dali-demo";
   demo.innerHTML = `
     <p class="dali-demo-title">발표자용 시연 버튼</p>
+    <p class="dali-demo-note">시연용 가상 화면입니다</p>
     <div class="dali-demo-apps"><button type="button" data-app="stock" class="${state.app === "stock" ? "on" : ""}">유진투자증권</button><button type="button" data-app="fut" class="${state.app === "fut" ? "on" : ""}">유진투자선물</button></div>
     <button type="button" data-demo="alert">의미 있는 뉴스 도착</button>
     <button type="button" data-demo="pebble">조약돌 3개 주기</button>
@@ -508,7 +523,7 @@
     else if (b.dataset.demo === "reset") { try { localStorage.removeItem("dali-shared"); } catch (e) { /* 무시 */ } location.reload(); }
   });
 
-  window.dali = { open, close, openNews, openOrder, setApp, alertNews };
+  window.dali = { open, close, openNews, openOrder, setApp, alertNews, record };
 
   render();
   setTimeout(() => sayOnce("좋은 아침이에요! 따라가는 종목에 확인할 소식이 있어요."), 800);
