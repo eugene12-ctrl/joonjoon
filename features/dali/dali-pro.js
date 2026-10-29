@@ -42,10 +42,10 @@
   const LOGO = code => `${BASE}img/logo-${code}.png`;
   const logo = sym => (DALI_SYMS[sym] && DALI_SYMS[sym].code ? `<img src="${LOGO(DALI_SYMS[sym].code)}" alt="" onerror="this.remove()">` : "");
   function row(sym, sub, value, p, held) {
-    const n = newsOf(sym), f = R.feat(sym, pro.sc);
+    const n = newsOf(sym);
     return `<li><button type="button" class="dali-pro-row" ${n ? `data-pro-news="${n.id}"` : ""}>
       <i class="dali-pro-logo">${sym[0]}${logo(sym)}</i>
-      <span class="dali-pro-name"><b>${sym}</b><small>${sub}</small>${f ? `<em class="dali-pro-feat">${f}</em>` : ""}</span>
+      <span class="dali-pro-name"><b>${sym}</b><small>${sub}</small></span>
       <span class="dali-pro-val"><b>${won(value)}</b><small class="${tone(p)}">${pct(p)}</small></span>
     </button></li>`;
   }
@@ -108,21 +108,19 @@
   // 밤사이 미국 지수 세 개와 내 돈 업종 막대(같은 업종 강조)
   const usBlock = a => `<div class="dali-pro-us"><div class="idx">${a.idx.map(([k, v]) => `<p><small>${k}</small><b>${pct(v)}</b></p>`).join("")}</div>
     <p class="mixl">내 돈</p><div class="mix">${a.mix.map(([k, sym, v, hot]) => `<span class="${hot ? "hot" : ""}" style="flex:${v}"><b>${k} ${v}%</b><small>${sym}</small></span>`).join("")}</div></div>`;
-  /* 맨 위 한 장: 계좌 상태를 읽고 달이가 고른 것 (DaliRules.state). 그 아래 "그다음"으로 나머지 두 개까지.
-     히어로 아래 내 돈, 보유, 현금, 관심 목록은 그대로 둔다 */
+  /* 맨 위 한 장: 계좌 상태를 읽고 달이가 고른 것 하나 (DaliRules.state). 라벨, 큰 숫자, 한 줄, 버튼 하나뿐.
+     크게 움직인 종목이면 특징뉴스 한 줄을 더한다. 히어로 아래 내 돈, 보유, 현금, 관심 목록은 그대로 둔다 */
   function hero() {
-    const m = R.money(pro.sc), day = R.dayLabel(pro.sc), st = R.state(pro.sc), a = st.cards[0], next = st.cards.slice(1, 3);
+    const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = R.state(pro.sc).cards[0], [go] = a.btns;
     const held = m.pos.map(p => row(p.sym, `${p.qty}주`, p.value, p.pct, true));
     const watch = C.watch.map(s => row(s, "관심", R.nowPrice(s, pro.sc), R.todayPct(s, pro.sc), false));
     return `
       <section class="dali-pro-act sc-${pro.sc} st-${a.k}">
-        <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}<span class="dali-pro-seen">${st.seen} 이후</span></p>
-        <p class="dali-pro-act-big">${paintNums(a.big)}</p>
+        <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
+        <p class="dali-pro-act-big">${a.big}</p>
         <h2>${a.title}</h2>
-        ${a.feat ? `<p class="dali-pro-act-feat"><span>특징뉴스</span>${a.feat}</p>` : a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
-        <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
-        ${next.length ? `<ul class="dali-pro-next">${next.map(c => `<li><span>${c.top}</span><b>${c.line}</b></li>`).join("")}</ul>` : ""}
-        <p class="dali-pro-read" data-read="${st.read.join(", ")}">달이가 계좌를 읽고 골랐어요. ${st.read.join(", ")}</p>
+        ${a.feat ? `<p class="dali-pro-act-feat"><span>특징뉴스</span>${a.feat}</p>` : ""}
+        <div class="dali-pro-act-btns"><button type="button" data-go="${go[0]}" data-sym="${go[1]}">${go[2]}</button></div>
       </section>
       <section class="dali-pro-head">
         <p>내 돈</p>
