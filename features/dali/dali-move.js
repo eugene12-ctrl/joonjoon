@@ -39,17 +39,24 @@
     fab.classList.toggle("dali-tucked", !!pos.tucked);
     phone.classList.toggle("dali-is-tucked", !!pos.tucked);
     tab.style.top = (y + size() / 2 - 26) + "px";
-    placeBubble(y);
+    // 스르륵 옮기는 동안은 offsetLeft가 아직 옛 자리라, 전환이 끝난 뒤 한 번 더 붙임
+    placeBubble();
+    if (animate) setTimeout(placeBubble, 320);
   }
-  // 말풍선은 달이 옆, 화면이 더 넓게 남은 쪽으로
-  function placeBubble(y) {
-    if (!bubble) return;
-    const x = restX(), onLeft = x + size() / 2 < W() / 2;
+  // 말풍선은 달이 옆, 화면이 더 넓게 남은 쪽으로.
+  // 자리는 저장된 값이 아니라 지금 그려진 달이 자리(offsetLeft, offsetTop)에서 읽는다.
+  // 그래야 달이를 옮기기 전(기본 자리)이든, 다른 코드가 달이를 옮겼든 말풍선이 늘 달이 옆에 붙는다
+  function placeBubble() {
+    if (!bubble || (pos && pos.tucked)) return;
+    const x = fab.offsetLeft, y = fab.offsetTop, onLeft = x + size() / 2 < W() / 2;
     bubble.style.bottom = (H() - y - size() + 18) + "px";
     if (onLeft) { bubble.style.left = (x + size() + 8) + "px"; bubble.style.right = "auto"; }
     else { bubble.style.right = (W() - x + 8) + "px"; bubble.style.left = "auto"; }
     bubble.classList.toggle("dali-bubble-left", onLeft);
   }
+  // 말풍선이 뜰 때마다(인사, 체결 알림) 그 순간의 달이 자리에 다시 붙임
+  if (bubble) new MutationObserver(() => { if (bubble.classList.contains("show")) placeBubble(); })
+    .observe(bubble, { attributes: true, attributeFilter: ["class"] });
 
   // 끌기. 6px 넘게 움직여야 끌기로 보고, 그보다 짧으면 그냥 누른 것(시트 열기)
   let drag = null, justDragged = false;
@@ -104,6 +111,6 @@
     .observe(fab, { attributes: true, attributeFilter: ["class"] });
   tab.classList.toggle("has-alert", fab.classList.contains("has-alert"));
 
-  window.addEventListener("resize", () => place(false));
-  if (pos) place(false);
+  window.addEventListener("resize", () => (pos ? place(false) : placeBubble()));
+  if (pos) place(false); else placeBubble();
 })();
