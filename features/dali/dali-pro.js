@@ -62,14 +62,10 @@
   function action() {
     const sc = pro.sc, m = R.money(sc), h = R.habits(), ss = m.pos.find(p => p.sym === "삼성전자"), pend = C.pending, did = memo();
     if (sc === "morning") {
-      const now = R.nowPrice(pend.sym, sc), rg = DAY_RANGE[pend.sym], gap = (pend.price / now - 1) * 100;
-      const gauge = { lo: rg.low, hi: rg.high, marks: [["내 주문", pend.price, "mine"], ["지금", now, "now"]], ends: ["어제 저가", "어제 고가"] };
-      const hd = m.pos.find(p => p.sym === pend.sym), q2 = hd.qty + pend.qty, avg2 = Math.round((hd.avg * hd.qty + pend.price * pend.qty) / q2);
-      const facts = [[`지금가보다 ${pct(gap)}`, "내 주문가"], [`${q2}주, 평단 ${won(avg2)}`, "체결되면 현대차"]];
-      return did.keep
-        ? { top: "잊고 있던 것", big: won(pend.price), title: `${pend.sym} ${pend.qty}주 매수, 그대로 두었어요`, sub: "체결되면 바로 알려 드릴게요", gauge, facts, btns: [["order", pend.sym, "주문 정정"]] }
-        : { top: "잊고 있던 것", big: won(pend.price), title: `어제 걸어 둔 ${pend.sym} ${pend.qty}주, 아직 안 됐어요`, gauge, facts,
-            btns: [["order", pend.sym, "주문 정정"], ["keep", "", "그대로 두기"]] };
+      // 아침: 숫자 하나, 문장 하나, 버튼 하나. 밤사이 미국 반도체가 내 돈 몇 %에 걸리는지만
+      const us = R.timeline("morning").end, ss = m.pos.find(p => p.sym === "삼성전자");
+      return { top: "밤사이 미국 반도체 지수", big: pct(us), title: `내 돈의 ${Math.round(ss.value / m.total * 100)}%, 삼성전자가 같은 업종이에요`,
+        btns: [["news", "삼성전자", "삼성전자 보기"]] };
     }
     if (sc === "intraday") {
       const now = ss.now, avg = ss.avg, pc = prevClose("삼성전자");
@@ -89,7 +85,7 @@
       // 체결로 바뀐 것: 평단과 비중 (보유 ${hd.qty}주에 ${pend.qty}주가 더해짐)
       const q2 = hd.qty + pend.qty, avg2 = Math.round((hd.avg * hd.qty + pend.price * pend.qty) / q2), w2 = Math.round(q2 * hd.now / m.total * 100);
       const facts = [[`${hd.avg.toLocaleString("ko-KR")} → ${won(avg2)}`, "현대차 평단"], [`${Math.round(hd.value / m.total * 100)}% → ${w2}%`, "내 돈 중 현대차"]];
-      return { top: "결과", big: won(pend.price), title: `아침에 걸어 둔 ${pend.sym} ${pend.qty}주, 체결됐어요`, sub: back, facts, btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
+      return { top: "결과", big: won(pend.price), title: `어제 걸어 둔 ${pend.sym} ${pend.qty}주, 체결됐어요`, sub: back, facts, btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
     }
     const q = R.flow("month").quickSell, c = R.costs();
     const facts = [[won(c.cost), `수수료와 세금, 실현의 ${Math.round(c.costShare)}%`], [`${q.oct}번`, `손실 난 날 바로 판 날 (9월 ${q.sep}번)`]];
@@ -103,6 +99,14 @@
 </div>`;
   }
   const factsHTML = f => f ? `<div class="dali-pro-facts">${f.map(([v, l]) => `<p><b>${v}</b><small>${l}</small></p>`).join("")}</div>` : "";
+  // 밤사이 뉴스 목록: 시각, 한 줄, 관련된 내 종목 로고. 누르면 그 종목 화면
+  const newsList = l => `<ul class="dali-pro-night-news">${l.map(n => { const nw = newsOf(n.sym);
+    return `<li><button type="button" ${nw ? `data-pro-news="${nw.id}"` : ""}><span class="tm">${n.time}</span>
+      <span class="tx"><b>${n.t}</b><small>${n.mine.length ? `내 ${n.mine.join(", ")}` : `관심 ${n.syms.join(", ")}`}</small></span>
+      <span class="lg">${n.syms.map(sy => `<i class="dali-pro-logo">${sy[0]}${logo(sy)}</i>`).join("")}</span></button></li>`; }).join("")}</ul>`;
+  // 밤사이 미국 지수 세 개와 내 돈 업종 막대(같은 업종 강조)
+  const usBlock = a => `<div class="dali-pro-us"><div class="idx">${a.idx.map(([k, v]) => `<p><small>${k}</small><b>${pct(v)}</b></p>`).join("")}</div>
+    <p class="mixl">내 돈</p><div class="mix">${a.mix.map(([k, sym, v, hot]) => `<span class="${hot ? "hot" : ""}" style="flex:${v}"><b>${k} ${v}%</b><small>${sym}</small></span>`).join("")}</div></div>`;
   function hero() {
     const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = action();
     const big = a.big, rest = a.title;
@@ -111,9 +115,9 @@
     return `
       <section class="dali-pro-act sc-${pro.sc}">
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
-        <p class="dali-pro-act-big">${big}</p>
+        ${big ? `<p class="dali-pro-act-big">${big}</p>` : ""}
         <h2>${rest}</h2>
-        ${a.gauge ? gaugeHTML(a.gauge) : a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
+        ${a.idx ? usBlock(a) : a.list ? newsList(a.list) : a.gauge ? gaugeHTML(a.gauge) : a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
         <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
       </section>
       <section class="dali-pro-head">
@@ -185,6 +189,7 @@
       if (k === "order") { if (pro.sc === "intraday") remember("sold", true); window.dali.openOrder(sym); }
       else if (k === "news") { const n = newsOf(sym); if (n) window.dali.openNews(n.id); }
       else if (k === "journal") tabs.querySelector('[data-tab="journal"]').click();
+      else if (k === "tab-news") tabs.querySelector('[data-tab="news"]').click();
       return;
     }
     const b = e.target.closest("[data-pro]");

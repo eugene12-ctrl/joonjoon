@@ -350,3 +350,30 @@
 .dali-pro-act .dali-pro-gauge .ends { margin-top: 6px; position: relative; top: 34px; }
 .dali-pro-act .dali-pro-gauge:has(.ends) { padding-bottom: 44px; }
 .dali-pro-act .dali-pro-gauge .mk:nth-child(3) em { bottom: 14px; top: auto; flex-direction: column; }
+
+/* 아침 히어로: 밤사이 뉴스 목록 (짙은 띠 위) */
+.dali-pro-night-news { list-style: none; margin: 14px -6px 0; padding: 0; }
+.dali-pro-night-news button { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; width: 100%; padding: 11px 6px; text-align: left; color: #fff; border-top: 1px solid rgba(255, 255, 255, .12); border-radius: 0; }
+.dali-pro-night-news li:first-child button { border-top: 0; }
+.dali-pro-night-news .tm { font-size: 12.5px; color: rgba(255, 255, 255, .6); font-variant-numeric: tabular-nums; }
+.dali-pro-night-news .tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dali-pro-night-news .tx b { font-size: 15px; font-weight: 600; line-height: 1.4; word-break: keep-all; }
+.dali-pro-night-news .tx small { font-size: 12.5px; color: rgba(255, 255, 255, .7); }
+.dali-pro-night-news .lg { display: flex; }
+.dali-pro-night-news .dali-pro-logo { width: 26px; height: 26px; font-size: 11px; border: 2px solid #1A222B; }
+.dali-pro-night-news .dali-pro-logo + .dali-pro-logo { margin-left: -8px; }
+
+/* 아침 히어로: 밤사이 미국 지수 세 개 + 내 돈 업종 막대 */
+.dali-pro-us { margin-top: 16px; }
+.dali-pro-us .idx { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.dali-pro-us .idx p { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, .08); }
+.dali-pro-us .idx small { display: block; font-size: 12px; color: rgba(255, 255, 255, .7); }
+.dali-pro-us .idx b { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dali-pro-us .mixl { margin: 16px 0 6px; font-size: 12.5px; color: rgba(255, 255, 255, .7); }
+.dali-pro-us .mix { display: flex; gap: 3px; }
+.dali-pro-us .mix span { min-width: 0; padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, .1); display: flex; flex-direction: column; gap: 1px; }
+.dali-pro-us .mix span.hot { background: #7FD1D9; color: #0B2F3C; }
+.dali-pro-us .mix b { font-size: 13px; white-space: nowrap; }
+.dali-pro-us .mix small { font-size: 11.5px; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dali-pro-us .mix span { min-width: 74px; }
+.dali-pro-us .mix b { font-size: 12.5px; }
