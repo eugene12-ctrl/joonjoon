@@ -92,7 +92,7 @@ const DaliRules = (function () {
     } else {
       const cost = C.month.fee + C.month.tax;
       lines = [
-        L("month", `10월 실현 ${man(C.month.realized)}`, `10월에 사고팔아 끝낸 ${C.month.trades}건의 결과예요`),
+        L("month", `10월 실현 ${man(C.month.realized)}`, `10월에 끝낸 매매 ${C.month.trades}건의 결과예요`),
         L("cost", `수수료와 세금 ${man(cost).replace("+", "")}`, `실현 수익의 ${Math.round(cost / C.month.realized * 100)}%가 비용으로 나갔어요`),
       ];
       noTodo = "월말 정리를 읽어 보기만 하면 돼요";
@@ -174,7 +174,7 @@ const DaliRules = (function () {
     } else {
       out.push("관심종목이라 내 돈엔 영향이 없어요");
       if (pc >= 5) out.push(`급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}였어요`);
-      else if (mine.length) out.push(`지난 3개월에 ${mine.length}번 사고팔아 평균 ${sgn(avg(mine))}`);
+      else if (mine.length) out.push(`지난 3개월 이 종목 매매 ${mine.length}번, 평균 ${sgn(avg(mine))}`);
     }
     return out.join(". ");
   }

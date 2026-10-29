@@ -752,5 +752,5 @@
 
   render();
   syncOrdering();
-  setTimeout(() => sayOnce("좋은 아침이에요! 따라가는 종목에 확인할 소식이 있어요."), 800);
+  setTimeout(() => sayOnce("아침이에요. 따라가는 종목에 확인할 소식이 있어요."), 800);
 })();

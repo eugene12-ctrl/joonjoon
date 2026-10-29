@@ -147,7 +147,9 @@
     const why = pro.why ? `<div class="dali-snap-why">${C.positions.map(p => {
       const a = R.alive(p.sym, pro.sc);
       return `<section><h3>${p.sym}<small class="${a.same ? "" : "changed"}">${a.same ? "같아요" : "달라요"}</small></h3>
-        <ul>${R.why(p.sym, pro.sc).map((l, i) => `<li class="${!a.same && i < a.diff.length ? "diff" : ""}">${paintNums(l)}</li>`).join("")}</ul></section>`;
+        <ul>${R.why(p.sym, pro.sc).map((l, i) => !a.same && i === 0 && window.DaliAI
+          ? `<li class="diff dali-snap-ai" data-sym="${p.sym}"></li>`
+          : `<li class="${!a.same && i < a.diff.length ? "diff" : ""}">${paintNums(l)}</li>`).join("")}</ul></section>`;
     }).join("")}</div>` : "";
     return `<section class="dali-snap-first ${w.state}">
         <img class="dali-snap-face" src="${FACE_S}" alt="달이">
@@ -189,6 +191,19 @@
     const replay = pro.play;
     pro.play = false; // 띠 그리는 연출은 열 때와 장면 바꿀 때만
     body.scrollTop = y;
+    // 달이 3.0: "달라요"를 펼치면 달라진 축을 사람 말로 한 문장, 달이가 그 자리에서 쓴다 (DaliAI.write).
+    // 구조는 facts(산 순간 사진, 지금 사진, 달라진 축) → 문장. 시연은 네트워크 없이 규칙 문장(R.why 첫 줄)을 쓴다.
+    // 실서비스에서 AI가 더 맡는 것: 산 순간 그날 종목 뉴스 톤 분류(snap.newsTone). 다섯 축 자체는 규칙이다
+    body.querySelectorAll(".dali-snap-ai").forEach(el => {
+      const sym = el.dataset.sym, a = R.alive(sym, pro.sc);
+      const facts = { sym, since: a.since, diff: a.diff.map(k => R.AX_LABEL[k]), buySnap: a.buySnap, nowSnap: a.nowSnap };
+      window.DaliAI.write(el, {
+        key: `snap-${pro.sc}-${sym}`,
+        steps: [`${facts.since} 산 순간 사진 읽는 중`, `지금과 ${facts.diff.join(", ")} 비교하는 중`],
+        text: R.why(sym, pro.sc)[0],
+        basis: `${facts.since} 산 순간과 지금의 추세, 지지선, 거래량, 업종, 변동을 견줘 보고 썼어요.`,
+      });
+    });
     // dali-ai.js가 있으면 맨 위 답을 달이가 그 자리에서 쓰는 것처럼
   }
   function show() { pro.on = true; pro.play = true; paint(); }
