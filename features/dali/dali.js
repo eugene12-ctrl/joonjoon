@@ -271,7 +271,7 @@
     const byDay = byDayOf(closed);
     return `<div class="dali-jcal"><div class="dali-jgrid w5">${J_WEEK.map((d, i) => jcell(d, byDay[d], `${"월화수목금"[i]} ${d}`)).join("")}</div></div>`;
   }
-  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 돈과 같은 계산)
+  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 자산과 같은 계산)
   const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return v * (q.chg || 0) / (100 + (q.chg || 0)); };
   // 일간: 그날 내 종목(보유와 그날 판 것) 실제 뉴스. 종목마다 최근 2건, 누르면 달이 안에서 기사가 열림
   function jnewsHTML(syms, dayLabel) {
@@ -449,7 +449,7 @@
       </div>`;
   }
 
-  /* --- 읽기 화면 맨 위 띠: 오늘 탭 히어로와 같은 틀. 숫자 하나(그 소식에 걸린 내 돈, 관심 종목은 등락), AI 요약 한 줄.
+  /* --- 읽기 화면 맨 위 띠: 오늘 탭 히어로와 같은 틀. 숫자 하나(그 소식에 걸린 내 자산, 관심 종목은 등락), AI 요약 한 줄.
      가격은 오늘 탭과 같은 장면 시각(daliPro.sc)으로 읽어서 두 탭의 숫자가 어긋나지 않게 --- */
   function readBand(sym, time, why) {
     const s = DALI_SYMS[sym], R = typeof DaliRules !== "undefined" ? DaliRules : null, sc = window.daliPro ? window.daliPro.sc : "morning";
