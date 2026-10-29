@@ -176,31 +176,39 @@
 
   /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
-  // 살 때와 팔 때 그 순간의 뉴스. 그날 그 종목 실제 뉴스가 있으면(최근 2주) 그걸, 없으면 그 순간의 가상 뉴스 한 줄
+  // 살 때와 팔 때: 그때 가격과 주수, 그리고 그날 특징뉴스 한 줄. 시황 숫자는 늘어놓지 않는다
+  // 특징뉴스는 그날 그 종목 실제 뉴스가 있으면(최근 2주) 그 제목을, 없으면 그날의 가상 뉴스 한 줄
   const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
   const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
   const dayKo = d => { const [m, dd] = (d === "오늘" ? "10/29" : d).split("/").map(Number); return `${m}월 ${dd}일`; };
-  // 그날 실제 뉴스 (받아 둔 목록에서 날짜가 같은 것 2건까지). 아직 안 받았으면 받고 다시 그림
+  const krw = n => `${Math.round(n).toLocaleString("ko-KR")}원`;
   function realNews(sym, label) {
     const code = DALI_SYMS[sym] && DALI_SYMS[sym].code;
-    if (!code || typeof DaliFeed === "undefined") return [];
+    if (!code || typeof DaliFeed === "undefined") return null;
     const c = DaliFeed.getNews(code, () => { if (state.open && state.tab === "journal" && !state.page) render(); });
-    return (c.list || []).filter(a => a.time.startsWith(label)).slice(0, 2);
+    return (c.list || []).find(a => a.time.startsWith(label)) || null;
   }
-  function newsCol(title, sym, date, at, fake) {
-    const label = dayKo(date), real = realNews(sym, label);
-    const rows = real.length
-      ? real.map(a => `<li><button type="button" data-article="${a.id}" data-sym="${sym}"><b>${a.title}</b><small>${a.author ? `${a.author}, ` : ""}${a.time.replace(label + " ", "")}</small></button></li>`).join("")
-      : fake ? `<li><p><b>${fake}</b><small>${at ? at.slice(6) : ""}</small></p></li>` : "";
-    return rows ? `<div class="dali-mn"><p class="dali-mn-head"><b>${title}</b><small>${label}</small></p><ul>${rows}</ul></div>` : "";
+  function hot(kind, sym, date) {
+    const real = realNews(sym, dayKo(date));
+    if (real) return `<button type="button" class="dali-mn-hot" data-article="${real.id}" data-sym="${sym}"><i>특징뉴스</i><b>${real.title}</b></button>`;
+    const t = typeof DALI_MOMENT_NEWS !== "undefined" && DALI_MOMENT_NEWS[kind][`${sym} ${date === "오늘" ? "10/29" : date}`];
+    return t ? `<p class="dali-mn-hot"><i>특징뉴스</i><b>${t}</b></p>` : "";
   }
+  // 한 번의 매매: 날짜, 가격에 주수, 특징뉴스
+  const deal = (kind, sym, date, price, qty) => `<div class="dali-mn-deal"><small>${dayKo(date)}</small><p class="dali-mn-px"><b>${krw(price)}</b>에 ${qty}주</p>${hot(kind, sym, date)}</div>`;
   function market(t) {
-    const ct = tradeOf(t), n = ct ? DALI_MOMENT_NEWS[ct.id] || [] : [];
+    const ct = tradeOf(t);
     if (!ct || !ct.buySnap) return "";
-    const buy = newsCol("살 때", t.sym, t.buy.date, ct.buySnap.at, n[0]);
-    const sell = t.sell ? newsCol("팔 때", t.sym, t.sell.date, ct.sellSnap && ct.sellSnap.at, n[1])
-      : `<div class="dali-mn"><p class="dali-mn-head"><b>팔 때</b></p><p class="dali-mn-hold">아직 들고 있어요</p></div>`;
-    return buy || sell ? `<div class="dali-mns">${buy}${sell}</div>` : "";
+    // 나눠 산 보유 종목은 회차마다, 끝에 평단 변화
+    const buys = t.buys && t.buys.length > 1 ? t.buys : [{ date: t.buy.date, qty: ct.qty, price: ct.price || ct.buySnap.price }];
+    let q = 0, cost = 0;
+    const avgs = buys.map(b => { q += b.qty; cost += b.qty * b.price; return cost / q; });
+    const avgLine = buys.length > 1 ? `<p class="dali-mn-avg">평단 ${krw(buys[0].price)} → <b>${krw(avgs[avgs.length - 1])}</b></p>` : "";
+    const buy = `<div class="dali-mn"><p class="dali-mn-head">살 때</p>${buys.map(b => deal("buy", t.sym, b.date, b.price, b.qty)).join("")}${avgLine}</div>`;
+    const sell = t.sell && ct.sellSnap
+      ? `<div class="dali-mn"><p class="dali-mn-head">팔 때</p>${deal("sell", t.sym, t.sell.date, ct.sellSnap.price, ct.qty)}</div>`
+      : `<div class="dali-mn"><p class="dali-mn-head">팔 때</p><p class="dali-mn-hold">아직 들고 있어요</p></div>`;
+    return `<div class="dali-mns">${buy}${sell}</div>`;
   }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
@@ -233,7 +241,7 @@
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
         ${open ? (() => { const mk = market(t);
-          return mk ? `<div class="dali-jmore">${DaliChart.trade(t)}${mk}${add.text ? `<p class="dali-mk-add">${add.text}</p>` : ""}</div>`
+          return mk ? `<div class="dali-jmore">${DaliChart.trade(t)}${mk}</div>`
             : `<div class="dali-jmore">${DaliChart.trade(t)}
           <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
           <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
