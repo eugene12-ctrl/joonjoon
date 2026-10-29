@@ -348,24 +348,51 @@
         ${DaliChart.day(n.sym, fmt)}
         <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
         <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">${n.time}</p><p>${txt.body}</p></article>
-        ${feedHTML(n)}
+        ${feedHTML(n.sym, n.id)}
+      </div>`;
+  }
+
+  /* --- 실제 기사 읽기 화면 (종목 화면 뉴스 탭에서 누른 기사. 달이 안에서 본문을 보여 주고 밖으로 내보내지 않음) --- */
+  function articlePage(p) {
+    const a = DaliFeed.article(DALI_SYMS[p.sym].code, p.id);
+    // 목록을 다시 받는 사이 기사가 빠졌으면(2주 지나 정리됨) 안내만 두고 목록은 그대로 보여 줌
+    const article = a ? `
+        <article class="dali-article"><h3>${a.title}</h3><p class="dali-hint">${a.author ? `${a.author} · ` : ""}${a.time}</p>
+          ${a.body.map(t => `<p>${t}</p>`).join("")}
+          ${a.full ? "" : `<p class="dali-hint">본문은 아직 받지 못해 앞부분만 보여 줘요.</p>`}</article>`
+      : `<p class="dali-hint center dali-feed-empty">이 기사는 더 이상 볼 수 없어요. 아래에서 다른 기사를 골라 보세요.</p>`;
+    return `
+      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
+        <button type="button" class="dali-symlink" data-act="order" data-sym="${p.sym}">${p.sym} ${quote(p.sym)}<span class="dali-go">주문 ›</span></button></header>
+      <div class="dali-page-body">
+        ${DaliChart.day(p.sym, fmt)}
+        ${article}
+        ${feedHTML(p.sym, p.id)}
       </div>`;
   }
 
   /* --- 종목 화면 아래 뉴스, 공시 탭 (날짜 | 제목과 한 줄) ---
-     뉴스는 달이 가상 뉴스, 공시는 실제 DART 공시(dali-feed.js). 공시는 종목코드가 있는 주식만 */
-  function feedHTML(n) {
-    const code = DALI_SYMS[n.sym].code;
+     종목코드가 있는 주식은 뉴스와 공시 모두 실제 데이터(dali-feed.js). 코드가 없는 선물은 달이 가상 뉴스만 */
+  function feedHTML(sym, currentId) {
+    const code = DALI_SYMS[sym].code;
     const sub = code && state.page.sub === "disc" ? "disc" : "news";
     const tabs = code ? [["news", "뉴스"], ["disc", "공시"]] : [["news", "뉴스"]];
     return `
       <nav class="dali-subtabs">${tabs.map(([k, l]) => `<button type="button" data-act="sub" data-v="${k}" class="${sub === k ? "on" : ""}">${l}</button>`).join("")}</nav>
-      ${sub === "disc" ? discList(code) : symNewsList(n)}`;
+      ${sub === "disc" ? discList(code) : code ? newsList(sym, code, currentId) : symNewsList(sym, currentId)}`;
   }
-  function symNewsList(n) {
-    return `<div class="dali-feed">${state.news.filter(x => x.sym === n.sym).map(x => `
-      <button type="button" class="dali-feed-row${x.id === n.id ? " on" : ""}" data-news="${x.id}"><span class="dali-feed-date">${x.time}</span>
+  function symNewsList(sym, currentId) {
+    return `<div class="dali-feed">${state.news.filter(x => x.sym === sym).map(x => `
+      <button type="button" class="dali-feed-row${x.id === currentId ? " on" : ""}" data-news="${x.id}"><span class="dali-feed-date">${x.time}</span>
         <span><b>${DALI_NEWS_TEXT[x.id].title}</b><small>${x.why}</small></span></button>`).join("")}</div>`;
+  }
+  function newsList(sym, code, currentId) {
+    const c = DaliFeed.getNews(code, () => { if (state.page) render(); });
+    if (!c.list) return `<p class="dali-hint center dali-feed-empty">${c.loading ? "뉴스를 불러오는 중이에요." : "지금은 뉴스를 불러오지 못했어요."}</p>`;
+    if (!c.list.length) return `<p class="dali-hint center dali-feed-empty">최근 2주 동안 올라온 뉴스가 없어요.</p>`;
+    return `<div class="dali-feed">${c.list.map(a => `
+      <button type="button" class="dali-feed-row${a.id === currentId ? " on" : ""}" data-article="${a.id}" data-sym="${sym}"><span class="dali-feed-date">${a.date}</span>
+        <span><b>${a.title}</b><small>${a.author ? `${a.author} · ` : ""}${a.sub}</small></span></button>`).join("")}</div>`;
   }
   function discList(code) {
     const c = DaliFeed.get(code, () => { if (state.page) render(); });
@@ -503,7 +530,7 @@
       const key = state.page.type === "grow" ? "grow" : state.page.id;
       const same = !pageEl.hidden && pageEl.dataset.id === key;
       const y = same ? pageEl.querySelector(".dali-page-body")?.scrollTop || 0 : 0;
-      pageEl.innerHTML = state.page.type === "grow" ? growPage() : newsPage(state.page.id);
+      pageEl.innerHTML = state.page.type === "grow" ? growPage() : state.page.type === "article" ? articlePage(state.page) : newsPage(state.page.id);
       pageEl.dataset.id = key;
       const pb = pageEl.querySelector(".dali-page-body");
       if (pb) pb.scrollTop = y;
@@ -527,11 +554,19 @@
   sheet.addEventListener("click", e => {
     const row = e.target.closest("[data-news]");
     if (row) { openNews(row.dataset.news); return; }
+    const art = e.target.closest("[data-article]");
+    if (art) {
+      // 기사 화면에서 다른 기사를 누르면 같은 자리에서 바꾸고, 뒤로 가면 처음 들어온 화면으로
+      const from = state.page?.type === "article" ? state.page.from : state.page;
+      state.page = { type: "article", sym: art.dataset.sym, id: art.dataset.article, from };
+      render();
+      return;
+    }
     const b = e.target.closest("[data-act]");
     if (!b || b.disabled) return;
     const act = b.dataset.act, id = b.dataset.id;
     const t = id && state.trades.find(x => x.id === id);
-    if (act === "back") { state.page = null; render(); }
+    if (act === "back") { state.page = state.page?.from || null; render(); }
     else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
     else if (act === "edit") { state.editing = id; render(); sheet.querySelector(".dali-input")?.focus(); }

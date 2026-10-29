@@ -1,6 +1,7 @@
-/* ---------- 달이 공시 피드 ----------
+/* ---------- 달이 공시·뉴스 피드 ----------
    종목 화면의 공시 탭이 Supabase disclosures 테이블을 읽는다 (정해 둔 4개 회사만 OpenDART에서 10분마다 수집, 최근 1년 중 최신 20건).
-   공시는 지어내지 않는다. 연결 정보가 비었거나 불러오지 못하면 공시 탭에 안내만 띄운다.
+   뉴스 탭은 같은 4개 회사의 실제 뉴스(news 테이블, 토스증권에서 10분마다 수집)를 본문까지 읽는다. 기사는 달이 안에서 보여 주고 밖으로 내보내지 않는다.
+   공시와 뉴스는 지어내지 않는다. 연결 정보가 비었거나 불러오지 못하면 탭에 안내만 띄운다.
    구축 방법: docs/supabase-setup.md (수집 설정은 supabase/)
    dali-data.js 다음, dali.js 앞에 불러옵니다. */
 const DaliFeed = (function () {
@@ -8,7 +9,8 @@ const DaliFeed = (function () {
   const SUPABASE_URL = "https://mxtakgepbztawgwxdykl.supabase.co";
   const SUPABASE_KEY = "sb_publishable_pWDErK2mPaP-5RepzT5eVA_adrhJyxI";
   const FRESH = 5 * 60 * 1000; // 5분이 지나면 다시 불러옴
-  const cache = {}; // 종목코드 -> { list, loading, error, at }
+  const cache = {}; // "disclosures:코드" | "news:코드" -> { list, loading, error, at }
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // 공시명을 쉬운 제목으로. 위에서부터 처음 맞는 것. 한 줄 요약(summary)이 생기면 아랫줄을 그걸로 바꿈
   const LABELS = [
@@ -50,21 +52,43 @@ const DaliFeed = (function () {
     };
   }
 
+  // 뉴스 한 건. 본문은 문단별로 나눠 둠 (화면에서 <p>로 하나씩)
+  function toNewsRow(n) {
+    const d = new Date(n.pub_date);
+    const today = new Date();
+    const sameDay = d.toDateString() === today.toDateString();
+    const hm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    return {
+      id: n.link,
+      date: sameDay ? hm : `${d.getMonth() + 1}월 ${d.getDate()}일`,
+      time: (sameDay ? "오늘 " : `${d.getMonth() + 1}월 ${d.getDate()}일 `) + hm,
+      title: esc(n.title),
+      sub: esc(n.description),
+      author: esc(n.author || ""),
+      body: String(n.content || n.description || "").split(/\n+/).map(p => esc(p.trim())).filter(Boolean),
+      full: !!n.content,
+    };
+  }
+
   // 지금 가진 상태를 바로 돌려주고, 처음이거나 오래됐으면 불러온 뒤 onLoad를 부름
-  function get(code, onLoad) {
-    const c = cache[code] || (cache[code] = {});
+  function load(table, code, query, map, onLoad) {
+    const key = `${table}:${code}`;
+    const c = cache[key] || (cache[key] = {});
     if (!SUPABASE_URL) { c.error = true; return c; }
     if (!c.loading && (!c.at || Date.now() - c.at > FRESH)) {
       c.loading = true;
-      const q = `select=*&stock_code=eq.${code}&order=rcept_no.desc&limit=20`;
-      fetch(`${SUPABASE_URL}/rest/v1/disclosures?${q}`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } })
+      fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } })
         .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(rows => { c.list = rows.map(toRow); c.error = false; })
+        .then(rows => { c.list = rows.map(map); c.error = false; })
         .catch(() => { c.error = true; }) // 예전에 받은 목록이 있으면 그대로 둠
         .finally(() => { c.loading = false; c.at = Date.now(); onLoad(); });
     }
     return c;
   }
+  const get = (code, onLoad) => load("disclosures", code, `select=*&stock_code=eq.${code}&order=rcept_no.desc&limit=20`, toRow, onLoad);
+  const getNews = (code, onLoad) => load("news", code, `select=*&stock_code=eq.${code}&order=pub_date.desc&limit=20`, toNewsRow, onLoad);
+  // 이미 받아 둔 뉴스 목록에서 한 건 (기사 화면용)
+  const article = (code, id) => (cache[`news:${code}`]?.list || []).find(a => a.id === id) || null;
 
-  return { get };
+  return { get, getNews, article };
 })();
