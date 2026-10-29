@@ -678,7 +678,7 @@
   function setApp(app) {
     // 두 앱 페이지는 저장소 맨 위에 있음. 어느 화면에서 눌러도 맞게 이 파일 위치 기준으로 찾음
     const onFut = location.pathname.endsWith("/futures.html");
-    if ((app === "fut") !== onFut) { location.href = new URL(app === "fut" ? "../../futures.html" : "../../index.html", BASE).href; return; }
+    if ((app === "fut") !== onFut) { const url = new URL(app === "fut" ? "../../futures.html" : "../../index.html", BASE).href; window.goPage ? window.goPage(url) : (location.href = url); return; }
     state.app = app;
     state.page = null;
     state.order = null;

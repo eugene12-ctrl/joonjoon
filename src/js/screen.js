@@ -185,7 +185,7 @@ function createScreen(host) {
   catsVp.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") td = { x: e.clientX, s: catsVp.scrollLeft, moved: false }; });
   catsVp.addEventListener("pointermove", e => {
     if (!td) return;
-    const dx = e.clientX - td.x;
+    const dx = (e.clientX - td.x) / (window.phoneZoom ? window.phoneZoom() : 1); // 확대된 휴대폰(fit.js)이면 안쪽 좌표로
     if (!td.moved && Math.abs(dx) > 5) { td.moved = true; catsVp.setPointerCapture(e.pointerId); }
     if (td.moved) catsVp.scrollLeft = td.s - dx;
   });
@@ -198,7 +198,7 @@ function createScreen(host) {
   vp.addEventListener("pointerdown", e => { gd = { x: e.clientX, y: e.clientY, w: vp.clientWidth, dx: 0, drag: false }; });
   vp.addEventListener("pointermove", e => {
     if (!gd) return;
-    const dx = e.clientX - gd.x, dy = e.clientY - gd.y;
+    const z = (window.phoneZoom ? window.phoneZoom() : 1), dx = (e.clientX - gd.x) / z, dy = (e.clientY - gd.y) / z;
     if (!gd.drag) {
       if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
         gd.drag = true; vp.setPointerCapture(e.pointerId); track.style.transition = "none";

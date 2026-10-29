@@ -73,7 +73,7 @@ const App = {
     this.screen = this.root.querySelector(".mts-screen");
     this.indexBar = this.root.querySelector(".index-bar");
     this.layer = this.root.querySelector(".modal-layer");
-    this.root.querySelector(".nav-menu").onclick = () => { location.href = "../../index.html"; };
+    this.root.querySelector(".nav-menu").onclick = () => { window.goPage ? window.goPage("../../index.html", "back") : (location.href = "../../index.html"); };
     this.root.querySelector(".nav-wallet").onclick = () => this.toast("빠른 메뉴는 준비 중이에요");
     this.root.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
       if (Screens[b.dataset.go]) this.go(b.dataset.go);
@@ -93,8 +93,12 @@ const App = {
   },
   render() {
     const s = Screens[this.current];
+    const moved = this.shown && this.shown !== this.current;
+    this.shown = this.current;
     this.screen.innerHTML = s.render(this.params);
-    this.screen.querySelector(".back")?.addEventListener("click", () => { location.href = "../../index.html"; });
+    if (moved && this.screen.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      this.screen.animate([{ opacity: 0, transform: "translateX(16px)" }, { opacity: 1, transform: "none" }], { duration: 240, easing: "cubic-bezier(.2, .8, .2, 1)" });
+    this.screen.querySelector(".back")?.addEventListener("click", () => { window.goPage ? window.goPage("../../index.html", "back") : (location.href = "../../index.html"); });
     if (s.mount) s.mount(this.screen, this.params);
     this.root.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("on", b.dataset.go === this.current));
     revealInRow(this.root.querySelector(`[data-go="${this.current}"]`));
@@ -181,6 +185,7 @@ function startIndexBar(bar) {
 function revealInRow(btn) {
   if (!btn) return;
   const row = btn.parentElement.scrollWidth > btn.parentElement.clientWidth ? btn.parentElement : btn.parentElement.parentElement;
-  const left = btn.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+  const z = (window.phoneZoom ? window.phoneZoom() : 1); // 확대된 휴대폰(src/js/fit.js)이면 화면 좌표를 안쪽 좌표로
+  const left = (btn.getBoundingClientRect().left - row.getBoundingClientRect().left) / z + row.scrollLeft;
   row.scrollLeft = left - (row.clientWidth - btn.offsetWidth) / 2;
 }

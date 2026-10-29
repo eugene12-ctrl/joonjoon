@@ -47,9 +47,9 @@
   function hide(openToday) {
     mark(true);
     const card = pop.querySelector(".dali-intro-card");
-    const c = card.getBoundingClientRect(), f = fab.getBoundingClientRect();
-    card.style.setProperty("--tx", `${f.left + f.width / 2 - (c.left + c.width / 2)}px`);
-    card.style.setProperty("--ty", `${f.top + f.height / 2 - (c.top + c.height / 2)}px`);
+    const c = card.getBoundingClientRect(), f = fab.getBoundingClientRect(), z = (window.phoneZoom ? window.phoneZoom() : 1); // 확대된 휴대폰이면 안쪽 좌표로
+    card.style.setProperty("--tx", `${(f.left + f.width / 2 - (c.left + c.width / 2)) / z}px`);
+    card.style.setProperty("--ty", `${(f.top + f.height / 2 - (c.top + c.height / 2)) / z}px`);
     pop.classList.add("leave");
     setTimeout(() => {
       pop.classList.remove("show", "leave");

@@ -57,7 +57,8 @@
   });
   window.addEventListener("pointermove", e => {
     if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    // 휴대폰이 확대돼 있으면(src/js/fit.js) 화면 좌표 차이를 휴대폰 안 좌표로 나눔
+    const z = (window.phoneZoom ? window.phoneZoom() : 1), dx = (e.clientX - drag.sx) / z, dy = (e.clientY - drag.sy) / z;
     if (!drag.moved && Math.hypot(dx, dy) < 6) return;
     if (!drag.moved) { drag.moved = true; fab.setPointerCapture?.(e.pointerId); bubble && bubble.classList.remove("show"); }
     fab.classList.add("dali-moving");

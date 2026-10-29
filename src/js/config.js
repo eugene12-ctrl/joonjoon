@@ -22,7 +22,8 @@ function openNewFeature(screen) {
 const TILE_LINKS = { "관심종목": "watch", "주문": "order", "차트": "chart", "잔고": "balance" };
 function openTileLink(ci, label) {
   if (ci !== 0 || !TILE_LINKS[label]) return false;
-  location.href = `features/mts/index.html#${TILE_LINKS[label]}`;
+  const url = `features/mts/index.html#${TILE_LINKS[label]}`;
+  window.goPage ? window.goPage(url) : (location.href = url);
   return true;
 }
 

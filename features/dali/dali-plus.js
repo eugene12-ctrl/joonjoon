@@ -30,8 +30,8 @@
     return { x, y, w: el.offsetWidth, h: el.offsetHeight };
   };
   const rectIn = el => {
-    const r = el.getBoundingClientRect(), p = phone.getBoundingClientRect();
-    return { x: r.left - p.left, y: r.top - p.top, w: r.width, h: r.height };
+    const r = el.getBoundingClientRect(), p = phone.getBoundingClientRect(), z = (window.phoneZoom ? window.phoneZoom() : 1); // 확대된 휴대폰이면 안쪽 좌표로
+    return { x: (r.left - p.left) / z, y: (r.top - p.top) / z, w: r.width / z, h: r.height / z };
   };
   // a에서 b로 위로 솟는 곡선 (조약돌, 해달 비행)
   function arc(img, a, b, ms, lift = 60) {
@@ -98,7 +98,7 @@
   sheet.addEventListener("pointerdown", e => { if (e.target.closest(".dali-grab, .dali-sheet-head")) dragStart(e); });
   sheet.addEventListener("pointermove", e => {
     if (!drag || e.pointerId !== drag.id) return;
-    const now = performance.now(), dy = Math.max(0, e.clientY - drag.y);
+    const now = performance.now(), dy = Math.max(0, (e.clientY - drag.y) / (window.phoneZoom ? window.phoneZoom() : 1));
     drag.v = (dy - drag.dy) / Math.max(1, now - drag.t);
     drag.dy = dy; drag.t = now;
     sheet.style.transform = `translateY(${dy}px)`;
