@@ -49,3 +49,8 @@
 .phone .dali-sheet .dali-page-body .dali-feed-row.on b { color: var(--d-brand2); }
 .phone .dali-sheet .dali-page-body .dali-feed-row small { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.45; color: var(--d-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .phone .dali-sheet .dali-page-body .dali-feed-empty { padding: 24px 20px; font-size: 14px; color: var(--d-sub); }
+
+/* 띠 큰 숫자: 지금가 옆 등락은 뉴스 탭 띠와 같은 크기와 색 */
+.phone .dali-sheet .dali-read-act .dali-pro-act-big small { margin-left: 10px; font-size: 18px; font-weight: 700; }
+.phone .dali-sheet .dali-read-act .dali-pro-act-big small.up { color: #FF8A8F; }
+.phone .dali-sheet .dali-read-act .dali-pro-act-big small.down { color: #8FB0FF; }
