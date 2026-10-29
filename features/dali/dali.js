@@ -176,6 +176,17 @@
 
   /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
+  // 살 때와 팔 때 그 순간의 시황 한 줄 (dali-customer.js 매매 사진의 코스피, 미국 지수, 업종, 수급, 그 종목 등락)
+  const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
+  const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
+  const sgn = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
+  const FLOW = { buy: "순매수", sell: "순매도", flat: "보합" };
+  const SECT = { up: "5일째 오름세", flat: "5일째 보합", down: "5일째 내림세" };
+  function market(sym, sn) {
+    if (!sn) return "";
+    const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "";
+    return `${sn.at} 코스피 ${sgn(sn.kospi)}, 전날 ${sn.usRef.name} ${sgn(sn.usRef.chg)}, ${sec} 업종 ${SECT[sn.sector]}, 외국인 ${FLOW[sn.flow5.foreign]}, 기관 ${FLOW[sn.flow5.inst]}. 이 종목은 그날 ${sgn(sn.dayChg)}`;
+  }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
     let qty = 0, cost = 0, water = 0, fire = 0;
@@ -206,9 +217,10 @@
           <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
-        ${open ? `<div class="dali-jmore">${DaliChart.trade(t)}
-          <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
-          <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>` : ""}
+        ${open ? (() => { const ct = tradeOf(t), mb = ct && market(t.sym, ct.buySnap), ms = ct && t.sell && market(t.sym, ct.sellSnap);
+          return `<div class="dali-jmore">${DaliChart.trade(t)}
+          <p><b>살 때</b><span>${mb || t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
+          <p><b>팔 때</b><span>${t.sell ? ms || t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
       </li>`;
   }
   // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
