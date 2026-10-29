@@ -21,6 +21,8 @@
 .dali-n2-slide h2 { margin-top: 8px; }
 
 /* 몇 번째 장인지 */
+/* 장 여백은 오늘 히어로와 같게 위 16px, 아래는 점 줄 자리 18px (dali-pro.css의 22px 0 규칙보다 앞서게) */
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding: 16px 20px 18px; }
 /* 몇 번째 장인지: 띠 바닥에 겹쳐 두어 높이를 안 차지함 */
 .dali-n2-dots { position: absolute; left: 0; right: 0; bottom: 7px; display: flex; justify-content: center; gap: 6px; margin: 0; }
 .dali-n2-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .3); transition: width .2s ease; }
@@ -44,3 +46,18 @@
 .dali-n2 .dali-pro-val b { color: var(--d-ink, #191F28); }
 .dali-n2 .dali-pro-val small.up { color: var(--d-up, #C8202C); }
 .dali-n2 .dali-pro-val small.down { color: var(--d-down, #2F5BD3); }
+
+/* 마우스로 끌어 넘기기 */
+.dali-n2-track { cursor: grab; user-select: none; touch-action: pan-y; }
+.dali-n2-track:active { cursor: grabbing; }
+.dali-n2-dots i { cursor: pointer; padding: 6px 0; background-clip: content-box; box-sizing: content-box; }
+/* 점 줄이 버튼과 겹치지 않게: 버튼 자체에 아래 여백 (장 여백이 다른 규칙에 덮여도 안전) */
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-top: auto; margin-bottom: 14px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding-bottom: 4px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots { bottom: 5px; }
+/* 점 줄은 버튼 아래 일반 흐름에 둔다. 띄워 두면(absolute) 예전 CSS가 남았을 때 버튼과 겹쳐 보여서 */
+.phone .dali-sheet .dali-pro-act.dali-n2-act { padding-bottom: 0; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding-bottom: 6px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-bottom: 0; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots { position: static; flex: none; height: 6px; margin: 0 0 10px; bottom: auto; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots i { padding: 0; height: 6px; }

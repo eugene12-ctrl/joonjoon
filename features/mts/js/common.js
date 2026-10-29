@@ -33,6 +33,8 @@ const icon = (name, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" fil
 const pill = (label, opts = "") => `<button type="button" class="pill" ${opts}>${label}</button>`;
 const dropPill = label => `<button type="button" class="pill drop">${label}<i class="drop-mark"></i></button>`;
 const iconBtn = (name, label) => `<button type="button" class="icon-btn" aria-label="${label}">${icon(name)}</button>`;
+// 관심 등록 별: 지금 종목이 관심1에 있으면 채운 별
+const starBtn = () => `<button type="button" class="icon-btn star${WATCH_GROUPS["관심1"].includes(App.code) ? " on" : ""}" data-act="star" aria-label="관심 등록">${icon("star")}</button>`;
 const select = (label, cls = "") => `<button type="button" class="select ${cls}">${label}<i class="corner"></i></button>`;
 const dateBox = (d = TODAY, disabled = false) => `<span class="date ${disabled ? "off" : ""}">${d}${icon("cal")}</span>`;
 const check = (label, on = true) => `<label class="check"><input type="checkbox" ${on ? "checked" : ""}><span>${label}</span></label>`;
@@ -79,6 +81,19 @@ const App = {
       if (Screens[b.dataset.go]) this.go(b.dataset.go);
       else this.toast(`${b.textContent} 화면은 준비 중이에요`);
     });
+    // 별을 누르면 관심1에 담고 달이에도 알림 (달이는 window.daliPro.addWatch로 같은 종목을 따라감)
+    this.screen.addEventListener("click", e => {
+      if (!e.target.closest("[data-act=star]")) return;
+      const s = stockBy(this.code), list = WATCH_GROUPS["관심1"];
+      if (list.includes(s.code)) { this.toast(`${s.name}, 이미 관심종목에 있어요`); return; }
+      list.push(s.code);
+      try { const saved = JSON.parse(localStorage.getItem("mts-watch") || "[]"); localStorage.setItem("mts-watch", JSON.stringify([...saved, s.code])); } catch (err) { /* 이번 화면에서만 */ }
+      this.render();
+      if (window.daliPro && window.daliPro.addWatch) window.daliPro.addWatch(s.name);
+      else this.toast(`${s.name}, 관심종목에 담았어요`);
+    });
+    // 발표자 상자 "처음으로"는 별로 더한 관심도 비움
+    document.addEventListener("click", e => { if (e.target.closest('[data-demo="reset"]')) try { localStorage.removeItem("mts-watch"); } catch (err) { /* 무시 */ } }, true);
     startIndexBar(this.indexBar);
     window.addEventListener("hashchange", () => this.route());
   },

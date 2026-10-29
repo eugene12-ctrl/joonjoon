@@ -1,0 +1,18 @@
+선물 종목 그림: 토스 증권 종목 아이콘 (https://static.toss.im/png-icons/securities/icn-sec-fill-<티커>.png, 480px)
+같은 기초자산을 따르는 미국 ETF 아이콘을 그대로 썼다. 시연용. 바꾸려면 같은 이름으로 PNG를 덮어쓰면 된다.
+
+sp500        SPY   S&P 500 (ES, MES)
+nasdaq100    QQQ   나스닥 100 (NQ, MNQ)
+dow          DIA   다우존스 (YM)
+russell2000  IWM   러셀 2000 (RTY)
+oil          USO   크루드 오일 (CL, MCL)
+gas          UNG   천연가스 (NG)
+gold         GLD   금 (GC, MGC)
+silver       SLV   은 (SI)
+copper       CPER  구리 (HG)
+corn         CORN  옥수수 (ZC)
+soybean      SOYB  대두 (ZS)
+wheat        WEAT  밀 (ZW)
+treasury     TLT   미국 10년 국채 (ZN)
+euro         FXE   유로 (6E)
+yen          FXY   엔 (6J)
