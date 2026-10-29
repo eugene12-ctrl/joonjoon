@@ -286,8 +286,8 @@
     const byDay = byDayOf(closed);
     return `<div class="dali-jcal"><div class="dali-jgrid w5">${J_WEEK.map((d, i) => jcell(d, byDay[d], `${"월화수목금"[i]} ${d}`)).join("")}</div></div>`;
   }
-  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 자산과 같은 계산)
-  const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return v * (q.chg || 0) / (100 + (q.chg || 0)); };
+  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 자산과 같은 계산). 원, 달러 모두 정수로
+  const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return Math.round(v * (q.chg || 0) / (100 + (q.chg || 0))); };
   // 일간: 그날 내 종목(보유와 그날 판 것) 실제 뉴스. 종목마다 최근 2건, 누르면 달이 안에서 기사가 열림
   function jnewsHTML(syms, dayLabel) {
     const rows = [];
@@ -299,8 +299,8 @@
       if (!c.list) { loading = loading || c.loading; return; }
       c.list.filter(a => a.time.startsWith(dayLabel)).slice(0, 2).forEach(a => rows.push({ sym, a }));
     });
-    if (!rows.length) return `<p class="dali-jsec">그날 내 종목 뉴스</p><p class="dali-jnews-empty">${loading ? "뉴스를 불러오는 중이에요" : "그날 올라온 뉴스가 없어요"}</p>`;
-    return `<p class="dali-jsec">그날 내 종목 뉴스</p><ul class="dali-jnews">${rows.map(({ sym, a }) => `
+    if (!rows.length) return `<p class="dali-pro-sec dali-jsec">그날 내 종목 뉴스</p><p class="dali-jnews-empty">${loading ? "뉴스를 불러오는 중이에요" : "그날 올라온 뉴스가 없어요"}</p>`;
+    return `<p class="dali-pro-sec dali-jsec">그날 내 종목 뉴스</p><ul class="dali-jnews">${rows.map(({ sym, a }) => `
       <li><button type="button" data-article="${a.id}" data-sym="${sym}">
         <i class="dali-jlogo">${sym[0]}${symImg(sym)}</i>
         <span><b>${a.title}</b><small>${sym}, ${a.time.replace(dayLabel + " ", "")}</small></span></button></li>`).join("")}</ul>`;
@@ -312,26 +312,30 @@
     const view = state.jview || "month";
     const inView = view === "day" ? closed.filter(t => jday(t) === J_TODAY) : view === "week" ? closed.filter(t => J_WEEK.includes(jday(t))) : closed;
     const total = inView.reduce((a, t) => a + t.pnl, 0), wins = inView.filter(t => t.pnl > 0).length;
-    const group = (title, l, mode) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(t => tradeRow(t, mode)).join("")}</ul>` : "";
+    const group = (title, l, mode) => l.length ? `<p class="dali-pro-sec dali-jsec">${title}</p><ul class="dali-jlist">${l.map(t => tradeRow(t, mode)).join("")}</ul>` : "";
     const tabs = [["day", "일간"], ["week", "주간"], ["month", "월간"]]
       .map(([k, l]) => `<button type="button" class="${view === k ? "on" : ""}" data-act="jview" data-v="${k}">${l}</button>`).join("");
     let head, body, closedTitle, newsBlock = "";
     if (view === "day") {
       const today = held.reduce((a, t) => a + heldToday(t), 0);
       // 시세는 10월 28일 마감 기준이라, 하루 변동은 "어제"로 적음 (오늘 탭 아침과 같은 말)
-      head = `<span>어제 10월 28일, 보유 종목</span><b class="${tone(today)}">${won(today)}</b><small>${inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘은 아직 판 게 없어요"}</small>`;
+      head = ["어제 보유 종목 변동", won(today), inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘은 아직 판 게 없어요"];
       body = ""; closedTitle = "오늘 판 것";
       newsBlock = jnewsHTML([...new Set([...held, ...inView].map(t => t.sym))], "10월 28일");
     } else if (view === "week") {
-      head = `<span>이번 주 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>${inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"}</small>`;
+      head = ["이번 주 실현 손익", won(total), inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"];
       body = jweekHTML(closed); closedTitle = "이번 주에 판 것";
     } else {
-      head = `<span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${inView.length}번 중 ${wins}번 수익</small>`;
+      head = ["10월 실현 손익", won(total), `판 ${inView.length}번 중 ${wins}번 수익`];
       body = jcalHTML(closed); closedTitle = "10월에 판 것";
     }
     return `
-      <div class="dali-jseg">${tabs}</div>
-      <div class="dali-jsum">${head}</div>
+      <section class="dali-pro-act dali-jhero">
+        <p class="dali-pro-act-top"><img src="${FACE}" alt="달이">${head[0]}</p>
+        <p class="dali-pro-act-big">${head[1]}</p>
+        <h2>${head[2]}</h2>
+        <div class="dali-pro-act-btns dali-jseg">${tabs}</div>
+      </section>
       ${body}
       ${group("보유 중", held, view)}${group(closedTitle, inView)}${newsBlock}`;
   }
