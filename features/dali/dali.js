@@ -55,7 +55,7 @@
       ${Object.keys(DALI_SYMS).filter(s => appOf(s) === "fut").map(s => `
         <li><button type="button" data-sym="${s}"><span><b>${s}</b><small>${kindLabel(s)}</small></span>${quote(s)}</button></li>`).join("")}
     </ul>
-    <p class="dali-fut-note">시세는 시연용 가상 숫자입니다.</p>`;
+    <p class="dali-fut-note">시세는 10월 28일 수준을 참고한 시연용 숫자입니다.</p>`;
 
   const dim = document.createElement("div");
   dim.className = "dali-dim";
@@ -146,7 +146,7 @@
     return `
       <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${s}</i>`).join("")}</div>` +
       sorted.map(newsRow).join("") +
-      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.<br>시세와 뉴스는 시연용 가상 데이터예요.</p>`;
+      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.<br>주가는 10월 28일 종가 수준이고, 뉴스는 시연용 가상 요약이에요.</p>`;
   }
 
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
@@ -240,7 +240,8 @@
   const tick = sym => {
     const p = DALI_SYMS[sym].price;
     if (DALI_SYMS[sym].app === "fut") return p > 10000 ? 0.25 : p > 1000 ? 0.1 : 0.01;
-    return p >= 200000 ? 500 : 100;
+    // 한국거래소 호가 단위
+    return p >= 500000 ? 1000 : p >= 200000 ? 500 : p >= 50000 ? 100 : p >= 20000 ? 50 : 10;
   };
   const fmt = (sym, v) => {
     if (DALI_SYMS[sym].app !== "fut") return Math.round(v).toLocaleString("ko-KR");
@@ -265,7 +266,7 @@
           <label>주문 유형<span class="dali-field">시장가</span></label>
           <label>수량<span class="dali-field qty"><button type="button" data-mts="qty" data-v="-1" aria-label="수량 줄이기">−</button><b>${o.qty}</b><button type="button" data-mts="qty" data-v="1" aria-label="수량 늘리기">+</button></span></label>
           <label>주문 가격<span class="dali-field">${priceText(o.sym)}</span></label>
-          <p class="dali-hint">${o.qty}${unit}, 시세와 호가는 가상</p>
+          <p class="dali-hint">${o.qty}${unit}, 주가는 10월 28일 종가 수준, 호가는 가상</p>
         </div>
       </div>
       <div class="dali-mts-foot"><button type="button" class="dali-btn wide ${o.side === "매도" ? "sell" : "buy"}" data-mts="fill">${o.side === "매도" ? "매도" : "매수"}</button></div>`;
