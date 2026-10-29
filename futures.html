@@ -23,6 +23,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:#EEF2F3;color:var(--text);min-height:100dvh;display:grid;place-items:center;padding:24px 12px}
+/* 페이지 전체 글자를 드래그해도 선택 영역이 생기지 않게 (앱처럼). 입력칸만 예외 */
+body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{user-select:text;-webkit-user-select:text}
 button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
 /* 휴대폰 틀은 증권 앱(src/css/main.css .phone)과 같은 크기와 모양 */
 .phone{width:375px;max-width:100%;height:min(780px,calc(100dvh - 48px));min-height:600px;background:var(--bg);border-radius:34px;overflow:hidden;position:relative;box-shadow:0 30px 60px -24px rgba(11,51,64,.45),0 0 0 1px rgba(0,0,0,.05);display:flex;flex-direction:column}
