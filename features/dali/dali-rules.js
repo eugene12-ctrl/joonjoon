@@ -194,5 +194,86 @@ const DaliRules = (function () {
     return Object.keys(s).sort((a, b) => s[b] - s[a]);
   }
 
-  return { money, habits, costs, diff, action, flow, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
+  /* --- 달이 3.0: 산 순간의 사진과 지금을 비교 ---
+     비교 축은 다섯 개뿐. 가격은 비교하지 않는다 (-3.8%여도 사진이 그대로면 같음).
+     이유는 추정하지 않고, 사라 팔아라도 말하지 않는다. "달라요"는 사실 통보 */
+  const AXES = ["trend", "support", "volume", "sector", "vol"];
+  const AX_LABEL = { trend: "추세", support: "지지선", volume: "거래량", sector: "업종", vol: "변동" };
+  const AX_WORD = {
+    trend: { up: "↑", flat: "→", down: "↓" }, sector: { up: "↑", flat: "→", down: "↓" },
+    support: { true: "위", false: "아래" }, volume: { high: "많음", normal: "보통", low: "적음" }, vol: { calm: "차분", wild: "큼" },
+  };
+  // 사진 한 장을 다섯 칸 단어로: [{ k, label, word }]
+  const axes = snap => AXES.map(k => ({ k, label: AX_LABEL[k], word: AX_WORD[k][String(snap[k])] }));
+  function same(a, b) {
+    const diff = AXES.filter(k => a[k] !== b[k]);
+    return { same: !diff.length, diff };
+  }
+  // 보유 종목 하나: 들고 있는 매매(아직 안 판 것)의 산 순간 사진 전부와 지금 사진을 비교. 하나라도 다르면 다름
+  function alive(sym, sc) {
+    const held = C.trades.filter(t => t.sym === sym && !t.sell);
+    const nowSnap = { ...M[sc].nowSnap[sym], price: nowPrice(sym, sc) };
+    const diff = [...new Set(held.flatMap(t => same(t.buySnap, nowSnap).diff))].sort((a, b) => AXES.indexOf(a) - AXES.indexOf(b));
+    const pos = C.positions.find(p => p.sym === sym);
+    return { sym, same: !diff.length, diff, since: pos ? pos.bought : held[0].buy, buySnap: held[0].buySnap, nowSnap };
+  }
+  // 첫 화면 한 단어. 보유 종목 전부가 같으면 same, 하나라도 다르면 changed와 그 종목
+  function word(sc) {
+    const syms = C.positions.map(p => alive(p.sym, sc)).filter(a => !a.same).map(a => a.sym);
+    return { state: syms.length ? "changed" : "same", syms, since: C.positions.map(p => [p.sym, p.bought]) };
+  }
+  // 근거 문장: 같은 축은 지금 상태 한 줄, 달라진 축은 지금과 산 순간을 같이
+  const DIR_NOW = { up: "올라요", flat: "옆으로 가요", down: "내려요" }, DIR_THEN = { up: "올랐어요", flat: "옆으로 갔어요", down: "내렸어요" };
+  const TREND_NOW = { up: "올라가요", flat: "평평해요", down: "내려가요" }, TREND_THEN = { up: "올라갔어요", flat: "평평했어요", down: "내려갔어요" };
+  const VOL_NOW = { high: "평소보다 많아요", normal: "평소만큼이에요", low: "평소보다 적어요" }, VOL_THEN = { high: "많았어요", normal: "평소만큼이었어요", low: "적었어요" };
+  const WILD_NOW = { calm: "차분해요", wild: "커요" }, WILD_THEN = { calm: "차분했어요", wild: "컸어요" };
+  function sameLine(k, sym, n) {
+    const sec = DALI_SECTOR[sym];
+    if (k === "trend") return n.trend === "up" ? "추세 위" : n.trend === "flat" ? "추세 옆으로" : "추세 아래";
+    if (k === "support") return n.support ? `지지선 ${won(n.lo20)} 위예요` : `지지선 ${won(n.lo20)} 아래예요`;
+    if (k === "volume") return `거래량 ${VOL_NOW[n.volume]}`;
+    if (k === "sector") return n.sector === "up" ? `${sec} 업종 같이 올라요` : `${sec} 업종은 ${DIR_NOW[n.sector]}`;
+    return `하루 변동이 ${WILD_NOW[n.vol]}`;
+  }
+  function diffLine(k, sym, n, b) {
+    const sec = DALI_SECTOR[sym];
+    if (k === "sector") return `${sec} 업종이 ${n.sectorRun ? `${n.sectorRun}일째 ` : ""}${DIR_NOW[n.sector]} (샀을 땐 ${DIR_THEN[b.sector]})`;
+    if (k === "trend") return `20일선이 ${TREND_NOW[n.trend]} (샀을 땐 ${TREND_THEN[b.trend]})`;
+    if (k === "support") return n.support ? "지지선 위로 올라왔어요 (샀을 땐 아래였어요)" : `지지선 ${won(n.lo20)} 아래로 내려왔어요 (샀을 땐 위였어요)`;
+    if (k === "volume") return `거래량이 ${VOL_NOW[n.volume]} (샀을 땐 ${VOL_THEN[b.volume]})`;
+    return `하루 변동이 ${WILD_NOW[n.vol]} (샀을 땐 ${WILD_THEN[b.vol]})`;
+  }
+  // 펼쳤을 때 근거 최대 3줄. 달라진 축이 먼저, 그다음 같은 축 (추세와 지지선은 한 줄로 묶음)
+  function why(sym, sc) {
+    const a = alive(sym, sc), n = a.nowSnap, b = a.buySnap, pc = todayPct(sym, sc);
+    const lines = a.diff.map(k => diffLine(k, sym, n, b));
+    const keep = AXES.filter(k => !a.diff.includes(k));
+    const same3 = [];
+    if (keep.includes("trend") && keep.includes("support"))
+      same3.push(pc < 0 ? `오늘 ${sgn(pc)}지만 지지선 ${won(n.lo20)} 위예요` : `${sameLine("trend", sym, n)}, ${sameLine("support", sym, n)}`);
+    else keep.filter(k => k === "trend" || k === "support").forEach(k => same3.push(sameLine(k, sym, n)));
+    if (keep.includes("volume")) same3.push(sameLine("volume", sym, n) + (keep.includes("vol") && n.vol === "calm" ? ", 하루 변동도 차분해요" : ""));
+    if (keep.includes("sector")) same3.push(sameLine("sector", sym, n));
+    return lines.concat(same3).slice(0, 3);
+  }
+  // 10월 리포트: 그 달에 판 매매 목록과 두 사진, 다른 축만. 요약, 해석, 통계는 없다
+  const pnlOf = t => Math.round(t.qty * (t.price || t.buySnap.price) * t.pct / 100 / 100) * 100;
+  function report(month = "10") {
+    const list = C.trades.filter(t => t.sell && t.sell.startsWith(month + "/"))
+      .sort((a, b) => b.sell.localeCompare(a.sell) || b.id - a.id)
+      .map(t => ({ id: t.id, sym: t.sym, qty: t.qty, buy: t.buy, sell: t.sell, pnl: pnlOf(t), pct: t.pct,
+        buySnap: t.buySnap, sellSnap: t.sellSnap, diff: same(t.buySnap, t.sellSnap).diff, later: t.sellSnap.later }));
+    return { month, list };
+  }
+  // 매매일지 한 줄에 붙는 짧은 말: 살 때 축 두 개(나중에 달라진 축 먼저), 팔 때 같음 또는 달라짐. 보유 중이면 지금과 비교
+  function brief(id, sc) {
+    const t = C.trades.find(x => x.id === id);
+    if (!t) return null;
+    const other = t.sellSnap || { ...M[sc].nowSnap[t.sym] };
+    const d = same(t.buySnap, other).diff;
+    const pick = (d.length ? d : []).concat(["trend", "sector", "volume"]).filter((k, i, l) => l.indexOf(k) === i).slice(0, 2);
+    return { buy: pick.map(k => `${AX_LABEL[k]} ${AX_WORD[k][String(t.buySnap[k])]}`), held: !t.sell, same: !d.length, diff: d };
+  }
+
+  return { same, alive, word, why, report, brief, axes, AX_LABEL, money, habits, costs, diff, action, flow, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
 })();
