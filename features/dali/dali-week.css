@@ -1,0 +1,40 @@
+/* ===== 주간 돌아보기: 한 달 습관 리포트(dali-report.css)와 같은 옷 =====
+   .dr 스타일을 그대로 쓰고, 주간에만 있는 것(헤엄치는 달이, 판 날 표시, 한 일 목록, 지난주 비교)만 여기 둔다.
+   dali-report.css 다음에 불러온다. */
+
+/* 맨 위: 헤엄치는 달이. 조개 대신 해달이 들어오고 거품이 올라감 */
+.dw-swim { position: relative; width: 84px; height: 72px; margin-bottom: 14px; }
+.dw-otter { width: 72px; height: 72px; animation: dw-otter .9s cubic-bezier(.2, .8, .2, 1) both; }
+.dw-bub { position: absolute; width: 18px; opacity: 0; animation: dw-bub 2.4s ease-out .5s infinite; }
+.dw-bub.b1 { left: 58px; top: 10px; }
+.dw-bub.b2 { left: 70px; top: 26px; width: 12px; animation-delay: 1.3s; }
+@keyframes dw-otter { from { transform: translateX(-16px) rotate(-8deg); opacity: 0; } 60% { transform: translateX(3px) rotate(2deg); opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes dw-bub { 0% { transform: translateY(6px) scale(.6); opacity: 0; } 25% { opacity: .9; } 100% { transform: translateY(-26px) scale(1); opacity: 0; } }
+
+/* 한 주 달력: 판 날은 테두리, 오늘은 밑에 점, 아직 안 온 날은 흐리게 */
+.dw .dr-cell.sell b { background: #fff; color: var(--t-ink); font-weight: 700; box-shadow: inset 0 0 0 2px var(--t-ink); }
+.dw .dr-cell.buy.sell b { background: var(--t-ink); color: #fff; box-shadow: inset 0 0 0 2px var(--t-ink); }
+.dw .dr-cell.future b { color: var(--t-sub); opacity: .55; }
+.dw .dr-cell.today::before { content: ""; position: absolute; left: 50%; top: 2px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--t-point); }
+.dw .dr-legend .k-sell { box-shadow: inset 0 0 0 2px var(--t-ink); }
+
+/* 이번 주 한 일: 날짜 상자 하나와 두 줄 */
+.dw-did { display: flex; flex-direction: column; }
+.dw-did li { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-top: 1px solid var(--t-line); }
+.dw-did li:first-child { border-top: 0; padding-top: 0; }
+.dw-day { flex: none; width: 44px; height: 44px; border-radius: 14px; background: var(--t-tile); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+.dw-day b { font-size: 16px; font-weight: 800; color: var(--t-ink); font-variant-numeric: tabular-nums; }
+.dw-day small { margin-top: 3px; font-size: 11px; color: var(--t-sub); font-weight: 500; }
+.dw-did div { flex: 1; min-width: 0; padding-top: 2px; }
+.dw-did div b { display: block; font-size: 15px; font-weight: 700; color: var(--t-ink); line-height: 1.35; }
+.dw-did div span { display: block; margin-top: 3px; font-size: 13.5px; color: var(--t-sub); line-height: 1.45; }
+
+/* 지난주랑 나란히: 라벨, 이번 주 숫자, 지난주 작은 글씨 */
+.dw-cmp { display: flex; flex-direction: column; }
+.dw-cmp li { display: flex; align-items: baseline; gap: 10px; padding: 13px 0; border-top: 1px solid var(--t-line); }
+.dw-cmp li:first-child { border-top: 0; padding-top: 0; }
+.dw-cmp span { flex: 1; font-size: 15px; color: var(--t-ink2); }
+.dw-cmp b { font-size: 16px; font-weight: 800; color: var(--t-ink); font-variant-numeric: tabular-nums; }
+.dw-cmp small { width: 72px; text-align: right; font-size: 12.5px; color: var(--t-sub); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) { .dw-otter, .dw-bub { animation: none; opacity: 1; } }

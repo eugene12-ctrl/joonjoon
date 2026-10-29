@@ -328,7 +328,13 @@
         <p class="dali-hint">읽고, 돌아보고, 같이 걸으면 조약돌이 생겨요. 거래로는 생기지 않아요.</p>
         <ol class="dali-ladder">${DALI_STAGES.map((x, i) => {
           const cls = i < si ? "past" : i === si ? "now" : i === si + 1 ? "next" : "lock";
-          const right = i <= si ? `<button type="button" class="dali-link" data-act="gift" data-i="${i}">${state.gift === i ? "접기" : "보기"}</button>`
+          // 한 달 습관 리포트 단계에 닿았으면 미리보기 대신 리포트 화면(dali-report.js)으로
+          const report = i <= si && x.gift === "한 달 습관 리포트" && window.DaliReport;
+          // 주간 돌아보기 카드 단계에 닿았으면 미리보기 대신 이번 주 화면(dali-week.js)으로
+          const week = i <= si && x.gift === "주간 돌아보기 카드" && window.DaliWeek;
+          const right = report ? `<button type="button" class="dali-link" data-act="report">열기</button>`
+            : week ? `<button type="button" class="dali-link" data-act="week">열기</button>`
+            : i <= si ? `<button type="button" class="dali-link" data-act="gift" data-i="${i}">${state.gift === i ? "접기" : "보기"}</button>`
             : `<span class="dali-left">${i === si + 1 ? `${x.min - state.pebbles}개 더` : `조약돌 ${x.min}`}</span>`;
           return `
           <li class="${cls}">
@@ -541,10 +547,11 @@
     else if (state.fx && !state.fx.grew) state.fx = null;
     if (state.page) {
       // 같은 화면을 다시 그릴 때(뉴스, 공시 탭 전환, 공시 도착)는 스크롤 위치를 지킴
-      const key = state.page.type === "grow" ? "grow" : state.page.id;
+      const key = ["grow", "report", "week"].includes(state.page.type) ? state.page.type : state.page.id;
       const same = !pageEl.hidden && pageEl.dataset.id === key;
       const y = same ? pageEl.querySelector(".dali-page-body")?.scrollTop || 0 : 0;
-      pageEl.innerHTML = state.page.type === "grow" ? growPage() : state.page.type === "article" ? articlePage(state.page) : newsPage(state.page.id);
+      pageEl.innerHTML = state.page.type === "grow" ? growPage() : state.page.type === "report" ? DaliReport.page()
+        : state.page.type === "week" ? DaliWeek.page() : state.page.type === "article" ? articlePage(state.page) : newsPage(state.page.id);
       pageEl.dataset.id = key;
       const pb = pageEl.querySelector(".dali-page-body");
       if (pb) pb.scrollTop = y;
@@ -587,6 +594,8 @@
     else if (act === "trade") { state.openTrade = state.openTrade === id ? null : id; render(); }
     else if (act === "jday") { state.openTrade = id; render(); sheet.querySelector(".dali-jrow.open")?.scrollIntoView({ block: "center", behavior: "smooth" }); }
     else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
+    else if (act === "report") { state.page = { type: "report", from: state.page }; render(); }
+    else if (act === "week") { state.page = { type: "week", from: state.page }; render(); }
     else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
     else if (act === "pet") pet(b);
     else if (act === "mission") { complete(id); render(); }
