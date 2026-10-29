@@ -263,3 +263,18 @@
   });
   sheet.addEventListener("transitionstart", () => { if (sheet.classList.contains("open")) hidePeek(); });
 })();
+
+/* ---------- 색 비교 페이지(팔레트 실험실)에서 보내는 색을 받아 입힘 ----------
+   다른 페이지가 이 앱을 iframe으로 띄우고 postMessage로 { type: "dali-palette", css, scene } 를 보냄.
+   평소 화면에는 영향 없음 */
+window.addEventListener("message", e => {
+  const d = e.data;
+  if (!d || d.type !== "dali-palette") return;
+  let s = document.getElementById("dali-palette");
+  if (!s) { s = document.createElement("style"); s.id = "dali-palette"; document.head.appendChild(s); }
+  s.textContent = d.css || "";
+  try { localStorage.setItem("dali-intro-seen", "1"); } catch (err) { /* 무시 */ }
+  document.querySelector(".dali-intro.show .dali-intro-go")?.click();
+  if (d.scene && window.daliPro) window.daliPro.scene(d.scene);
+  if (window.dali && !document.querySelector(".dali-sheet.open")) window.dali.open("today");
+});
