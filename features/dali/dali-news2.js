@@ -26,7 +26,7 @@
   const chg = sym => (R && DALI_SYMS[sym].app === "stock" ? R.todayPct(sym, scene()) : DALI_SYMS[sym].chg);
   const nowP = sym => (R && DALI_SYMS[sym].app === "stock" ? R.nowPrice(sym, scene()) : DALI_SYMS[sym].price);
 
-  // 그 소식에 걸린 내 돈: 국내주식 보유는 수량 × 지금가 × 등락(오늘 탭과 같은 계산), 선물 보유는 매매일지 평가손익
+  // 그 소식에 걸린 내 자산: 국내주식 보유는 수량 × 지금가 × 등락(오늘 탭과 같은 계산), 선물 보유는 매매일지 평가손익
   function mine(sym) {
     const s = DALI_SYMS[sym];
     if (s.app === "stock" && C) {

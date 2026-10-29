@@ -122,8 +122,7 @@
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
         <p class="dali-pro-act-big">${a.big}</p>
         <h2>${a.title}</h2>
-        ${a.gauge ? gaugeHTML(a.gauge, "크루드 오일") : a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
-        ${factsHTML(a.facts)}
+        ${a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
         <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
       </section>
       <section class="dali-pro-head">

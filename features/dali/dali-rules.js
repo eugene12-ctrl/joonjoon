@@ -14,7 +14,7 @@ const DaliRules = (function () {
 
   const fmtWon = n => `${n < 0 ? "-" : "+"}${Math.abs(Math.round(n)).toLocaleString("ko-KR")}원`;
 
-  /* --- 내 돈 한눈에 --- */
+  /* --- 내 자산 한눈에 --- */
   // 걸어 둔 주문이 체결된 뒤면 보유와 현금에 반영 (평단은 수량 가중)
   function holdings(sc) {
     const pd = C.pending, filled = !!(M[sc] && M[sc].filled);
@@ -64,7 +64,7 @@ const DaliRules = (function () {
   }
 
   /* --- 그동안 달라진 것 ---
-     줄마다 끝맺음을 바꿔 쓴다 (라벨 없이 문장만). 비중은 어디서나 현금 포함 "내 돈" 기준 */
+     줄마다 끝맺음을 바꿔 쓴다 (라벨 없이 문장만). 비중은 어디서나 현금 포함 "내 자산" 기준 */
   const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
   const sgn = n => (n > 0 ? "+" : "") + n.toFixed(1) + "%";
   const dayLabel = sc => (sc === "morning" ? "어제" : "오늘");
@@ -85,14 +85,14 @@ const DaliRules = (function () {
       noTodo = "오늘 아침은 보기만 해도 괜찮아요";
     } else if (sc === "intraday") {
       lines = [
-        L("shock", `삼성전자 ${sgn(ss.pct)}, 내 돈 ${man(ss.today)}`, `장 시작 뒤 4시간 동안 꾸준히 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
+        L("shock", `삼성전자 ${sgn(ss.pct)}, 내 자산 ${man(ss.today)}`, `장 시작 뒤 4시간 동안 꾸준히 내렸고, 내 자산 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
         L("habit", "급하게 판 날의 기록", `손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올라 있었어요`),
         L("watch", `SK하이닉스 ${sgn(todayPct("SK하이닉스", sc))}`, `관심종목이에요. 급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}로 끝났고요`),
       ];
       noTodo = "팔거나 살 이유가 새로 생긴 건 아니라서, 지금은 지켜보기만 해도 돼요";
     } else if (sc === "close") {
       lines = [
-        L("close", `삼성전자 ${sgn(ss.pct)} 마감`, `내 ${ss.qty}주가 오늘 ${man(ss.today)}, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
+        L("close", `삼성전자 ${sgn(ss.pct)} 마감`, `내 ${ss.qty}주가 오늘 ${man(ss.today)}, 내 자산 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
         L("fill", `${pend.sym} ${pend.qty}주 체결`, `장중 ${won(pend.price)}에 체결됐고, 그때 상황은 매매일지에 적어 뒀어요`),
         L("event", "내일 삼성전자 실적 발표", "지난 4번 중 2번은 발표 전날 크게 올랐어요"),
       ];
@@ -117,7 +117,7 @@ const DaliRules = (function () {
     if (sc === "morning") return { sym: pend.sym, top: "걸어 둔 주문", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)} 매수 대기`,
       sub: `지금 ${won(nowPrice(pend.sym, sc))}, 9시 시가에 다시 봐요`, btns: [["order", pend.sym, "주문 정정"], ["news", pend.sym, `${pend.sym} 보기`]] };
     if (sc === "intraday") return { sym: ss.sym, top: "지금 크게 움직여요", title: `${ss.sym} ${sgn(ss.pct)}, 내 ${ss.qty}주 ${fmtWon(ss.today)}`,
-      sub: `장 시작 뒤 4시간 동안 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`, btns: [["order", ss.sym, `${ss.sym} 주문`], ["news", ss.sym, "차트 보기"]] };
+      sub: `장 시작 뒤 4시간 동안 내렸고, 내 자산 전체로 보면 ${sgn(ss.today / m.total * 100)}`, btns: [["order", ss.sym, `${ss.sym} 주문`], ["news", ss.sym, "차트 보기"]] };
     if (sc === "close") return { sym: pend.sym, top: "체결됐어요", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)}에 체결`,
       sub: "살 때 상황은 매매일지에 적어 뒀어요", btns: [["journal", "", "매매일지"], ["news", pend.sym, `${pend.sym} 보기`]] };
     return { sym: "", top: "이번 달", title: `10월 실현 ${fmtWon(C.month.realized)}`,
@@ -175,19 +175,19 @@ const DaliRules = (function () {
     const out = [];
     if (p) {
       const share = Math.round(p.value / m.total * 100);
-      out.push(`${day} ${sgn(pc)}로 내 ${p.qty}주가 ${fmtWon(p.today)}. 내 돈의 ${share}%라 전체로는 ${sgn(pc * share / 100)}`);
+      out.push(`${day} ${sgn(pc)}로 내 ${p.qty}주가 ${fmtWon(p.today)}. 내 자산의 ${share}%라 전체로는 ${sgn(pc * share / 100)}`);
       if (sc === "morning") out.push("장이 열리기 전이라 지금 움직일 건 없어요");
       else if (sc === "intraday" && pc < 0) out.push(`손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올라 있었어요`);
       else if (sc === "month") out.push(`이번 달 이 종목 매매는 ${mine.filter(t => t.buy.startsWith("10/")).length}번`);
     } else {
-      out.push("관심종목이라 내 돈엔 영향이 없어요");
+      out.push("관심종목이라 내 자산엔 영향이 없어요");
       if (pc >= 5) out.push(`급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}였어요`);
       else if (mine.length) out.push(`지난 3개월 이 종목 매매 ${mine.length}번, 평균 ${sgn(avg(mine))}`);
     }
     return out.join(". ");
   }
 
-  /* --- 카드 순서: 내 돈 영향 금액 × 시급성 × 행동 관련 --- */
+  /* --- 카드 순서: 내 자산 영향 금액 × 시급성 × 행동 관련 --- */
   function priority(sc) {
     const m = money(sc);
     const s = {
