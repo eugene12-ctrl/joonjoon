@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전체메뉴 화면 흐름 목업 · 시연용 가상 화면</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== 바깥 화면 (라이트/다크 대응) ===== */
+  :root {
+    --bg: #EEF2F3; --surface: #FFFFFF; --ink: #15262B; --muted: #5E6E74; --line: #D7E0E3;
+    --accent: #1B5F6B; --accent-ink: #FFFFFF; --note: #FFF4C7; --note-ink: #5A4A10;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    font-family: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11181A; --surface: #1A2427; --ink: #E3ECEE; --muted: #93A5AA; --line: #2B393D;
+      --accent: #5FC3CF; --accent-ink: #0C2A30; --note: #3B3418; --note-ink: #F2E2A6; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11181A; --surface: #1A2427; --ink: #E3ECEE; --muted: #93A5AA; --line: #2B393D;
+    --accent: #5FC3CF; --accent-ink: #0C2A30; --note: #3B3418; --note-ink: #F2E2A6; color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  button:focus-visible { outline: 2px solid #FFB020; outline-offset: 2px; }
+
+  .topbar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .topbar h1 { margin: 0; font-size: 16px; font-weight: 700; }
+  .topbar h1 small { margin-left: 8px; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .seg { display: flex; padding: 3px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .seg a {
+    padding: 7px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
+    color: var(--muted); text-decoration: none;
+  }
+  .seg a.on { background: var(--accent); color: var(--accent-ink); }
+
+  .view[hidden] { display: none; }
+  .proto { display: flex; justify-content: center; padding: 24px 12px 40px; }
+  .proto-hint { text-align: center; color: var(--muted); font-size: 13px; margin: 18px 16px 0; }
+
+  /* 플로우 */
+  .flow-scroll { overflow-x: auto; padding: 28px 24px 40px; }
+  .flow { display: flex; align-items: flex-start; width: max-content; margin: 0 auto; }
+  .step { flex: 0 0 auto; width: 210px; }
+  .thumb {
+    position: relative; width: 210px; height: 437px; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 16px 32px -16px rgba(11, 51, 64, .45), 0 0 0 1px var(--line);
+  }
+  .thumb > .phone { transform: scale(.56); transform-origin: 0 0; box-shadow: none; }
+  .cap { margin-top: 14px; }
+  .cap .no {
+    display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink);
+  }
+  .cap h2 { margin: 8px 0 4px; font-size: 15px; }
+  .cap p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); word-break: keep-all; }
+  .cap .memo {
+    margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--note); color: var(--note-ink);
+    font-size: 12px; line-height: 1.5; word-break: keep-all;
+  }
+  .cap .memo code { font-size: 11.5px; }
+  .link {
+    flex: 0 0 auto; width: 124px; margin-top: 190px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 8px;
+  }
+  .link span { font-size: 12.5px; font-weight: 600; color: var(--accent); text-align: center; word-break: keep-all; line-height: 1.4; }
+  .link svg { width: 100%; height: 14px; color: var(--accent); }
+  @media (max-width: 760px) {
+    .flow { flex-direction: column; align-items: center; width: auto; }
+    .step { width: 210px; }
+    .link { width: auto; margin: 14px 0; flex-direction: row-reverse; gap: 10px; }
+    .link svg { width: 14px; height: 44px; }
+    .link svg.h { display: none; }
+  }
+  @media (min-width: 761px) { .link svg.v { display: none; } }
+
+  /* ===== 휴대폰 화면 ===== */
+  .phone {
+    position: relative; width: 375px; height: 780px; background: #fff; border-radius: 34px; overflow: hidden;
+    display: flex; flex-direction: column; color: #1A1D1F;
+    box-shadow: 0 30px 60px -24px rgba(11, 51, 64, .45), 0 0 0 1px rgba(0,0,0,.05);
+    font-family: inherit;
+  }
+  .proto .phone { height: min(780px, calc(100dvh - 150px)); min-height: 600px; }
+  @media (max-width: 420px) { .proto { padding: 12px 0 24px; } .proto .phone { width: 100%; max-width: 390px; border-radius: 20px; } }
+
+  .demo-band { flex: 0 0 auto; background: #6B7378; color: #fff; font-size: 12px; font-weight: 500; text-align: center; padding: 6px 0; }
+  .app-head { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 12px 16px; background: #fff; }
+  .who { display: flex; align-items: center; gap: 10px; }
+  .who strong { font-size: 17px; font-weight: 700; color: #0E2F3A; }
+  .mode { display: flex; border: 1.5px solid #0E3A4A; border-radius: 999px; padding: 1.5px; }
+  .mode button { font-size: 11.5px; padding: 2px 8px; border-radius: 999px; color: #0E3A4A; font-weight: 500; }
+  .mode button.on { background: #0E3A4A; color: #fff; font-weight: 700; }
+  .head-icons { display: flex; gap: 12px; }
+  .head-icons button { width: 24px; height: 24px; display: grid; place-items: center; color: #0E3A4A; }
+  .head-icons svg { width: 22px; height: 22px; }
+
+  .body {
+    flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; padding-bottom: 18px;
+    background: linear-gradient(180deg, #1B5F6B 0%, #23707C 40%, #5E9EA7 68%, #E6F1F2 92%, #FFFFFF 100%);
+  }
+
+  .cats { position: relative; padding: 12px 20px 8px; }
+  .cats-vp { overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .cats-vp::-webkit-scrollbar { display: none; }
+  .cats-grid { display: grid; grid-template-columns: repeat(6, var(--colw, 84px)); grid-template-rows: repeat(2, 40px); }
+  .cat {
+    align-self: center; height: 34px; margin: 0 3px; border-radius: 17px;
+    color: rgba(255,255,255,.85); font-size: 13.5px; font-weight: 500; white-space: nowrap; letter-spacing: -0.03em;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  .cat.on { background: #fff; color: #1B5F6B; font-weight: 700; box-shadow: 0 4px 10px -6px rgba(0,0,0,.5); }
+  .edge { position: absolute; top: 50%; transform: translateY(-50%); font-size: 11px; color: rgba(255,255,255,.75); transition: opacity .2s ease; pointer-events: none; }
+  .edge.l { left: 6px; } .edge.r { right: 6px; }
+  .edge.off { opacity: 0; }
+
+  .panel {
+    position: relative; margin: 4px 12px 0; background: #2B7A86; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 14px 26px -18px rgba(3, 30, 36, .8);
+  }
+  .vp { overflow: hidden; margin: 0 20px; padding-top: 10px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .track { display: flex; align-items: flex-start; transition: transform .3s ease; }
+  .page { flex: 0 0 100%; min-width: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px 2px; align-content: start; padding: 4px 3px 10px; }
+  .tile {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 8px 2px 7px; border-radius: 12px; border: 2px solid transparent;
+    color: #fff; font-size: 12px; line-height: 1.25; text-align: center; word-break: keep-all; letter-spacing: -0.03em;
+  }
+  .tile svg { width: 40px; height: 40px; flex: 0 0 auto; filter: drop-shadow(0 3px 5px rgba(3, 35, 42, .4)); pointer-events: none; }
+  .tile span { pointer-events: none; }
+  .tile.on { background: rgba(255,255,255,.15); font-weight: 700; }
+  .tile.new { border-color: #3FD0E0; animation: newglow 2.4s ease-in-out infinite; }
+  @keyframes newglow {
+    0%, 100% { box-shadow: 0 0 4px rgba(63,208,224,.3); }
+    50% { box-shadow: 0 0 16px rgba(63,208,224,.9), inset 0 0 10px rgba(63,208,224,.35); }
+  }
+  @media (prefers-reduced-motion: reduce) { .tile.new { animation: none; box-shadow: 0 0 12px rgba(63,208,224,.7); } }
+  .badge {
+    position: absolute; top: -8px; right: -4px; background: #FF6B4A; color: #fff;
+    font-size: 9px; font-weight: 700; line-height: 1; padding: 3px 5px; border-radius: 7px; letter-spacing: 0;
+  }
+  .tile.extra { display: none; }
+  .panel.expanded .tile.extra { display: flex; }
+  .nav {
+    position: absolute; top: calc((100% - 38px) / 2); transform: translateY(-50%); z-index: 2;
+    width: 18px; height: 44px; display: grid; place-items: center; color: rgba(255,255,255,.75);
+  }
+  .nav.prev { left: 2px; } .nav.next { right: 2px; }
+  .nav svg { width: 8px; height: 14px; }
+  .expand {
+    width: 100%; height: 38px; display: flex; align-items: center; justify-content: center; gap: 5px;
+    background: rgba(8, 50, 58, .28); color: rgba(255,255,255,.92); font-size: 12.5px;
+  }
+  .expand svg { width: 11px; height: 11px; transition: transform .3s ease; }
+  .panel.expanded .expand svg { transform: rotate(180deg); }
+
+  .banners { display: grid; gap: 8px; margin: 12px 12px 0; }
+  .banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+    background: #fff; border-radius: 12px; padding: 11px 12px 11px 14px; text-align: left;
+    box-shadow: 0 6px 14px -10px rgba(3, 35, 42, .5);
+  }
+  .chip { display: inline-block; padding: 2px 6px; border-radius: 4px; background: #1B5F6B; color: #fff; font-size: 10px; font-weight: 700; }
+  .btext { display: block; margin-top: 5px; font-size: 14px; font-weight: 700; color: #1A1D1F; transition: opacity .15s ease; }
+  .btext.fade { opacity: 0; }
+  .banner svg { width: 44px; height: 44px; flex: 0 0 auto; }
+
+  .bottom { flex: 0 0 auto; display: flex; align-items: center; height: 58px; border-top: 1px solid #E3E8EB; background: #fff; }
+  .bottom button { position: relative; flex: 1 1 0; height: 100%; display: grid; place-items: center; font-size: 14px; color: #1A1D1F; }
+  .bottom button.x { flex: 0 0 56px; }
+  .bottom button.x svg { width: 20px; height: 20px; }
+  .bottom button + button::before { content: ""; position: absolute; left: 0; top: 50%; width: 1px; height: 16px; transform: translateY(-50%); background: #DDE3E6; }
+  .bottom button.on { color: #1B5F6B; font-weight: 700; }
+
+  .toast {
+    position: absolute; left: 50%; bottom: 74px; z-index: 6; transform: translate(-50%, 10px); opacity: 0;
+    background: rgba(18, 28, 32, .92); color: #fff; font-size: 13px; padding: 10px 16px; border-radius: 20px;
+    white-space: nowrap; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* 플로우 썸네일의 동작 표시 */
+  .mark { position: absolute; z-index: 7; pointer-events: none; }
+  .mark.tap { width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 3px solid #FF6B4A; background: rgba(255,107,74,.25); }
+  .mark.swipe {
+    width: 150px; height: 40px; margin: -20px 0 0 -75px; border-radius: 20px; border: 3px solid #FF6B4A;
+    background: rgba(255,107,74,.2); display: grid; place-items: center;
+  }
+  .mark.swipe svg { width: 100px; height: 18px; }
+</style>
+</head>
+<body>
+
+<!-- 아이콘 공용 그라데이션 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#F4FBFC" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#8FC1CA" stop-opacity=".62"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FE8F2"/><stop offset="1" stop-color="#139AB2"/></linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC4FF"/><stop offset="1" stop-color="#2F6FE0"/></linearGradient>
+    <linearGradient id="gPurple" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9A2FF"/><stop offset="1" stop-color="#7646DE"/></linearGradient>
+    <linearGradient id="gOrange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC07A"/><stop offset="1" stop-color="#F2703A"/></linearGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <h1>전체메뉴 화면 흐름 목업<small>시연용 가상 화면</small></h1>
+  <nav class="seg" aria-label="보기 전환">
+    <a href="#prototype" data-view="prototype">프로토타입</a>
+    <a href="#flow" data-view="flow">플로우</a>
+  </nav>
+</header>
+
+<main>
+  <section class="view" id="view-prototype">
+    <p class="proto-hint">탭을 누르거나 메뉴 그리드를 좌우로 밀어 보세요.</p>
+    <div class="proto" id="protoHost"></div>
+  </section>
+  <section class="view" id="view-flow" hidden>
+    <div class="flow-scroll"><div class="flow" id="flowHost"></div></div>
+  </section>
+</main>
+
+<script>
+/* ===================================================
+   이름 바꾸기: 아래 상수만 고치면 됩니다
+   =================================================== */
+const NEW_FEATURE_LABEL = "신규 기능";
+const NEW_FEATURE_TOAST = "신규 기능 페이지 연결 예정";
+const TOAST_MS = 1500;
+
+/* ===================================================
+   새 페이지 연결: 지금은 안내 메시지만 띄웁니다.
+   새 화면이 준비되면 이 함수 안쪽만 바꾸면 됩니다.
+   =================================================== */
+function openNewFeature(screen) {
+  screen.showToast(NEW_FEATURE_TOAST);
+}
+
+/* ---------- 카테고리 데이터 (배열 순서 = 스와이프 순서) ----------
+   pos: [탭 줄, 탭 칸] */
+const CATS = [
+  { name: "국내주식", pos: [1, 1], tiles: "관심종목,현재가,주문,차트,잔고,시장정보,업종/테마,뉴스/공시,리서치,기업정보,순위분석,거래분석", extra: "조건검색" },
+  { name: "해외주식", pos: [1, 2], tiles: "해외관심,해외현재가,해외주문,해외차트,해외계좌/잔고,해외업종정보,해외종목정보,스코어/ETF,뉴스/리포트,뱅킹/환전,안내/신청,소수점투자" },
+  { name: "ETF", pos: [1, 3], tiles: "관심종목,현재가,주문,차트,잔고,투자트렌드,ETF랭킹,종목으로찾기,ETF분배금,레버리지ETF" },
+  { name: "CFD", pos: [1, 4], tiles: "CFD현재가,해CFD현재가,CFD주문,차트,국내체결/잔고,해외체결/잔고,국내증거금/손익,해외증거금/손익,CFD가능종목,안내/신청" },
+  { name: "선물옵션", pos: [2, 1], tiles: "선옵시세종합,선옵현재가,선옵주문,선옵차트,선옵계좌/잔고,선옵증거금,야간시세종합,야간선옵현재가,야간주문/잔고,야간선옵차트,해외선물옵션" },
+  { name: "금융상품", pos: [2, 2], tiles: "펀드,연금,장외채권,장내채권,외화채권,ELS/ELB,RP/CMA,신탁,랩(Wrap),중개형ISA,AI투자" },
+  { name: "쏙쏙클럽", pos: [2, 3], tiles: "수급/섹터,특징주,리포트/검색,DART알림,종목분석,신청/해지,이벤트/혜택,서비스,★" },
+  { name: "인터넷뱅킹", pos: [2, 4], tiles: "자산내역,이체,유가증권대체,외화이체/대체,환전" },
+  { name: "공모주/청약", pos: [1, 5], tiles: "공모주청약,실권주청약,유상/예약청약,공개매수청약,권리일정" },
+  { name: "온라인지점", pos: [2, 5], tiles: "개인정보,거래시작하기,거래신청,뱅킹설정,공모주/청약,신용/대출,부가서비스,고객센터,디지털PB,Open API,분할매매,알림" },
+  { name: "인증센터", pos: [1, 6], tiles: "인증,OTP/보안" },
+];
+const LAST = CATS.length - 1;
+
+/* ---------- 아이콘 ---------- */
+const GLYPH = {
+  star: '<path d="M24 18.5l2.3 4.6 5.1.7-3.7 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.7-3.6 5.1-.7Z" fill="#15505C" stroke="none"/>',
+  won: '<path d="M17 21.5l2.6 9 4.4-7.5 4.4 7.5 2.6-9M16 26h16"/>',
+  order: '<path d="M17 22.5h13m-3-3 3 3-3 3M31 30.5H18m3-3-3 3 3 3"/>',
+  chart: '<path d="M18 33v-5M22.7 33v-9M27.3 33v-6M32 33V20"/>',
+  wallet: '<rect x="16" y="20.5" width="16" height="12" rx="2.5"/><path d="M26.5 26.5h5.5"/>',
+  moon: '<path d="M28.5 19.5a7 7 0 1 0 3.5 12 6.2 6.2 0 0 1-3.5-12Z"/>',
+  globe: '<circle cx="24" cy="26.5" r="7"/><path d="M17 26.5h14M24 19.5c3 3 3 11 0 14M24 19.5c-3 3-3 11 0 14"/>',
+  news: '<path d="M18 21h12M18 25.5h12M18 30h8"/>',
+  search: '<circle cx="23" cy="25.5" r="5"/><path d="m26.8 29.3 4.2 4.2"/>',
+  building: '<path d="M19 33.5V20h10v13.5M17 33.5h14M22.5 23.5h.1M25.5 23.5h.1M22.5 27.5h.1M25.5 27.5h.1"/>',
+  rank: '<path d="M17 33v-6h5M22 33V20.5h5V33M27 24h5v9M16 33.5h17"/>',
+  trend: '<path d="m17 31 5-5 4 3 6-7.5m-4.5 0h4.5v4.5"/>',
+  bank: '<path d="m16 24 8-5 8 5M18.5 25v6.5M22.5 25v6.5M25.5 25v6.5M29.5 25v6.5M16 33h16"/>',
+  shield: '<path d="M24 18.5l7 2.8v5c0 4-3 6.5-7 8-4-1.5-7-4-7-8v-5Z"/><path d="m21 26.5 2 2 4-4"/>',
+  bell: '<path d="M19 29.5v-5a5 5 0 0 1 10 0v5l1.5 2h-13Z"/><path d="M22.5 33.8h3"/>',
+  user: '<circle cx="24" cy="23" r="3.5"/><path d="M17.5 33.5c1-4 3.5-5.5 6.5-5.5s5.5 1.5 6.5 5.5"/>',
+  coin: '<ellipse cx="24" cy="21.5" rx="7" ry="2.8"/><path d="M17 21.5v4c0 1.6 3 2.8 7 2.8s7-1.2 7-2.8v-4M17 25.5v4c0 1.6 3 2.8 7 2.8s7-1.2 7-2.8v-4"/>',
+  gift: '<rect x="17" y="24" width="14" height="9.5" rx="1.5"/><path d="M16 21h16v3H16ZM24 21v12.5M24 21c-2-4-6-3-4 0M24 21c2-4 6-3 4 0"/>',
+  gear: '<circle cx="24" cy="26.5" r="3"/><path d="M24 19v2.5M24 31.5V34M16.5 26.5H19M29 26.5h2.5M18.7 21.2l1.8 1.8M27.5 30l1.8 1.8M29.3 21.2 27.5 23M20.5 30l-1.8 1.8"/>',
+  doc: '<path d="M19 19h7l4 4v10.5H19Z"/><path d="M26 19v4h4M21.5 27h6M21.5 30.5h4"/>',
+  sparkle: '<path d="M24 17.5c1 5 3 7 8 8.5-5 1.5-7 3.5-8 8.5-1-5-3-7-8-8.5 5-1.5 7-3.5 8-8.5Z" fill="#0E8FB0" stroke="none"/>',
+};
+const GLYPH_RULES = [
+  [["관심"], "star"], [["야간"], "moon"], [["현재가", "시세"], "won"], [["주문"], "order"], [["차트"], "chart"],
+  [["잔고", "계좌", "자산", "증거금", "손익"], "wallet"],
+  [["리서치", "검색", "찾기"], "search"], [["뉴스", "공시", "리포트", "DART"], "news"],
+  [["순위", "랭킹", "스코어"], "rank"], [["기업", "종목정보", "특징주", "가능종목", "종목분석"], "building"],
+  [["업종", "테마", "섹터", "수급", "트렌드", "분석", "시장"], "trend"],
+  [["환전", "이체", "대체", "뱅킹"], "bank"], [["인증", "OTP", "보안"], "shield"], [["알림"], "bell"],
+  [["개인정보", "고객센터", "PB"], "user"], [["이벤트", "혜택"], "gift"], [["API", "서비스", "설정"], "gear"],
+  [["펀드", "연금", "채권", "ELS", "RP", "신탁", "랩", "ISA", "분배금", "소수점", "AI투자", "레버리지", "신용", "분할"], "coin"],
+  [["해외"], "globe"],
+];
+function glyphFor(label) {
+  for (const [keys, g] of GLYPH_RULES) if (keys.some(k => label.includes(k))) return g;
+  return "doc";
+}
+const ACCENTS = ["gTeal", "gBlue", "gPurple", "gOrange"];
+function iconSVG(label, accent, variant, isNew) {
+  const a = `url(#${accent})`;
+  const backs = [
+    `<circle cx="15" cy="14" r="8.5" fill="${a}"/>`,
+    `<rect x="27" y="7" width="13" height="16" rx="4" fill="${a}"/>`,
+    `<rect x="14" y="6" width="20" height="11" rx="4" fill="${a}"/>`,
+    `<rect x="6" y="11" width="11" height="20" rx="3.5" fill="${a}" transform="rotate(-10 11 21)"/>`,
+  ];
+  const g = isNew ? "sparkle" : glyphFor(label);
+  return `<svg viewBox="0 0 48 48" aria-hidden="true">${backs[variant]}`
+    + `<rect x="9" y="13" width="30" height="27" rx="7" fill="url(#glass)" stroke="#fff" stroke-opacity=".7"/>`
+    + `<rect x="12" y="15" width="24" height="6" rx="3" fill="#fff" opacity=".3"/>`
+    + `<g fill="none" stroke="#15505C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[g]}</g></svg>`;
+}
+const wbr = s => s.replace(/\//g, "/<wbr>");
+
+const BANNER_ILLU = [
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="14" width="24" height="18" rx="4" fill="url(#gBlue)" transform="rotate(-10 18 23)"/><rect x="15" y="19" width="25" height="18" rx="4" fill="url(#glass)" stroke="#9CC7CF"/><path d="M19 30h9" stroke="#2F6FE0" stroke-width="2" stroke-linecap="round"/><path d="M38 6c.7 3.4 2 4.8 5.5 5.5-3.5.7-4.8 2-5.5 5.5-.7-3.5-2-4.8-5.5-5.5 3.5-.7 4.8-2.1 5.5-5.5Z" fill="url(#gOrange)"/></svg>`,
+  `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="22" width="28" height="18" rx="3" fill="url(#gOrange)"/><rect x="8" y="16" width="32" height="8" rx="2.5" fill="url(#gOrange)"/><rect x="21" y="16" width="6" height="24" fill="url(#gPurple)"/><path d="M24 16c-3-6-10-6-8-1.5 1 2 5 1.5 8 1.5Zm0 0c3-6 10-6 8-1.5-1 2-5 1.5-8 1.5Z" fill="url(#gPurple)"/><rect x="12" y="25" width="7" height="3" rx="1.5" fill="#fff" opacity=".45"/></svg>`,
+];
+
+/* ---------- 휴대폰 화면 만들기 ---------- */
+function screenHTML() {
+  const tabs = CATS.map((c, i) =>
+    `<button type="button" class="cat" data-i="${i}" style="grid-row:${c.pos[0]};grid-column:${c.pos[1]}">${c.name}</button>`).join("");
+  const pages = CATS.map((c, ci) => {
+    const list = c.tiles.split(",").map(t => t === "★" ? { label: NEW_FEATURE_LABEL, isNew: true } : { label: t });
+    if (c.extra) list.push({ label: c.extra, extra: true });
+    const tiles = list.map((t, ti) => {
+      const accent = t.isNew ? "gTeal" : ACCENTS[(ti + ci) % 4];
+      const variant = (ti * 3 + ci) % 4;
+      const cls = ["tile", t.isNew ? "new" : "", t.extra ? "extra" : ""].join(" ").trim();
+      return `<button type="button" class="${cls}" data-t="${ti}">${iconSVG(t.label, accent, variant, t.isNew)}`
+        + (t.isNew ? `<span class="badge">NEW</span>` : "")
+        + `<span class="lbl">${wbr(t.label)}</span></button>`;
+    }).join("");
+    return `<div class="page" data-c="${ci}" aria-label="${c.name} 메뉴">${tiles}</div>`;
+  }).join("");
+
+  return `
+  <div class="demo-band">시연용 가상 화면</div>
+  <header class="app-head">
+    <div class="who"><strong>홍길동님</strong>
+      <div class="mode" role="group" aria-label="화면 모드"><button type="button" class="on">기본</button><button type="button">간편</button></div>
+    </div>
+    <div class="head-icons">
+      <button type="button" aria-label="이벤트"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M3 7h18v3H3ZM12 7v13M12 7c-2-4-6-3.5-4.5-.5M12 7c2-4 6-3.5 4.5-.5"/></svg></button>
+      <button type="button" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg></button>
+      <button type="button" aria-label="알림"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a6 6 0 0 0-6 6v4.2L4.3 16a.8.8 0 0 0 .7 1.2h14a.8.8 0 0 0 .7-1.2L18 13.2V9a6 6 0 0 0-6-6Z"/><path d="M9.5 19a2.5 2.5 0 0 0 5 0Z"/></svg></button>
+      <button type="button" aria-label="설정"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.3 2.5h3.4l.5 2.6c.6.2 1.2.5 1.7.9l2.5-.9 1.7 2.9-2 1.8c.1.6.1 1.3 0 1.9l2 1.8-1.7 2.9-2.5-.9c-.5.4-1.1.7-1.7.9l-.5 2.6h-3.4l-.5-2.6c-.6-.2-1.2-.5-1.7-.9l-2.5.9-1.7-2.9 2-1.8a6 6 0 0 1 0-1.9l-2-1.8 1.7-2.9 2.5.9c.5-.4 1.1-.7 1.7-.9l.5-2.6ZM12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/></svg></button>
+    </div>
+  </header>
+  <div class="body">
+    <nav class="cats" aria-label="카테고리">
+      <span class="edge l off" aria-hidden="true">◂</span>
+      <div class="cats-vp"><div class="cats-grid">${tabs}</div></div>
+      <span class="edge r" aria-hidden="true">▸</span>
+    </nav>
+    <section class="panel">
+      <button type="button" class="nav prev" aria-label="이전 카테고리"><svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg></button>
+      <button type="button" class="nav next" aria-label="다음 카테고리"><svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></button>
+      <div class="vp"><div class="track">${pages}</div></div>
+      <button type="button" class="expand" aria-expanded="false"><span class="exp-l">펼쳐보기</span>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 4.5 3.5 3.5 3.5-3.5"/></svg></button>
+    </section>
+    <div class="banners">
+      <button type="button" class="banner"><span><span class="chip">디지털</span><span class="btext"></span></span>${BANNER_ILLU[0]}</button>
+      <button type="button" class="banner"><span><span class="chip">디지털</span><span class="btext"></span></span>${BANNER_ILLU[1]}</button>
+    </div>
+  </div>
+  <nav class="bottom" aria-label="하단 메뉴">
+    <button type="button" class="x" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+    <button type="button">계좌개설</button>
+    <button type="button">고객센터</button>
+    <button type="button">로그아웃</button>
+  </nav>
+  <div class="toast" role="status" aria-live="polite"></div>`;
+}
+
+function createScreen(host, { interactive = true } = {}) {
+  const root = document.createElement("div");
+  root.className = "phone";
+  root.innerHTML = screenHTML();
+  host.appendChild(root);
+
+  const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
+  const catsVp = $(".cats-vp"), catsGrid = $(".cats-grid"), vp = $(".vp"), track = $(".track"), panel = $(".panel"), toast = $(".toast");
+  const tabs = $$(".cat"), pages = $$(".page"), btexts = $$(".btext");
+  const edgeL = $(".edge.l"), edgeR = $(".edge.r");
+  const state = { cur: 0, sel: CATS.map(() => 0), expanded: false };
+  let toastTimer = null, suppressClick = false;
+
+  const baseX = () => `translateX(${-state.cur * 100}%)`;
+
+  function sizeTabs() { root.style.setProperty("--colw", (catsVp.clientWidth / 4) + "px"); }
+  function updateEdges() {
+    const max = catsVp.scrollWidth - catsVp.clientWidth;
+    edgeL.classList.toggle("off", catsVp.scrollLeft <= 2);
+    edgeR.classList.toggle("off", catsVp.scrollLeft >= max - 2);
+  }
+  function revealTab(animate) {
+    const t = tabs[state.cur], x0 = t.offsetLeft - catsGrid.offsetLeft;
+    const l = x0 - 3, r = x0 + t.offsetWidth + 3;
+    let target = null;
+    if (l < catsVp.scrollLeft) target = l;
+    else if (r > catsVp.scrollLeft + catsVp.clientWidth) target = r - catsVp.clientWidth;
+    if (target !== null) catsVp.scrollTo({ left: target, behavior: animate ? "smooth" : "auto" });
+    updateEdges();
+  }
+  function fitHeight(animate) {
+    vp.style.transition = animate ? "height .3s ease" : "none";
+    vp.style.height = (pages[state.cur].offsetHeight + 10) + "px";
+  }
+  function setBanners(animate) {
+    const name = CATS[state.cur].name;
+    const texts = [`${name} 가상 이벤트 배너 A`, `${name} 가상 이벤트 배너 B`];
+    if (!animate) { btexts.forEach((b, i) => b.textContent = texts[i]); return; }
+    btexts.forEach(b => b.classList.add("fade"));
+    setTimeout(() => btexts.forEach((b, i) => { b.textContent = texts[i]; b.classList.remove("fade"); }), 150);
+  }
+  function paintSel(ci) {
+    pages[ci].querySelectorAll(".tile").forEach(t => t.classList.toggle("on", +t.dataset.t === state.sel[ci]));
+  }
+  function bounce(dir) {
+    track.animate([
+      { transform: baseX() },
+      { transform: `translateX(calc(${-state.cur * 100}% + ${dir * 26}px))` },
+      { transform: baseX() },
+    ], { duration: 320, easing: "ease-out" });
+  }
+  function go(i, animate = true) {
+    if (i < 0) { bounce(1); return; }
+    if (i > LAST) { bounce(-1); return; }
+    state.cur = i;
+    track.style.transition = animate ? "transform .3s ease" : "none";
+    track.style.transform = baseX();
+    tabs.forEach(t => {
+      const on = +t.dataset.i === i;
+      t.classList.toggle("on", on);
+      t.setAttribute("aria-current", on ? "true" : "false");
+    });
+    revealTab(animate);
+    setBanners(animate);
+    fitHeight(animate);
+  }
+  function select(ci, ti) { state.sel[ci] = ti; paintSel(ci); }
+  function showToast(msg, persist = false) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    if (!persist) toastTimer = setTimeout(() => toast.classList.remove("show"), TOAST_MS);
+  }
+  function setExpanded(on) {
+    state.expanded = on;
+    panel.classList.toggle("expanded", on);
+    $(".exp-l").textContent = on ? "접기" : "펼쳐보기";
+    $(".expand").setAttribute("aria-expanded", String(on));
+    fitHeight(true);
+  }
+  // 플로우 썸네일용: 다음 행동 위치 표시
+  function mark(el, kind) {
+    const p = root.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const k = p.width / root.offsetWidth;
+    const m = document.createElement("div");
+    m.className = "mark " + kind;
+    m.style.left = ((r.left - p.left + r.width / 2) / k) + "px";
+    m.style.top = ((r.top - p.top + r.height / 2) / k) + "px";
+    if (kind === "swipe") m.innerHTML = '<svg viewBox="0 0 100 18" fill="none" stroke="#FF6B4A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M92 9H8m8-7-8 7 8 7"/></svg>';
+    root.appendChild(m);
+  }
+
+  const api = { root, go, select, showToast, setExpanded, mark, q: $, qa: $$, state };
+
+  sizeTabs();
+  CATS.forEach((_, ci) => paintSel(ci));
+  go(0, false);
+
+  if (!interactive) return api;
+
+  /* --- 이벤트 연결 --- */
+  catsVp.addEventListener("scroll", updateEdges, { passive: true });
+  new ResizeObserver(() => { sizeTabs(); fitHeight(false); revealTab(false); }).observe(catsVp);
+
+  // 탭 터치
+  tabs.forEach(t => t.addEventListener("click", () => { if (!suppressClick) go(+t.dataset.i); }));
+
+  // 탭 줄: 마우스로 끌어서 밀기 (터치는 기본 스크롤)
+  let td = null;
+  catsVp.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") td = { x: e.clientX, s: catsVp.scrollLeft, moved: false }; });
+  catsVp.addEventListener("pointermove", e => {
+    if (!td) return;
+    const dx = e.clientX - td.x;
+    if (!td.moved && Math.abs(dx) > 5) { td.moved = true; catsVp.setPointerCapture(e.pointerId); }
+    if (td.moved) catsVp.scrollLeft = td.s - dx;
+  });
+  const endTabDrag = () => { if (td && td.moved) { suppressClick = true; setTimeout(() => suppressClick = false, 0); } td = null; };
+  catsVp.addEventListener("pointerup", endTabDrag);
+  catsVp.addEventListener("pointercancel", endTabDrag);
+
+  // 그리드 스와이프 (터치 + 마우스)
+  let gd = null;
+  vp.addEventListener("pointerdown", e => { gd = { x: e.clientX, y: e.clientY, w: vp.clientWidth, dx: 0, drag: false }; });
+  vp.addEventListener("pointermove", e => {
+    if (!gd) return;
+    const dx = e.clientX - gd.x, dy = e.clientY - gd.y;
+    if (!gd.drag) {
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        gd.drag = true; vp.setPointerCapture(e.pointerId); track.style.transition = "none";
+      } else if (Math.abs(dy) > 10) { gd = null; return; }
+      else return;
+    }
+    const atEdge = (state.cur === 0 && dx > 0) || (state.cur === LAST && dx < 0);
+    gd.dx = atEdge ? dx * 0.3 : dx;
+    track.style.transform = `translateX(calc(${-state.cur * 100}% + ${gd.dx}px))`;
+  });
+  function endGridDrag() {
+    if (!gd) return;
+    if (gd.drag) {
+      suppressClick = true; setTimeout(() => suppressClick = false, 0);
+      const th = gd.w * 0.18;
+      if (gd.dx < -th && state.cur < LAST) go(state.cur + 1);
+      else if (gd.dx > th && state.cur > 0) go(state.cur - 1);
+      else { // 제자리로 튕겨 돌아오기
+        track.style.transition = "transform .35s cubic-bezier(.3,1.5,.5,1)";
+        track.style.transform = baseX();
+      }
+    }
+    gd = null;
+  }
+  vp.addEventListener("pointerup", endGridDrag);
+  vp.addEventListener("pointercancel", endGridDrag);
+
+  // ‹ › 화살표
+  $(".nav.prev").addEventListener("click", () => go(state.cur - 1));
+  $(".nav.next").addEventListener("click", () => go(state.cur + 1));
+
+  // 타일 터치: 선택 강조만 (카테고리마다 기억)
+  track.addEventListener("click", e => {
+    const tile = e.target.closest(".tile");
+    if (!tile || suppressClick) return;
+    const ci = +tile.closest(".page").dataset.c;
+    select(ci, +tile.dataset.t);
+    if (tile.classList.contains("new")) openNewFeature(api);
+  });
+
+  // 펼쳐보기 / 접기
+  $(".expand").addEventListener("click", () => setExpanded(!state.expanded));
+
+  // 기본|간편, 하단 바: 선택 표시만
+  $$(".mode button").forEach(b => b.addEventListener("click", () => {
+    $$(".mode button").forEach(x => x.classList.toggle("on", x === b));
+  }));
+  $$(".bottom button").forEach(b => b.addEventListener("click", () => {
+    $$(".bottom button").forEach(x => x.classList.toggle("on", x === b));
+  }));
+
+  return api;
+}
+
+/* ---------- 플로우 ---------- */
+const FLOW = [
+  { no: "S1", title: "첫 화면", point: "국내주식이 선택되고 관심종목 타일이 강조된 상태",
+    setup: s => { s.go(0, false); s.mark(s.q(".vp"), "swipe"); } },
+  { action: "그리드 ← 스와이프" },
+  { no: "S2", title: "해외주식", point: "그리드를 밀면 탭 선택 표시가 해외주식으로 함께 이동",
+    setup: s => { s.go(1, false); s.mark(s.qa(".cat")[6], "tap"); } },
+  { action: "탭 ‘쏙쏙클럽’ 터치" },
+  { no: "S3", title: "쏙쏙클럽", point: "신규 기능 타일이 NEW 배지와 빛나는 테두리로 눈에 띔",
+    setup: s => { s.go(6, false); s.mark(s.q(".page[data-c='6'] .tile.new"), "tap"); } },
+  { action: "‘신규 기능’ 타일 터치" },
+  { no: "S4", title: "안내 메시지", point: "화면 이동 없이 ‘신규 기능 페이지 연결 예정’을 1.5초간 표시",
+    memo: "메모: 다음 단계에서 새 페이지로 연결할 자리 (<code>openNewFeature()</code>)",
+    setup: s => { s.go(6, false); s.select(6, 8); s.showToast(NEW_FEATURE_TOAST, true); s.mark(s.q(".vp"), "swipe"); } },
+  { action: "그리드 ← 스와이프 여러 번" },
+  { no: "S5", title: "인증센터", point: "탭 줄이 자동으로 밀려 인증센터가 보임. 마지막 카테고리라 더 넘어가지 않음",
+    setup: s => { s.go(LAST, false); } },
+];
+
+let flowBuilt = false;
+function buildFlow() {
+  if (flowBuilt) return;
+  flowBuilt = true;
+  const host = document.getElementById("flowHost");
+  const steps = [];
+  FLOW.forEach(f => {
+    if (f.action) {
+      const l = document.createElement("div");
+      l.className = "link";
+      l.innerHTML = `<span>${f.action}</span>
+        <svg class="h" viewBox="0 0 108 14" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h102m-6-5 6 5-6 5"/></svg>
+        <svg class="v" viewBox="0 0 14 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v38m-5-6 5 6 5-6"/></svg>`;
+      host.appendChild(l);
+      return;
+    }
+    const step = document.createElement("article");
+    step.className = "step";
+    step.innerHTML = `<div class="thumb" inert></div>
+      <div class="cap"><span class="no">${f.no}</span><h2>${f.title}</h2><p>${f.point}</p>${f.memo ? `<div class="memo">${f.memo}</div>` : ""}</div>`;
+    host.appendChild(step);
+    steps.push([createScreen(step.querySelector(".thumb"), { interactive: false }), f]);
+  });
+  requestAnimationFrame(() => steps.forEach(([s, f]) => f.setup(s)));
+}
+
+/* ---------- 보기 전환 (#prototype / #flow) ---------- */
+let proto = null;
+function showView() {
+  const name = location.hash === "#flow" ? "flow" : "prototype";
+  document.querySelectorAll(".seg a").forEach(a => a.classList.toggle("on", a.dataset.view === name));
+  document.getElementById("view-prototype").hidden = name !== "prototype";
+  document.getElementById("view-flow").hidden = name !== "flow";
+  if (name === "prototype" && !proto) proto = createScreen(document.getElementById("protoHost"));
+  if (name === "flow") buildFlow();
+}
+window.addEventListener("hashchange", showView);
+showView();
+</script>
+</body>
+</html>

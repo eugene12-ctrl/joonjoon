@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전체메뉴 · 시연용 가상 화면</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/main.css">
+</head>
+<body>
+
+<!-- 아이콘 공용 그라데이션 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#F4FBFC" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#8FC1CA" stop-opacity=".62"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FE8F2"/><stop offset="1" stop-color="#139AB2"/></linearGradient>
+    <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC4FF"/><stop offset="1" stop-color="#2F6FE0"/></linearGradient>
+    <linearGradient id="gPurple" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9A2FF"/><stop offset="1" stop-color="#7646DE"/></linearGradient>
+    <linearGradient id="gOrange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC07A"/><stop offset="1" stop-color="#F2703A"/></linearGradient>
+  </defs>
+</svg>
+
+<main id="app"></main>
+
+<!-- 불러오는 순서가 중요합니다: 설정 → 데이터 → 아이콘 → 화면 → 시작 -->
+<script src="src/js/config.js"></script>
+<script src="src/js/data.js"></script>
+<script src="src/js/icons.js"></script>
+<script src="src/js/screen.js"></script>
+<script src="src/js/main.js"></script>
+</body>
+</html>
