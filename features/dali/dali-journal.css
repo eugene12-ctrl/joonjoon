@@ -1,43 +1,44 @@
 /* ===== 매매일지 탭 (dali-renew.css 뒤에 불러옴) =====
-   덜어 낸 목록: 로고와 건수 줄 없이, 이름(물타기, 불타기 칩)과 날짜, 오른쪽 손익.
-   색은 금액에만, %는 작은 회색. 묶음 제목은 작은 글자 하나. 줄을 눌러야 차트와 두 줄이 펼쳐짐 */
-.phone .dali-sheet:has(.dali-tabs button.on:not([data-tab="today"])) .dali-body:has(> .dali-jsum) { background: #fff; padding: 0 0 24px; }
+   오늘, 뉴스 탭과 한 벌: 맨 위 짙은 띠(라벨, 큰 숫자, 한 줄, 버튼 자리에 일간 주간 월간), 묶음 제목은 dali-pro-sec,
+   줄은 오늘 탭 종목 줄과 같은 크기. 금액은 검정, 색은 %에만. 줄을 눌러야 차트와 살 때, 팔 때가 펼쳐짐 */
+.phone .dali-sheet:has(.dali-tabs button.on:not([data-tab="today"])) .dali-body:has(> .dali-jhero) { background: #fff; padding: 0 0 24px; }
 
-.phone .dali-sheet .dali-jsum { display: flex; flex-direction: column; gap: 4px; padding: 24px 20px 20px; }
-.phone .dali-sheet .dali-jsum span { font-size: 13px; color: #8B95A1; }
-.phone .dali-sheet .dali-jsum b { font-size: 28px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: #1A1D1F; }
-.phone .dali-sheet .dali-jsum b.up { color: #C8202C; }
-.phone .dali-sheet .dali-jsum b.down { color: #2F5BD3; }
+/* 맨 위 띠: 뉴스 띠와 같은 청록. 크기와 글자는 dali-pro.css 히어로 한 벌 규칙을 그대로 받음 */
+.phone .dali-sheet .dali-pro-act.dali-jhero { background: radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, .14) 0%, rgba(255, 255, 255, 0) 55%), linear-gradient(135deg, #0A6270 0%, #004652 100%); }
+/* 버튼 자리의 기간 고르기: 반투명 칸(안쪽 4px) + 알약(위아래 11px)이 흰 버튼(위아래 15px)과 같은 높이. 고른 것만 흰 알약 */
+.phone .dali-sheet .dali-body .dali-jhero .dali-jseg { gap: 2px; margin: auto 0 0; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, .14); }
+.phone .dali-sheet .dali-body .dali-jhero .dali-jseg button { flex: 1; height: auto; padding: 11px 0; border-radius: 11px; background: transparent; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, .78); box-shadow: none; }
+.phone .dali-sheet .dali-body .dali-jhero .dali-jseg button.on { background: #fff; color: #004652; font-weight: 700; }
 
-.phone .dali-sheet .dali-jsec { margin: 0; padding: 18px 20px 4px; font-size: 13px; font-weight: 500; color: #8B95A1; }
-.phone .dali-sheet .dali-jlist { list-style: none; margin: 0; padding: 0; }
+.phone .dali-sheet .dali-jlist { list-style: none; margin: 0; padding: 0 0 6px; }
 
+/* 한 줄: 오늘 탭 종목 줄(dali-pro-row)과 같은 칸, 글자, 색 */
 .phone .dali-sheet .dali-jline {
-  display: grid; grid-template-columns: 36px 1fr auto; align-items: center; column-gap: 12px;
-  width: 100%; padding: 10px 20px; text-align: left; background: none; border-radius: 0; color: #1A1D1F;
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: 12px;
+  width: 100%; padding: 12px 20px; text-align: left; background: none; border-radius: 0; color: var(--d-ink);
 }
-.phone .dali-sheet .dali-jline:active { background: #F9FAFB; transform: none; }
-.phone .dali-sheet .dali-jrow.new .dali-jline { background: #F2F8F9; }
-.phone .dali-sheet .dali-jname { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.phone .dali-sheet .dali-jname b { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 500; white-space: nowrap; }
-.phone .dali-sheet .dali-jname em { font-style: normal; font-size: 12px; font-weight: 500; color: #1B5F6B; }
-.phone .dali-sheet .dali-jname small { font-size: 13px; color: #8B95A1; white-space: nowrap; }
-.phone .dali-sheet .dali-jval { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-variant-numeric: tabular-nums; }
-.phone .dali-sheet .dali-jval b { font-size: 16px; font-weight: 600; color: #1A1D1F; }
-.phone .dali-sheet .dali-jval.up b { color: #C8202C; }
-.phone .dali-sheet .dali-jval.down b { color: #2F5BD3; }
-.phone .dali-sheet .dali-jval small { font-size: 13px; font-weight: 400; color: #8B95A1; }
+.phone .dali-sheet .dali-jline:active { background: var(--d-band); transform: none; }
+.phone .dali-sheet .dali-jrow.new .dali-jline { background: var(--d-brand-tint); }
+.phone .dali-sheet .dali-jname { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.phone .dali-sheet .dali-jname b { display: flex; align-items: baseline; font-size: 16px; font-weight: 600; letter-spacing: -.02em; color: var(--d-ink); white-space: nowrap; }
+.phone .dali-sheet .dali-jname em { margin-left: 6px; font-style: normal; font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--d-sub); }
+.phone .dali-sheet .dali-jname small { font-size: 13px; color: var(--d-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.phone .dali-sheet .dali-jval { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-variant-numeric: tabular-nums; }
+.phone .dali-sheet .dali-jval b { font-size: 16px; font-weight: 600; color: var(--d-ink); }
+.phone .dali-sheet .dali-jval small { font-size: 13px; font-weight: 600; color: var(--d-sub); }
+.phone .dali-sheet .dali-jval.up small { color: var(--d-up); }
+.phone .dali-sheet .dali-jval.down small { color: var(--d-down); }
 
 /* 펼친 줄: 차트 하나와 두 줄 */
 .phone .dali-sheet .dali-jmore { margin: 0 20px 8px; padding: 4px 0 8px; }
 .phone .dali-sheet .dali-jmore > svg { display: block; width: 100%; height: auto; margin: 0 0 6px; }
 .phone .dali-sheet .dali-jmore p { display: grid; grid-template-columns: 40px 1fr; gap: 8px; margin: 0; padding: 3px 0; font-size: 13px; line-height: 1.5; color: #4E5968; }
-.phone .dali-sheet .dali-jmore p b { font-weight: 500; color: #8B95A1; }
+.phone .dali-sheet .dali-jmore p b { font-weight: 500; color: var(--d-sub); }
 
 /* 종목 로고: 저장소의 img/logo-<종목코드>.png. 없으면 글자 동그라미 */
 .phone .dali-sheet .dali-jlogo {
-  position: relative; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
-  background: #F4F6F8; color: #4E5968; font-style: normal; font-weight: 700; font-size: 14px;
+  position: relative; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
+  background: var(--d-band); color: var(--d-ink2); font-style: normal; font-weight: 700; font-size: 15px;
 }
 .phone .dali-sheet .dali-jlogo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #fff; }
 
@@ -47,18 +48,18 @@
 /* 매매일지 펼친 줄: 살 때와 팔 때 그때 가격과 주수, 그날 특징뉴스 (dali.js market) */
 .phone .dali-sheet .dali-mns { display: grid; gap: 14px; margin: 8px 0 0; }
 .phone .dali-sheet .dali-mn p.dali-mn-head { display: block; margin: 0 0 6px; padding: 0; font-size: 13px; font-weight: 800; color: #6B7684; grid-template-columns: none; }
-.phone .dali-sheet .dali-mn-deal { padding: 12px 14px; border-radius: 14px; background: #F7F8FA; }
+.phone .dali-sheet .dali-mn-deal { padding: 12px 14px; border-radius: 14px; background: var(--d-band); }
 .phone .dali-sheet .dali-mn-deal + .dali-mn-deal { margin-top: 6px; }
 .phone .dali-sheet .dali-mn-deal > small { display: block; font-size: 12.5px; color: #8B95A1; }
 .phone .dali-sheet .dali-mn p.dali-mn-px { display: block; margin: 2px 0 0; padding: 0; font-size: 15px; color: #333D4B; grid-template-columns: none; }
 .phone .dali-sheet .dali-mn-px b { font-size: 19px; font-weight: 800; letter-spacing: -.3px; color: #191F28; }
 .phone .dali-sheet .dali-mn-hot { display: flex; align-items: flex-start; gap: 8px; width: 100%; margin: 10px 0 0; padding: 10px 0 0; border: 0; border-top: 1px solid #E9EDF0; background: none; font: inherit; text-align: left; grid-template-columns: none; }
 .phone .dali-sheet button.dali-mn-hot { cursor: pointer; }
-.phone .dali-sheet .dali-mn-hot i { flex: none; padding: 2px 6px; border-radius: 5px; background: #FDECEC; font-style: normal; font-size: 11.5px; font-weight: 800; color: #E5484D; }
+.phone .dali-sheet .dali-mn-hot i { flex: none; padding: 2px 6px; border-radius: 5px; background: var(--d-brand-tint); font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--d-brand2); }
 .phone .dali-sheet .dali-mn-hot b { font-size: 14px; font-weight: 700; line-height: 1.4; color: #191F28; }
 .phone .dali-sheet .dali-mn p.dali-mn-avg { display: block; margin: 8px 2px 0; padding: 0; font-size: 13.5px; color: #6B7684; grid-template-columns: none; }
 .phone .dali-sheet .dali-mn-avg b { color: #191F28; }
-.phone .dali-sheet .dali-mn p.dali-mn-hold { display: block; margin: 0; padding: 12px 14px; border-radius: 14px; background: #F7F8FA; font-size: 14px; color: #6B7684; grid-template-columns: none; }
+.phone .dali-sheet .dali-mn p.dali-mn-hold { display: block; margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--d-band); font-size: 14px; color: #6B7684; grid-template-columns: none; }
 /* .dali-jmore p b 규칙(옅은 회색)보다 앞서도록 한 단계 더 좁혀 씀 */
 .phone .dali-sheet .dali-jmore .dali-mn-px b { font-weight: 800; color: #191F28; }
 .phone .dali-sheet .dali-jmore .dali-mn-hot b { font-weight: 700; color: #191F28; }
@@ -67,8 +68,3 @@
 .phone .dali-sheet .dali-jmore p.dali-mn-hot, .phone .dali-sheet .dali-jmore button.dali-mn-hot { display: flex; gap: 8px; margin: 10px 0 0; padding: 10px 0 0; }
 .phone .dali-sheet .dali-mn-hot b { word-break: keep-all; }
 
-/* 기간 선택(일간, 주간, 월간)은 위 탭보다 한 단계 아래: 상자 없이 작은 글, 고른 것만 잉크 알약 */
-.phone .dali-sheet .dali-body .dali-jseg { gap: 4px; margin: 12px 20px 0; padding: 0; border-radius: 0; background: none; }
-.phone .dali-sheet .dali-body .dali-jseg button { flex: 0 0 auto; height: 28px; padding: 0 12px; border-radius: 999px; background: transparent; font-size: 13px; font-weight: 600; color: #8B95A1; }
-.phone .dali-sheet .dali-body .dali-jseg button.on { background: #191F28; color: #fff; font-weight: 700; box-shadow: none; }
-.phone .dali-sheet .dali-body .dali-jseg + .dali-jsum { padding-top: 12px; }
