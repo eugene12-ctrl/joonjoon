@@ -78,11 +78,15 @@
   const dim = document.createElement("div");
   dim.className = "dali-dim";
 
+  // 옷장에서 고른 장식. 얼굴만 나오는 자리(버튼, 시트 머리)는 w-face, 전신은 w-body로 위치를 다르게 잡음 (dali-wear.css)
+  // 클래스에 w- 접두어를 붙이는 건 앱 CSS(src/css/main.css)의 .body 같은 이름과 겹치지 않게 하려는 것
+  const wearImg = where => state.wear ? `<img class="dali-wear w-${where} ${state.wear}" src="${IMG(state.wear)}" alt="">` : "";
+
   const fab = document.createElement("button");
   fab.type = "button";
   fab.className = "dali-fab";
   fab.setAttribute("aria-label", "달이 열기");
-  fab.innerHTML = `<img src="${FACE}" alt=""><span class="dali-alert" aria-hidden="true">!</span>`;
+  fab.innerHTML = `<img src="${FACE}" alt="">${wearImg("face")}<span class="dali-alert" aria-hidden="true">!</span>`;
 
   const bubble = document.createElement("div");
   bubble.className = "dali-bubble";
@@ -94,7 +98,7 @@
   sheet.inert = true;
   sheet.innerHTML = `
     <header class="dali-sheet-head">
-      <img src="${FACE}" alt="">
+      <span class="dali-face"><img src="${FACE}" alt="">${wearImg("face")}</span>
       <div><strong>달이</strong><span class="dali-where"></span></div>
       <span class="dali-pebbles"></span>
       <button type="button" class="dali-close" aria-label="닫기">✕</button>
@@ -109,6 +113,15 @@
   phone.append(fut, dim, fab, bubble, sheet);
   const body = sheet.querySelector(".dali-body");
   const pageEl = sheet.querySelector(".dali-page");
+  // 옷을 바꾸면 다시 그려지지 않는 두 자리(플로팅 버튼, 시트 머리)의 장식을 맞춤. 바다는 render()가 새로 그림
+  function syncWear() {
+    [fab, sheet.querySelector(".dali-sheet-head .dali-face")].forEach(el => {
+      el.querySelector(".dali-wear")?.remove();
+      const alert = el.querySelector(".dali-alert");
+      if (alert) alert.insertAdjacentHTML("beforebegin", wearImg("face"));
+      else el.insertAdjacentHTML("beforeend", wearImg("face"));
+    });
+  }
 
   /* --- 말풍선, 느낌표, 조약돌 --- */
   let bubbleTimer = null;
@@ -365,7 +378,7 @@
           <span class="dali-ripple"></span>
           <span class="dali-otterbox">
             <img class="dali-body3d" src="${BODY}" alt="">
-            ${state.wear ? `<img class="dali-wear ${state.wear}" src="${IMG(state.wear)}" alt="">` : ""}
+            ${wearImg("body")}
           </span>
         </button>
         ${si === 0 ? prop("baby_bottle", "bottle") : ""}
@@ -431,7 +444,7 @@
       <div class="dali-page-body">
       <article class="dali-card grow">
         <div class="dali-ghero">
-          <span class="dali-gotter"><img src="${BODY}" alt="">${state.wear ? `<img class="dali-wear ${state.wear}" src="${IMG(state.wear)}" alt="">` : ""}</span>
+          <span class="dali-gotter"><img src="${BODY}" alt="">${wearImg("body")}</span>
           <div><small>지금 달이</small><b>${s.name}</b>
             <span>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요. 해 줄 수 있는 걸 다 열었어요"}</span>
             ${n ? `<i class="dali-bar"><i style="width:${p}%"></i></i>` : ""}</div>
@@ -719,7 +732,7 @@
     if (act === "back") { state.page = state.page?.from || null; render(); }
     else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
-    else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
+    else if (act === "wear") { state.wear = state.wear === id ? null : id; syncWear(); render(); }
     else if (act === "trade") { state.openTrade = state.openTrade === id ? null : id; render(); }
     else if (act === "jview") { state.jview = b.dataset.v; state.openTrade = null; render(); }
     else if (act === "jday") { state.openTrade = id; render(); sheet.querySelector(".dali-jrow.open")?.scrollIntoView({ block: "center", behavior: "smooth" }); }
