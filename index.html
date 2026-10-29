@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="features/dali/dali-jcal.css">
 <link rel="stylesheet" href="features/dali/dali-news2.css">
 <link rel="stylesheet" href="features/dali/dali-read.css">
+<link rel="stylesheet" href="features/dali/dali-snap.css">
 <script src="src/js/fit.js"></script>
 </head>
 <body>
@@ -54,6 +55,7 @@
 <script src="features/dali/dali-data.js"></script>
 <script src="features/dali/dali-customer.js"></script>
 <script src="features/dali/dali-rules.js"></script>
+<script src="features/dali/dali-snap.js"></script>
 <script src="features/dali/dali-feed.js"></script>
 <script src="features/dali/dali-chart.js"></script>
 <script src="features/dali/dali.js"></script>
@@ -65,7 +67,6 @@
 <script src="features/dali/dali-intro.js"></script>
 <script src="features/dali/dali-move.js"></script>
 <script src="features/dali/dali-ai.js"></script>
-<script src="features/dali/dali-after.js"></script>
 <script>
   // 달이에서 종목 이름을 누르면 국내주식 MTS 주문 화면으로 (features/mts, 그 종목)
   window.DALI_ORDER = name => { const n = DALI_NEWS.find(x => x.sym === name); try { n ? sessionStorage.setItem("dali-back", n.id) : sessionStorage.removeItem("dali-back"); } catch (e) { /* 돌아갈 곳만 못 기억함 */ } const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) (window.goPage ? window.goPage("features/mts/index.html#order/" + c) : (location.href = "features/mts/index.html#order/" + c)); };
