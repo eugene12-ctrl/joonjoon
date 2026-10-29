@@ -1,0 +1,25 @@
+/* ===== 옷장 장식이 달이가 보이는 세 자리에 같이 나오게 (dali.js의 wearImg, syncWear 짝) =====
+   1) 플로팅 버튼  2) 시트 머리 얼굴  3) 관리 탭 바다와 키우기 화면의 전신
+   전신(body) 위치는 dali-theme.css 값을 그대로 쓰고, 여기서는 얼굴만 나오는 자리(w-face)의 위치를 따로 잡는다. (앱 CSS의 .body, .face와 겹치지 않게 w- 접두어)
+   얼굴 그림은 정면이라 리본은 왼쪽 위, 바다 꽃은 오른쪽 위, 학사모는 정수리.
+   되돌리려면 각 페이지에서 이 파일을 불러오는 <link> 한 줄을 지우면 된다. (JS가 넣는 장식은 크기만 어긋남) */
+
+/* 시트 머리: 얼굴 그림을 감싼 상자가 장식의 기준 */
+.dali-sheet-head .dali-face { position: relative; display: block; width: 32px; height: 32px; flex: 0 0 auto; }
+.dali-sheet-head .dali-face > img:first-child { display: block; width: 100%; height: 100%; }
+
+/* 얼굴용 장식: 자리별 img 크기 규칙(.dali-fab img, .dali-sheet-head img)을 덮어씀 */
+.dali-wear.w-face { height: auto; transform-origin: 50% 50%; }
+.dali-sheet-head .dali-wear.w-face.ribbon { left: 4%; top: 0; width: 36%; rotate: -16deg; }
+.dali-sheet-head .dali-wear.w-face.hibiscus { left: 62%; top: 2%; width: 32%; rotate: 14deg; }
+.dali-sheet-head .dali-wear.w-face.graduation_cap { left: 26%; top: -12%; width: 48%; rotate: 6deg; }
+
+/* 플로팅 버튼: 62px 원 안에 얼굴 50px가 가운데 있어 그만큼 안쪽으로 */
+.dali-fab .dali-wear.w-face.ribbon { left: 13%; top: 9%; width: 29%; rotate: -16deg; }
+.dali-fab .dali-wear.w-face.hibiscus { left: 55%; top: 14%; width: 26%; rotate: 14deg; }
+.dali-fab .dali-wear.w-face.graduation_cap { left: 31%; top: 0; width: 39%; rotate: 6deg; }
+
+/* 옷을 바꾼 직후 살짝 통통 */
+@keyframes dali-wear-pop { 0% { scale: .6; } 60% { scale: 1.15; } 100% { scale: 1; } }
+.dali-wear.w-face { animation: dali-wear-pop .35s ease-out; }
+@media (prefers-reduced-motion: reduce) { .dali-wear.w-face { animation: none; } }
