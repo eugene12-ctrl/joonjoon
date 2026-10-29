@@ -130,6 +130,7 @@
     if (state.done[id]) return;
     const m = DALI_MISSIONS.find(x => x.id === id);
     state.done[id] = true;
+    state.justDone = id;
     gain(m.reward);
     state.forest = Math.min(100, state.forest + (m.forest || m.reward * 2));
     say(m.doneSay || `조약돌 ${m.reward}개! ${m.title.replace(" (안 해도 괜찮아요)", "")}`);
@@ -325,13 +326,28 @@
   // 오늘 할 일: 한 줄짜리. 자동으로 채워지는 건 버튼 없이 조약돌만
   function missionRow(m) {
     const done = state.done[m.id];
-    const right = done ? `<span class="dali-check">✓</span>`
+    const right = done ? `<span class="dali-check${state.justDone === m.id ? " pop" : ""}">✓</span>`
       : m.auto ? `<span class="dali-reward">+${m.reward}</span>`
       : `<button type="button" class="dali-btn small" data-act="mission" data-id="${m.id}">${m.btn || "하기"}</button>`;
+    const tag = m.tag ? `<i class="dali-tag" data-tag="${m.tag}">${m.tag}</i>` : m.auto ? `<i class="dali-tag" data-tag="자동">자동</i>` : "";
+    // 아직 안 한 손 미션엔 왜 하는지 보이게 조약돌 보상을 작게 (자동 미션은 오른쪽 알약이 이미 말해 줌)
+    const reward = !done && !m.auto ? `<i class="dali-reward-s"><img src="${IMG("rock")}" alt="">+${m.reward}</i>` : "";
     return `
       <div class="dali-row-m${done ? " done" : ""}">
-        <img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>${right}
+        <img src="${IMG(m.icon)}" alt=""><span>${m.title}${tag || reward ? `<span class="dali-meta">${tag}${reward}</span>` : ""}</span>${right}
       </div>`;
+  }
+  // 오늘 날짜 짧게: "10월 30일 금"
+  function todayLabel() {
+    const d = new Date();
+    return `${d.getMonth() + 1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}`;
+  }
+  // (3) 진행 막대 대신 조약돌 점: 다음 단계까지 필요한 개수만큼 놓고 모은 만큼 채움. 바로 다음 빈 칸만 숨 쉼
+  function dotsHTML(s, n) {
+    if (!n) return "";
+    const total = n.min - s.min, have = state.pebbles - s.min;
+    const dots = Array.from({ length: total }, (_, i) => `<i class="${i < have ? "" : i === have ? "empty next" : "empty"}"></i>`).join("");
+    return `<span class="dali-dots" aria-label="조약돌 ${have}/${total}">${dots}<small>${have} / ${total}</small></span>`;
   }
   // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
   function seaHTML() {
@@ -340,6 +356,8 @@
     return `
       <div class="dali-sea st${si}">
         ${prop("sun", "sun")}
+        <span class="dali-sea-chip stage"><img src="${IMG(s.icon)}" alt="">${s.name}</span>
+        <span class="dali-sea-chip pebble dali-sea-pebbles"><img src="${IMG("rock")}" alt="">조약돌 <b>${state.pebbles}</b></span>
         ${si >= 1 ? prop("coral", "coral") : ""}
         ${si >= 3 ? prop("lotus", "lotus") : ""}
         <div class="dali-wave far"></div>
@@ -385,21 +403,24 @@
   // 관리 탭 첫 화면: 한 화면 안에 다 보이게. 바다, 다음 선물(왜 키우나), 오늘 할 일 3줄(어떻게), 한 문제 한 줄
   function manageHTML() {
     const s = stage(), n = nextStage();
-    const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
-    return `
+    const todo = DALI_MISSIONS.filter(m => !m.quiz && !m.hidden);
+    const doneN = todo.filter(m => state.done[m.id]).length;
+    const html = `
       <article class="dali-card grow compact">
         ${seaHTML()}
         <button type="button" class="dali-next" data-act="grow-page">
           <img src="${IMG((n || s).icon)}" alt="">
           <span><small>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 달이가 주는 선물` : "다 자란 달이가 주는 선물"}</small><b>${n ? n.gift : s.gift}</b>
-            <i class="dali-bar"><i style="width:${p}%"></i></i></span>
+            ${dotsHTML(s, n)}</span>
           <em>›</em>
         </button>
       </article>
-      <article class="dali-card">
-        <h3>오늘 달이랑</h3>
-        ${DALI_MISSIONS.filter(m => !m.quiz && !m.hidden).map(missionRow).join("")}
+      <article class="dali-card todo">
+        <h3>오늘 달이랑 <span class="dali-todo-cnt">${doneN}/${todo.length} 완료</span><span class="dali-todo-date">${todayLabel()}</span></h3>
+        ${todo.map(missionRow).join("")}
       </article>`;
+    state.justDone = null; // 체크 톡 연출은 한 번만
+    return html;
   }
   // 달이 키우기 자세히 (관리 탭의 다음 선물 줄을 누르면): 단계별 선물, 숲, 옷장
   function growPage() {
