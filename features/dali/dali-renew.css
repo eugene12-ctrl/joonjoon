@@ -241,3 +241,29 @@
 
 /* 관리 탭 카드가 세로로 눌려 잘리던 것: 본문이 flex 세로 줄이라 카드가 줄어들면서 overflow로 잘렸음 */
 .phone .dali-sheet .dali-body > * { flex-shrink: 0; }
+
+/* ---------- 달이 키우기 화면 2차: 지금 단계가 맨 위, 단계 목록은 같은 버튼, 옷장에 제목 ---------- */
+.phone .dali-sheet .dali-ghero { display: flex; align-items: center; gap: 14px; margin: -4px 0 18px; padding: 14px; border-radius: 18px; background: linear-gradient(145deg, #0E3A4A, #1B5F6B); color: #fff; }
+.phone .dali-sheet .dali-gotter { position: relative; flex: 0 0 auto; width: 84px; height: 84px; }
+.phone .dali-sheet .dali-gotter > img:first-child { width: 100%; height: 100%; object-fit: contain; }
+.phone .dali-sheet .dali-gotter .dali-wear { position: absolute; }
+.phone .dali-sheet .dali-ghero > div { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.phone .dali-sheet .dali-ghero small { font-size: 12px; color: rgba(255, 255, 255, .7); }
+.phone .dali-sheet .dali-ghero b { font-size: 19px; font-weight: 800; letter-spacing: -.3px; }
+.phone .dali-sheet .dali-ghero span { font-size: 13px; line-height: 1.45; color: rgba(255, 255, 255, .85); }
+.phone .dali-sheet .dali-ghero .dali-bar { margin-top: 8px; background: rgba(255, 255, 255, .18); }
+.phone .dali-sheet .dali-ghero .dali-bar > i { background: #7FD3DC; }
+.phone .dali-sheet .dali-gsec { margin: 4px 0 8px; font-size: 13px; font-weight: 700; color: #6B7684; }
+/* 단계 목록: 연 단계는 같은 알약 버튼, 지금 단계만 바탕색 */
+.phone .dali-sheet .dali-ladder li.past, .phone .dali-sheet .dali-ladder li.now { opacity: 1; }
+.phone .dali-sheet .dali-ladder li.past > img, .phone .dali-sheet .dali-ladder li.now > img { box-shadow: 0 0 0 2px #1B5F6B; }
+.phone .dali-sheet .dali-ladder .dali-link { min-width: 52px; padding: 7px 12px; border-radius: 999px; background: #EAF2F3; color: #1B5F6B; font-size: 13px; font-weight: 800; text-align: center; }
+.phone .dali-sheet .dali-ladder li.now .dali-link { background: #fff; }
+.phone .dali-sheet .dali-ladder li.next, .phone .dali-sheet .dali-ladder li.lock { opacity: .55; }
+.phone .dali-sheet .dali-ladder .dali-say { flex-basis: 100%; margin: 4px 0 0 48px; font-size: 13px; line-height: 1.5; color: #4E5968; }
+.phone .dali-sheet .dali-ladder li { flex-wrap: wrap; }
+/* 옷장: 작게 한 줄 */
+.phone .dali-sheet .dali-closet button { padding: 10px 6px 8px; }
+.phone .dali-sheet .dali-closet button img { width: 32px; height: 32px; }
+.phone .dali-sheet .dali-ghero, .phone .dali-sheet .dali-gsec { text-align: left; }
+.phone .dali-sheet .dali-ghero > div { align-items: flex-start; }

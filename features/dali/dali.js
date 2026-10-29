@@ -324,8 +324,13 @@
       <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>달이 키우기</strong></header>
       <div class="dali-page-body">
       <article class="dali-card grow">
-        <h3>달이가 자라면 더 많이 도와줘요</h3>
-        <p class="dali-hint">읽고, 돌아보고, 같이 걸으면 조약돌이 생겨요. 거래로는 생기지 않아요.</p>
+        <div class="dali-ghero">
+          <span class="dali-gotter"><img src="${BODY}" alt="">${state.wear ? `<img class="dali-wear ${state.wear}" src="${IMG(state.wear)}" alt="">` : ""}</span>
+          <div><small>지금 달이</small><b>${s.name}</b>
+            <span>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요. 해 줄 수 있는 걸 다 열었어요"}</span>
+            ${n ? `<i class="dali-bar"><i style="width:${p}%"></i></i>` : ""}</div>
+        </div>
+        <p class="dali-gsec">자랄수록 달이가 해 주는 일</p>
         <ol class="dali-ladder">${DALI_STAGES.map((x, i) => {
           const cls = i < si ? "past" : i === si ? "now" : i === si + 1 ? "next" : "lock";
           // 한 달 습관 리포트 단계에 닿았으면 미리보기 대신 리포트 화면(dali-report.js)으로
@@ -334,16 +339,17 @@
           const week = i <= si && x.gift === "주간 돌아보기 카드" && window.DaliWeek;
           const right = report ? `<button type="button" class="dali-link" data-act="report">열기</button>`
             : week ? `<button type="button" class="dali-link" data-act="week">열기</button>`
-            : i <= si ? `<button type="button" class="dali-link" data-act="gift" data-i="${i}">${state.gift === i ? "접기" : "보기"}</button>`
+            : i <= si ? `<button type="button" class="dali-link" data-act="gift" data-i="${i}">${state.gift === i ? "접기" : "열기"}</button>`
             : `<span class="dali-left">${i === si + 1 ? `${x.min - state.pebbles}개 더` : `조약돌 ${x.min}`}</span>`;
           return `
           <li class="${cls}">
             <img src="${IMG(x.icon)}" alt="">
-            <div><small>${x.name}</small><b>${x.gift}</b>${i === si + 1 ? `<span class="dali-bar"><span style="width:${p}%"></span></span>` : ""}</div>
+            <div><small>${x.name}</small><b>${x.gift}</b></div>
             ${right}
             ${state.gift === i ? `<p class="dali-say">${x.preview}</p>` : ""}
           </li>`;
         }).join("")}</ol>
+        <p class="dali-gsec">옷장</p>
         <div class="dali-closet">${DALI_WEARS.map(w => {
           const open = si >= w.stage;
           return `<button type="button" class="${state.wear === w.id ? "on" : ""}" data-act="wear" data-id="${w.id}" ${open ? "" : "disabled"}>
@@ -353,7 +359,7 @@
       <article class="dali-card forest">
         <h3>달이네 숲 <small class="dali-left">${state.forest}%</small></h3>
         <div class="dali-trees" aria-label="달이네 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}"><img src="${IMG("tree")}" alt=""></span>`).join("")}</div>
-        <p class="dali-hint">다 차면 노을공원에 진짜 나무 한 그루</p>
+        <p class="dali-hint">${state.forest >= 100 ? "다 찼어요. 노을공원에 홍길동님 이름으로 나무 한 그루를 심어요" : "다 차면 노을공원에 진짜 나무 한 그루를 심어요"}</p>
       </article>
       </div>`;
   }
