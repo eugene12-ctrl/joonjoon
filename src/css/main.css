@@ -14,6 +14,9 @@ body {
 }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 button:focus-visible { outline: 2px solid #FFB020; outline-offset: 2px; }
+/* 페이지 전체 글자를 드래그해도 선택 영역이 생기지 않게 (앱처럼). 입력칸만 예외 */
+body { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+input, textarea, [contenteditable="true"] { user-select: text; -webkit-user-select: text; }
 
 /* ===== 휴대폰 화면 ===== */
 .phone {

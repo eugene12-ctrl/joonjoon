@@ -23,6 +23,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:#EEF2F3;color:var(--text);min-height:100dvh;display:grid;place-items:center;padding:24px 12px}
+/* 페이지 전체 글자를 드래그해도 선택 영역이 생기지 않게 (앱처럼). 입력칸만 예외 */
+body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{user-select:text;-webkit-user-select:text}
 button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
 /* 휴대폰 틀은 증권 앱(src/css/main.css .phone)과 같은 크기와 모양 */
 .phone{width:375px;max-width:100%;height:min(780px,calc(100dvh - 48px));min-height:600px;background:var(--bg);border-radius:34px;overflow:hidden;position:relative;box-shadow:0 30px 60px -24px rgba(11,51,64,.45),0 0 0 1px rgba(0,0,0,.05);display:flex;flex-direction:column}
@@ -376,6 +379,8 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 <link rel="stylesheet" href="features/dali/dali-intro.css">
 <link rel="stylesheet" href="features/dali/dali-move.css">
 <link rel="stylesheet" href="features/dali/dali-pro.css">
+<link rel="stylesheet" href="features/dali/dali-ai.css">
+<link rel="stylesheet" href="features/dali/dali-after.css">
 <link rel="stylesheet" href="features/dali/dali-renew.css">
 <link rel="stylesheet" href="features/dali/dali-palette.css">
 <link rel="stylesheet" href="features/dali/dali-journal.css">
@@ -383,6 +388,8 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 <link rel="stylesheet" href="features/dali/dali-news2.css">
 <link rel="stylesheet" href="features/dali/dali-event.css">
 <link rel="stylesheet" href="features/dali/dali-read.css">
+<link rel="stylesheet" href="features/dali/dali-snap.css">
+<link rel="stylesheet" href="features/dali/dali-manage.css">
 <script src="src/js/fit.js"></script>
 </head>
 <body>
@@ -422,7 +429,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
       </div>
       <div class="card">
         <div class="poll">
-          <div><h3>S&amp;P 500<br>내일 오를까 내릴까?</h3><div class="p">$774.40 <span class="up-c">+0.28%</span></div></div>
+          <div><h3>S&amp;P 500<br>내일 오를까 내릴까?</h3><div class="p">$7,768.25 <span class="up-c">+0.31%</span></div></div>
           <div class="badge">S&amp;P<br>500</div>
         </div>
         <div class="vote">
@@ -676,8 +683,8 @@ function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';cl
 
 /* ===== 가상 데이터 ===== */
 const SYMS=[
- {tk:'SPX',nm:'S&P 500 Index',p:7743.98,c:0.28,b:'S&P<br>500'},
- {tk:'XSP',nm:'Mini S&P 500 Index',p:774.40,c:0.28,b:'S&P<br>500'},
+ {tk:'SPX',nm:'S&P 500 Index',p:7768.25,c:0.31,b:'S&P<br>500'},
+ {tk:'XSP',nm:'Mini S&P 500 Index',p:776.83,c:0.31,b:'S&P<br>500'},
  {tk:'TSLA',nm:'Tesla, Inc. - Common Stock',p:412.30,c:-0.16},
  {tk:'NVDA',nm:'NVIDIA Corporation - Common Stock',p:213.99,c:-1.15},
  {tk:'PLTR',nm:'Palantir Technologies Inc. - Class A Common Stock',p:182.75,c:-0.88},
@@ -692,12 +699,12 @@ const priceTxt=s=>`<b class="${s.c>=0?'up-c':'dn-c'}">${fmt(s.p)} ${s.c>=0?'▲'
 const optWatch=new Set(SYMS.filter(s=>s.tk!=='NBIS').map(s=>s.tk));   // NBIS는 거래량 TOP에만 있고 관심에는 없음
 const TOP={
  multi:{
-  '최근 7일':[['SPX','숏 풋 스프레드',7743.98,.28,'up'],['SPX','숏 콜 스프레드',7743.98,.28,'dn'],['NBIS','롱 콜 스프레드',173.00,7.00,'up','nv'],['XSP','롱 콜 스프레드',774.40,.28,'up'],['SPX','숏 아이언 버터플라이',7743.98,.28,'side']],
-  '최근 30일':[['SPX','숏 콜 스프레드',7743.98,.28,'dn'],['SPX','숏 풋 스프레드',7743.98,.28,'up'],['XSP','롱 콜 스프레드',774.40,.28,'up'],['QQQ','롱 풋 스프레드',718.05,.59,'dn','ndq'],['SPX','숏 아이언 버터플라이',7743.98,.28,'side']]},
+  '최근 7일':[['SPX','숏 풋 스프레드',7768.25,.31,'up'],['SPX','숏 콜 스프레드',7768.25,.31,'dn'],['NBIS','롱 콜 스프레드',173.00,7.00,'up','nv'],['XSP','롱 콜 스프레드',776.83,.31,'up'],['SPX','숏 아이언 버터플라이',7768.25,.31,'side']],
+  '최근 30일':[['SPX','숏 콜 스프레드',7768.25,.31,'dn'],['SPX','숏 풋 스프레드',7768.25,.31,'up'],['XSP','롱 콜 스프레드',776.83,.31,'up'],['QQQ','롱 풋 스프레드',718.05,.59,'dn','ndq'],['SPX','숏 아이언 버터플라이',7768.25,.31,'side']]},
  single:{
-  '전일':[['NVDA','롱콜',213.99,-1.15,'up','nv',true],['XSP','롱풋',774.40,.28,'dn'],['SPX','롱콜',7743.98,.28,'up'],['QQQ','롱풋',718.05,.59,'dn','ndq'],['XSP','롱콜',774.40,.28,'up']],
-  '최근 7일':[['XSP','롱콜',774.40,.28,'up'],['XSP','롱풋',774.40,.28,'dn'],['SPX','롱콜',7743.98,.28,'up'],['SPX','롱풋',7743.98,.28,'dn'],['QQQ','롱콜',718.05,.59,'up','ndq']],
-  '최근 30일':[['XSP','롱풋',774.40,.28,'dn'],['XSP','롱콜',774.40,.28,'up'],['SPX','롱콜',7743.98,.28,'up'],['SPX','롱풋',7743.98,.28,'dn'],['QQQ','롱풋',718.05,.59,'dn','ndq']]}
+  '전일':[['NVDA','롱콜',213.99,-1.15,'up','nv',true],['XSP','롱풋',776.83,.31,'dn'],['SPX','롱콜',7768.25,.31,'up'],['QQQ','롱풋',718.05,.59,'dn','ndq'],['XSP','롱콜',776.83,.31,'up']],
+  '최근 7일':[['XSP','롱콜',776.83,.31,'up'],['XSP','롱풋',776.83,.31,'dn'],['SPX','롱콜',7768.25,.31,'up'],['SPX','롱풋',7768.25,.31,'dn'],['QQQ','롱콜',718.05,.59,'up','ndq']],
+  '최근 30일':[['XSP','롱풋',776.83,.31,'dn'],['XSP','롱콜',776.83,.31,'up'],['SPX','롱콜',7768.25,.31,'up'],['SPX','롱풋',7768.25,.31,'dn'],['QQQ','롱풋',718.05,.59,'dn','ndq']]}
 };
 let leg='multi', period='최근 7일';
 
@@ -1018,8 +1025,7 @@ let CASH = 24350, REAL = 1180;
 // 해외선물 보유는 달이 매매일지(dali-data.js t6, t7)와 같은 숫자
 const HOLD = [
   { tk: 'CLZ26', name: '크루드 오일 매수', qty: 1, cost: 6200, eval: -310, fut: 'CL', side: '매수', entry: 62.15 },
-  { tk: 'MGCZ26', name: '마이크로 금 매수', qty: 2, cost: 3300, eval: 540, fut: 'MGC', side: '매수', entry: 4101.4 },
-  { tk: 'XSP', name: '숏 풋 스프레드', qty: 1, cost: -68, eval: 42 }];
+  { tk: 'MGCZ26', name: '마이크로 금 매수', qty: 2, cost: 3300, eval: 540, fut: 'MGC', side: '매수', entry: 4101.4 }];
 const money = n => (n < 0 ? '-' : '') + fmt(Math.abs(n));
 function renderAsset() {
   const ev = HOLD.reduce((a, h) => a + h.eval, 0);

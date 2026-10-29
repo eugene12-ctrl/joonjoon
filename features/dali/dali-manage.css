@@ -1,0 +1,88 @@
+/* ===== 관리 탭 꾸미기 (dali.js의 seaHTML, manageHTML, missionRow 짝) =====
+   1) 바다 위 유리 칩  2) 바다와 다음 선물 줄을 한 장으로  3) 진행 막대 대신 조약돌 점
+   4) 미션 카드를 체크리스트처럼  5) 캠페인 태그 색  6) 바다 일렁임, 체크 톡  7) 제목 위계, 오늘 날짜
+   색은 dali-palette.css와 같은 넷: #005461 #0C7779 #249E94 #3BC1A8, 옅은 바탕 #E6F7F3
+   되돌리려면 각 페이지에서 이 파일을 불러오는 <link> 한 줄을 지우면 된다. (JS가 넣는 칩과 점은 글자만 남음) */
+
+/* ---------- 1. 바다 위 유리 칩 ---------- */
+.phone .dali-sheet .dali-sea-chip {
+  position: absolute; z-index: 5; top: 12px; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px 0 8px; border-radius: 999px;
+  background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #fff; font-size: 12px; font-weight: 700; letter-spacing: -.01em; text-shadow: 0 1px 2px rgba(0, 0, 0, .25); white-space: nowrap;
+}
+.phone .dali-sheet .dali-sea-chip.stage { left: 12px; }
+.phone .dali-sheet .dali-sea-chip.pebble { right: 12px; font-variant-numeric: tabular-nums; }
+.phone .dali-sheet .dali-sea-chip img { display: block; width: 18px; height: 18px; }
+.phone .dali-sheet .dali-sea-chip b { font-size: 13px; }
+
+/* ---------- 2. 바다와 다음 선물 줄을 한 장으로 ---------- */
+/* 바다 아랫부분을 흰색으로 녹여 내림. 물결(z 3) 위, 연출(z 6) 아래 */
+.phone .dali-sheet .dali-sea::after {
+  content: ""; position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; height: 56px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .55) 60%, #fff 100%);
+}
+/* 카드에 쌓임 맥락: 안쪽 z-index(칩 5, 다음 선물 줄 7)가 z-index 2인 .dali-page(달이 키우기 등)를 뚫고 올라오지 않게 */
+.phone .dali-sheet .dali-card.grow.compact { position: relative; isolation: isolate; z-index: 0; }
+/* 다음 선물 줄을 바다 끝에 겹치고, 조개 아이콘은 원형 흰 배경으로 경계선에 걸침 */
+.phone .dali-sheet .dali-next { position: relative; z-index: 7; margin-top: -24px; padding: 0 18px 18px; align-items: flex-start; }
+.phone .dali-sheet .dali-next > img {
+  width: 52px; height: 52px; padding: 9px; border-radius: 50%; background: #fff;
+  box-shadow: 0 6px 14px -6px rgba(0, 61, 71, .45), 0 0 0 3px #fff;
+}
+.phone .dali-sheet .dali-next > span { padding-top: 22px; gap: 2px; }
+.phone .dali-sheet .dali-next > em { padding-top: 24px; }
+
+/* ---------- 3. 조약돌 점 ---------- */
+.phone .dali-sheet .dali-dots { display: flex; flex-direction: row; flex: 0 0 auto; align-items: center; gap: 5px; margin-top: 8px; }
+/* 크기는 flex-basis와 aspect-ratio로 못 박고 글자 높이는 0으로: 점선 테두리와 scale 애니메이션은 브라우저에 따라 세로로 늘어져 보여 실선 링과 깜빡임으로 */
+.phone .dali-sheet .dali-dots i {
+  display: block; flex: 0 0 14px; width: 14px; height: 14px; aspect-ratio: 1; border-radius: 50%; box-sizing: border-box; font-size: 0; line-height: 0;
+  background: linear-gradient(135deg, #3BC1A8, #0C7779); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12);
+}
+.phone .dali-sheet .dali-dots i.empty { background: #E6F7F3; box-shadow: inset 0 0 0 1.5px #9AC9C0; }
+.phone .dali-sheet .dali-dots i.empty.next { animation: dali-dot-blink 1.8s ease-in-out infinite; }
+@keyframes dali-dot-blink { 50% { background: #fff; box-shadow: inset 0 0 0 2px #3BC1A8; } }
+.phone .dali-sheet .dali-dots small { margin-left: 6px; font-size: 11.5px; font-weight: 700; color: #0C7779; font-variant-numeric: tabular-nums; }
+
+/* ---------- 4. 미션 카드를 체크리스트처럼 ---------- */
+.phone .dali-sheet .dali-card.todo { padding: 16px 18px 8px; }
+.phone .dali-sheet .dali-row-m { padding: 10px 0; }
+.phone .dali-sheet .dali-row-m > img { width: 38px; height: 38px; padding: 7px; border-radius: 50%; background: #E6F7F3; }
+.phone .dali-sheet .dali-row-m > span:first-of-type { font-size: 14.5px; font-weight: 700; }
+.phone .dali-sheet .dali-row-m.done { opacity: .55; }
+.phone .dali-sheet .dali-row-m.done > img { opacity: 1; background: #F0F4F3; filter: grayscale(.6); }
+.phone .dali-sheet .dali-row-m.done > span:first-of-type { font-weight: 500; text-decoration: line-through; text-decoration-color: #9AC9C0; }
+.phone .dali-sheet .dali-check { width: 26px; height: 26px; background: #3BC1A8; color: #fff; font-size: 13px; }
+/* 남은 손 미션에만 붙는 작은 보상 */
+.phone .dali-sheet .dali-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+.phone .dali-sheet .dali-meta .dali-tag { margin-left: 0; }
+.phone .dali-sheet .dali-reward-s { display: inline-flex; align-items: center; gap: 3px; font-style: normal; font-size: 11px; font-weight: 800; color: #0C7779; }
+.phone .dali-sheet .dali-reward-s img { display: inline-block; width: 13px; height: 13px; }
+
+/* ---------- 5. 캠페인 태그 색 (팔레트 안: 민트는 기본, 모래색과 보라는 옅게 하나씩) ---------- */
+.phone .dali-sheet .dali-tag { padding: 1px 7px; font-size: 10.5px; }
+.phone .dali-sheet .dali-tag[data-tag="독서클럽"] { background: #E6F7F3; color: #005461; }
+.phone .dali-sheet .dali-tag[data-tag="가치걸음"] { background: #FFF3DF; color: #9A5B10; }
+.phone .dali-sheet .dali-tag[data-tag="서울오픈"] { background: #EEF0FB; color: #3F4BA8; }
+.phone .dali-sheet .dali-tag[data-tag="자동"] { background: #EEF0FB; color: #3F4BA8; }
+
+/* ---------- 6. 작은 움직임: 바다가 천천히 일렁이고, 체크가 톡 ---------- */
+.phone .dali-sheet .dali-sea::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(60% 40% at 30% 30%, rgba(59, 193, 168, .18), transparent 70%);
+  animation: dali-sway 9s ease-in-out infinite;
+}
+@keyframes dali-sway { 50% { transform: translateX(6%) scale(1.06); opacity: .7; } }
+.phone .dali-sheet .dali-check.pop { animation: dali-checkpop .5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes dali-checkpop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+/* "자랐어요" 알림은 바다 끝에 겹친 다음 선물 줄 위로 */
+.phone .dali-sheet .dali-grew { bottom: 40px; }
+@media (prefers-reduced-motion: reduce) {
+  .phone .dali-sheet .dali-sea::before, .phone .dali-sheet .dali-dots i, .phone .dali-sheet .dali-check { animation: none !important; }
+}
+
+/* ---------- 7. 제목 위계, 오늘 날짜 ---------- */
+.phone .dali-sheet .dali-next b { font-size: 17px; font-weight: 900; letter-spacing: -.01em; line-height: 1.3; }
+.phone .dali-sheet .dali-card.todo h3 { display: flex; align-items: baseline; gap: 8px; font-size: 16px; font-weight: 900; }
+.phone .dali-sheet .dali-todo-cnt { padding: 1px 8px; border-radius: 999px; background: #E6F7F3; color: #0C7779; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.phone .dali-sheet .dali-todo-date { margin-left: auto; font-size: 11.5px; font-weight: 500; color: #9AA7A4; }
