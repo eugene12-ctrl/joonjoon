@@ -181,7 +181,7 @@
       const fmt = v => v.toLocaleString(pre.includes("$") ? "en-US" : "ko-KR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
       const t0 = performance.now(), ms = 900;
       (function step(now) {
-        const p = Math.min(1, (now - t0) / ms), k = 1 - Math.pow(1 - p, 3);
+        const p = Math.max(0, Math.min(1, (now - t0) / ms)), k = 1 - Math.pow(1 - p, 3);
         node.textContent = pre + fmt(end * k) + post;
         if (p < 1 && node.isConnected) requestAnimationFrame(step);
       })(t0);

@@ -155,13 +155,13 @@
     sheet.inert = true;
   }
 
-  /* --- 뉴스 탭: 종목, 등락, 왜? --- */
+  /* --- 뉴스 탭: 종목, 등락, AI 요약 --- */
   function newsRow(n) {
     const flag = isFlag(n);
     return `
       <button type="button" class="dali-news${flag && !n.seen ? " unseen" : ""}" data-news="${n.id}"><span class="dali-news-main">
         <span class="dali-news-top">${flag ? `<span class="dali-bang">!</span>` : ""}<b>${n.sym}</b>${quote(n.sym)}<span class="dali-time">${n.time}</span></span>
-        <span class="dali-why"><em>왜?</em> ${n.why}</span></span>${DaliChart.spark(n.sym)}
+        <span class="dali-why"><em>AI 요약</em> ${n.why}</span></span>${DaliChart.spark(n.sym)}
       </button>`;
   }
   function newsHTML() {
@@ -175,17 +175,31 @@
   }
 
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
+  // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
+  function addLine(t) {
+    if (!t.buys || t.buys.length < 2) return "";
+    const plain = n => `${Math.round(n).toLocaleString("ko-KR")}원`;
+    let qty = 0, cost = 0, water = 0, fire = 0;
+    const first = t.buys[0].price;
+    t.buys.forEach((b, i) => {
+      if (i) (b.price < cost / qty ? water++ : fire++);
+      qty += b.qty; cost += b.qty * b.price;
+    });
+    const kind = [water ? `물타기 ${water}번` : "", fire ? `불타기 ${fire}번` : ""].filter(Boolean).join(", ");
+    const adds = t.buys.slice(1).map(b => `${b.date} ${b.qty}주 ${plain(b.price)}`).join(", ");
+    return `<p class="dali-add"><b>${kind}</b> <span>평단 ${(first).toLocaleString("ko-KR")} → ${plain(cost / qty)}</span><small>${adds}</small></p>`;
+  }
   function tradeCard(t) {
     const closed = !!t.sell;
-    const side = (label, x) => `
+    const side = (label, x, extra = "") => `
       <div class="dali-side-box"><p class="dali-side-label">${label} <span>${x ? x.date : ""}</span></p>
-        ${x ? `<p>${x.news}</p><p class="dali-mood">${x.mood}</p>` : `<p class="dali-mood">아직 보유 중</p>`}</div>`;
+        ${x ? `<p>${x.news}</p><p class="dali-mood">${x.mood}</p>` : `<p class="dali-mood">아직 보유 중</p>`}${extra}</div>`;
     return `
       <article class="dali-trade${t.live ? " new" : ""}">
         <header><b>${t.sym}</b><span>${t.qty}</span><span class="dali-state ${closed ? "done" : "hold"}">${closed ? "매매 완료" : "보유 중"}</span></header>
         <p class="dali-pnl ${tone(t.pnl)}">${closed ? "" : "<small>지금 평가</small> "}${won(t.pnl)} <span>${pct(t.pct)}</span></p>
         ${DaliChart.trade(t)}
-        <div class="dali-sides">${side("살 때", t.buy)}${side("팔 때", t.sell)}</div>
+        <div class="dali-sides">${side("살 때", t.buy, addLine(t))}${side("팔 때", t.sell)}</div>
       </article>`;
   }
   function journalHTML() {
@@ -315,7 +329,7 @@
       <article class="dali-card forest">
         <h3>달이네 숲 <small class="dali-left">${state.forest}%</small></h3>
         <div class="dali-trees" aria-label="달이네 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}"><img src="${IMG("tree")}" alt=""></span>`).join("")}</div>
-        <p class="dali-hint">다 차면 노을공원에 진짜 나무 한 그루 (가상 연동)</p>
+        <p class="dali-hint">다 차면 노을공원에 진짜 나무 한 그루</p>
       </article>
       </div>`;
   }
@@ -328,7 +342,7 @@
         <button type="button" class="dali-symlink" data-act="order" data-sym="${n.sym}">${n.sym} ${quote(n.sym)}<span class="dali-go">주문 ›</span></button></header>
       <div class="dali-page-body">
         ${DaliChart.day(n.sym, fmt)}
-        <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
+        <div class="dali-ctx"><p><em>AI 요약</em> ${n.why}</p></div>
         <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">${n.time}</p><p>${txt.body}</p></article>
         ${feedHTML(n.sym, n.id)}
       </div>`;

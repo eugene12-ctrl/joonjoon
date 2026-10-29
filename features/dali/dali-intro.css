@@ -1,61 +1,57 @@
-/* ===== 앱 첫 실행 달이 인사 팝업 (dali-intro.js) ===== */
+/* ===== 앱 첫 실행 달이 첫 화면 (dali-intro.js) =====
+   화면을 꽉 채우는 한 장. 위에서부터: 문제 한 줄, 약속 한 줄, 내 데이터로 찾은 세 가지, 버튼. */
 .dali-intro {
-  position: absolute; inset: 0; z-index: 30; display: none; place-items: center; padding: 24px;
-  background: rgba(20, 12, 10, .45); opacity: 0; transition: opacity .25s ease;
+  position: absolute; inset: 0; z-index: 30; display: none; align-items: flex-end;
+  background: rgba(10, 20, 24, .5); opacity: 0; transition: opacity .25s ease;
 }
-.dali-intro.show { display: grid; opacity: 1; animation: dali-intro-dim .25s ease; }
+.dali-intro.show { display: flex; opacity: 1; animation: dali-intro-dim .25s ease; }
 .dali-intro.leave { opacity: 0; transition: opacity .4s ease .1s; }
 @keyframes dali-intro-dim { from { opacity: 0; } }
 
 .dali-intro-card {
-  width: 100%; max-width: 320px; background: #FFFBF7; border-radius: 26px; padding: 0 20px 18px; overflow: hidden;
-  text-align: center; color: #2A1416; word-break: keep-all;
-  box-shadow: 0 24px 48px -18px rgba(42, 20, 22, .6);
-  animation: dali-intro-pop .55s cubic-bezier(.3, 1.5, .5, 1);
+  width: 100%; max-height: 94%; overflow-y: auto; box-sizing: border-box;
+  padding: 22px 22px 18px; border-radius: 26px 26px 0 0;
+  background: #fff;
+  color: #191F28; word-break: keep-all; text-align: left;
+  box-shadow: 0 -16px 40px -20px rgba(0, 0, 0, .5);
+  animation: dali-intro-up .5s cubic-bezier(.2, .9, .2, 1);
 }
-@keyframes dali-intro-pop { from { transform: translateY(40px) scale(.7); opacity: 0; } }
+@keyframes dali-intro-up { from { transform: translateY(60px); opacity: 0; } }
 .dali-intro.leave .dali-intro-card {
   transform: translate(var(--tx), var(--ty)) scale(.08); opacity: .2;
-  transition: transform .5s cubic-bezier(.5, 0, .7, .4), opacity .5s ease;
+  transition: transform .45s cubic-bezier(.5, 0, .7, .4), opacity .45s ease;
 }
 
-/* 위쪽 바다와 손 흔드는 달이 */
-.dali-intro-sea {
-  position: relative; height: 190px; margin: 0 -20px 12px; overflow: hidden; isolation: isolate;
-  background: linear-gradient(#FFE3D1 0%, #FFF3E8 45%, #CDEDF7 70%);
-}
-.dali-intro-water {
-  position: absolute; left: 0; right: 0; bottom: 0; top: 70%; z-index: 2;
-  background: repeat-x 0 0 / 90px 300px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='300'%3E%3Cpath d='M0 12 Q22 0 45 12 T90 12 V300 H0Z' fill='%2363BCE0' fill-opacity='.9'/%3E%3C/svg%3E");
-  animation: dali-intro-water 6s linear infinite;
-}
-@keyframes dali-intro-water { to { background-position-x: -90px; } }
-.dali-intro-otter {
-  position: absolute; z-index: 1; left: 50%; top: 18px; width: 170px; height: 170px; margin-left: -85px;
-  animation: dali-intro-bob 2.8s ease-in-out infinite;
-}
-@keyframes dali-intro-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
-.dali-intro-otter img { position: absolute; }
-.dali-intro-otter .dali-intro-body { inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 8px 8px rgba(42, 20, 22, .2)); }
-.dali-intro-otter .dali-intro-ribbon { left: 1%; top: 19%; width: 24%; rotate: -24deg; }
-.dali-intro-otter .dali-intro-hand { left: -16%; top: 34%; width: 30%; transform-origin: 70% 90%; animation: dali-intro-hi 1.2s ease-in-out infinite; }
-@keyframes dali-intro-hi { 0%, 60%, 100% { rotate: -10deg; } 15%, 45% { rotate: 18deg; } 30% { rotate: -14deg; } }
-.dali-intro-spark { position: absolute; z-index: 3; width: 26px; animation: dali-intro-tw 1.8s ease-in-out infinite; }
-.dali-intro-spark.s1 { left: 18%; top: 20px; }
-.dali-intro-spark.s2 { right: 16%; top: 54px; width: 20px; animation-delay: .9s; }
-@keyframes dali-intro-tw { 50% { transform: scale(.6); opacity: .5; } }
-.dali-intro-heart { position: absolute; z-index: 3; right: 24%; top: 26px; width: 24px; animation: dali-intro-heart 2.4s ease-out infinite; }
-@keyframes dali-intro-heart { 0% { transform: translateY(14px) scale(.4); opacity: 0; } 30% { opacity: 1; transform: scale(1); } 100% { transform: translateY(-20px) scale(.8); opacity: 0; } }
+.dali-intro-hero { margin: -22px -22px 20px; padding: 22px 22px 26px; background: linear-gradient(160deg, #0E3A4A 0%, #1B5F6B 100%); border-radius: 26px 26px 0 0; }
+.dali-intro-top { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+.dali-intro-top img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
+.dali-intro-top span { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .85); }
+.dali-intro-eyebrow { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, .62); }
+.dali-intro-card h2 { margin: 0 0 10px; font-size: 30px; line-height: 1.28; font-weight: 800; letter-spacing: -.6px; color: #fff; }
+.dali-intro-sub { margin: 0; font-size: 14.5px; line-height: 1.55; color: rgba(255, 255, 255, .82); }
 
-.dali-intro-card h2 { margin: 0; font-size: 20px; font-weight: 800; }
-.dali-intro-sub { margin: 4px 0 14px; font-size: 13.5px; color: #8A7670; }
-.dali-intro-card ul { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
-.dali-intro-card li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: #fff; box-shadow: 0 3px 10px -8px rgba(42, 20, 22, .4); font-size: 14px; font-weight: 600; }
-.dali-intro-card li img { width: 28px; height: 28px; flex: 0 0 auto; }
-.dali-intro-go { width: 100%; padding: 14px; border-radius: 14px; background: var(--d-brand2, #1B5F6B); color: #fff; font-size: 15.5px; font-weight: 800; }
-.dali-intro-foot { margin: 10px 0 0; font-size: 12px; color: #8A7670; }
+.dali-intro-label { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: #1B5F6B; display: flex; align-items: center; gap: 6px; }
+.dali-intro-label::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #1B5F6B; box-shadow: 0 0 0 4px rgba(27, 95, 107, .15); animation: dali-intro-live 1.6s ease-in-out infinite; }
+@keyframes dali-intro-live { 50% { box-shadow: 0 0 0 7px rgba(27, 95, 107, 0); } }
+.dali-intro-finds { list-style: none; margin: 0 0 18px; padding: 0; display: flex; flex-direction: column; }
+.dali-intro-finds li {
+  display: flex; align-items: center; gap: 12px; padding: 13px 2px; border-top: 1px solid #EEF0F2;
+  opacity: 0; transform: translateY(10px); animation: dali-intro-find .45s ease forwards; animation-delay: calc(.25s + var(--i) * .18s);
+}
+@keyframes dali-intro-find { to { opacity: 1; transform: none; } }
+.dali-intro-finds li:first-child { border-top: 0; }
+.dali-intro-finds img { width: 38px; height: 38px; flex: 0 0 auto; padding: 6px; border-radius: 12px; background: #fff; }
+.dali-intro-finds span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dali-intro-finds small { font-size: 12px; font-weight: 700; color: #1B5F6B; }
+.dali-intro-finds b { font-size: 14.5px; font-weight: 700; line-height: 1.45; color: #191F28; }
+
+.dali-intro-go {
+  width: 100%; height: 54px; border: 0; border-radius: 14px; background: #1B5F6B; color: #fff;
+  font-size: 16px; font-weight: 800; letter-spacing: -.2px; cursor: pointer;
+}
+.dali-intro-go:active { transform: scale(.98); }
+.dali-intro-foot { margin: 10px 0 0; text-align: center; font-size: 12.5px; color: #6B7684; }
 
 @media (prefers-reduced-motion: reduce) {
-  .dali-intro *, .dali-intro-card { animation: none !important; }
-  .dali-intro.leave .dali-intro-card { transition: none; }
+  .dali-intro-card, .dali-intro-finds li, .dali-intro-label::before { animation: none; opacity: 1; transform: none; }
 }
