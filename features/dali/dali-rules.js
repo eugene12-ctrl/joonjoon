@@ -32,7 +32,7 @@ const DaliRules = (function () {
   function habits() {
     const T = C.trades, closed = T.filter(t => t.sell);
     const spike = T.filter(t => t.buyChg >= 5), waited = T.filter(t => t.waited);
-    const quick = T.filter(t => t.soldIn24h), quickUp = quick.filter(t => t.later > 0);
+    const quick = T.filter(t => t.soldIn24h), quickUp = quick.filter(t => t.sellSnap.later > 0);
     const kept = T.filter(t => t.days >= 7 && t.sell);
     const sym = {};
     T.forEach(t => { sym[t.sym] = (sym[t.sym] || 0) + 1; });
@@ -41,7 +41,7 @@ const DaliRules = (function () {
       avgDays: closed.reduce((a, t) => a + t.days, 0) / closed.length,
       spike: { n: spike.length, avg: avg(spike) }, waited: { n: waited.length, avg: avg(waited) },
       kept: { n: kept.length, avg: avg(kept) },
-      quick: { n: quick.length, up: quickUp.length, laterAvg: quickUp.length ? quickUp.reduce((a, t) => a + t.later, 0) / quickUp.length : 0 },
+      quick: { n: quick.length, up: quickUp.length, laterAvg: quickUp.length ? quickUp.reduce((a, t) => a + t.sellSnap.later, 0) / quickUp.length : 0 },
       most: Object.entries(sym).sort((a, b) => b[1] - a[1])[0],
       concentrated: money("morning").topShare >= 50,
     };
