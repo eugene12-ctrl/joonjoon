@@ -34,13 +34,14 @@
 
 /* ---------- 3. 조약돌 점 ---------- */
 .phone .dali-sheet .dali-dots { display: flex; flex-direction: row; flex: 0 0 auto; align-items: center; gap: 5px; margin-top: 8px; }
-/* 크기는 flex-basis와 aspect-ratio로 못 박고 글자 높이는 0으로: 점선 테두리와 scale 애니메이션은 브라우저에 따라 세로로 늘어져 보여 실선 링과 깜빡임으로 */
+/* 클래스는 dali-dot- 접두어: MTS 페이지 CSS의 .empty(margin 40px) 같은 일반 이름과 겹치지 않게.
+   크기는 flex-basis와 aspect-ratio로 못 박고 글자 높이는 0으로: 점선 테두리와 scale 애니메이션은 브라우저에 따라 세로로 늘어져 보여 실선 링과 깜빡임으로 */
 .phone .dali-sheet .dali-dots i {
-  display: block; flex: 0 0 14px; width: 14px; height: 14px; aspect-ratio: 1; border-radius: 50%; box-sizing: border-box; font-size: 0; line-height: 0;
+  display: block; flex: 0 0 14px; width: 14px; height: 14px; margin: 0; padding: 0; aspect-ratio: 1; border-radius: 50%; box-sizing: border-box; font-size: 0; line-height: 0;
   background: linear-gradient(135deg, #3BC1A8, #0C7779); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12);
 }
-.phone .dali-sheet .dali-dots i.empty { background: #E6F7F3; box-shadow: inset 0 0 0 1.5px #9AC9C0; }
-.phone .dali-sheet .dali-dots i.empty.next { animation: dali-dot-blink 1.8s ease-in-out infinite; }
+.phone .dali-sheet .dali-dots i.dali-dot-empty { background: #E6F7F3; box-shadow: inset 0 0 0 1.5px #9AC9C0; }
+.phone .dali-sheet .dali-dots i.dali-dot-empty.dali-dot-next { animation: dali-dot-blink 1.8s ease-in-out infinite; }
 @keyframes dali-dot-blink { 50% { background: #fff; box-shadow: inset 0 0 0 2px #3BC1A8; } }
 .phone .dali-sheet .dali-dots small { margin-left: 6px; font-size: 11.5px; font-weight: 700; color: #0C7779; font-variant-numeric: tabular-nums; }
 

@@ -358,7 +358,7 @@
   function dotsHTML(s, n) {
     if (!n) return "";
     const total = n.min - s.min, have = state.pebbles - s.min;
-    const dots = Array.from({ length: total }, (_, i) => `<i class="${i < have ? "" : i === have ? "empty next" : "empty"}"></i>`).join("");
+    const dots = Array.from({ length: total }, (_, i) => `<i class="${i < have ? "" : i === have ? "dali-dot-empty dali-dot-next" : "dali-dot-empty"}"></i>`).join("");
     return `<span class="dali-dots" aria-label="조약돌 ${have}/${total}">${dots}<small>${have} / ${total}</small></span>`;
   }
   // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
