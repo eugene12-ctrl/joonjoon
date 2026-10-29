@@ -76,5 +76,5 @@
 ## 이미지 출처
 
 - `dali-otter.png`: Microsoft Fluent UI Emoji "Otter" 3D (MIT, `LICENSE-fluentui-emoji.txt` 동봉). `feature/dali-visual` 브랜치에서 쓰는 달이 이미지와 같다.
-- `img/*.png`: 같은 Microsoft Fluent UI Emoji 3D 세트 (MIT). 해, 산호, 연꽃, 젖병, 거품, 굴, 반짝이, 빛나는 별, 하트, 돌, 리본, 히비스커스, 안경, 학사모, 폭죽.
+- `img/*.png`: 같은 Microsoft Fluent UI Emoji 3D 세트 (MIT). 해, 산호, 연꽃, 젖병, 거품, 굴, 반짝이, 빛나는 별, 하트, 돌, 리본, 히비스커스, 안경, 학사모, 폭죽. 옷장용으로 더 받은 것: 왕관, 실크 모자, 선글라스, 머플러, 넥타이, 헤드폰, 소라, 구명튜브, 밀짚모자, 보석, 야구모자 (위치는 features/wear-lab에서 맞춤).
 - `dali-face.svg`: 팀에서 그린 얼굴 시안 (지금은 쓰지 않음)
