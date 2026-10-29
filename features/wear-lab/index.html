@@ -1,0 +1,321 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>달이 옷장 맞추기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 달이 위에 액세서리를 끌어 놓고 크기, 기울기, 앞뒤를 맞춘 뒤 CSS와 JSON으로 복사하는 작업용 페이지.
+     무대가 둘: 전신(관리 탭 바다 120px, 키우기 84px)과 얼굴(시트 머리 32px, 플로팅 버튼 62px 안 얼굴 50px).
+     값은 각 그림 상자 기준 퍼센트. 버튼 자리는 얼굴 값을 비율로 환산해 쓴다 (6px 안쪽, 50/62).
+     상태는 localStorage("dali-wear-lab")에 자동 저장. 시연 화면에는 쓰지 않음 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Pretendard,"Malgun Gothic",sans-serif;background:#F2F4F6;color:#1A1D1F;display:flex;height:100vh;user-select:none;-webkit-user-select:none}
+input,textarea{user-select:text;-webkit-user-select:text}
+button,select,input{font:inherit}
+.left{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 20px;background:#E9ECEF;overflow:auto}
+.ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.ctl button{padding:6px 11px;border-radius:999px;border:1px solid #D5D9DD;background:#fff;font-size:12.5px;cursor:pointer}
+.ctl button.on{background:#1A1D1F;color:#fff;border-color:#1A1D1F}
+.ctl .mode button.on{background:#005461;border-color:#005461}
+/* 큰 무대: 그림 상자 360px. 실제 화면과 같은 바다색 */
+.stage{position:relative;width:440px;height:440px;border-radius:24px;background:linear-gradient(180deg,#003D47 0%,#005461 55%,#0C7779 100%);display:grid;place-items:center;overflow:visible;touch-action:none}
+.stage.light{background:#fff;border:1px solid #D5D9DD}
+.stage.grid::before{content:"";position:absolute;inset:40px;border:1px dashed rgba(255,255,255,.35);border-radius:4px;pointer-events:none}
+.stage.light.grid::before{border-color:rgba(0,0,0,.25)}
+.box{position:relative;width:360px;height:360px}
+.box>img.body{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;filter:drop-shadow(0 8px 8px rgba(0,20,24,.3))}
+.box .w{position:absolute;transform-origin:50% 50%;cursor:grab;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.box .w.back{z-index:0}.box .w.front{z-index:2}
+.box .w.sel{outline:2px dashed #FFD166;outline-offset:2px}
+.box .w:active{cursor:grabbing}
+.tip{font-size:12px;color:#4E5968;text-align:center;max-width:440px;line-height:1.5}
+/* 실제 크기 미리보기 */
+.minis{display:flex;gap:16px;align-items:flex-end}
+.mini{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:#4E5968}
+.mini .sea{width:200px;height:150px;border-radius:14px;background:linear-gradient(180deg,#003D47,#005461 55%,#0C7779);display:grid;place-items:center}
+.mini .hero{width:200px;height:110px;border-radius:14px;background:linear-gradient(145deg,#005461,#0C7779);display:flex;align-items:center;padding:0 14px}
+.mini .head{width:200px;height:64px;border-radius:14px;background:#fff;border:1px solid #E5E8EB;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;font-weight:800;color:#1A1D1F}
+.mini .head small{display:block;font-size:10px;font-weight:400;color:#8B95A1}
+.mini .fabwrap{width:200px;height:110px;border-radius:14px;background:#F7F8FA;border:1px solid #E5E8EB;display:grid;place-items:center}
+.mini .fab{position:relative;width:62px;height:62px;border-radius:50%;background:#fff;box-shadow:0 8px 18px -8px rgba(14,58,74,.45),0 0 0 1px rgba(14,58,74,.08)}
+.mini .fab .box{position:absolute;left:6px;top:6px;width:50px;height:50px}
+.mini .box{pointer-events:none}.mini .box .w{cursor:default;outline:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.mini .box>img.body{filter:none}
+.right{flex:1;overflow:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{font-size:18px;margin:0}.top span{font-size:12.5px;color:#4E5968}
+/* 고른 아이템 조절 */
+.edit{background:#fff;border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:13px}
+.edit b{font-size:14px;min-width:90px}
+.edit .which{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:#E6F7F3;color:#005461}
+.edit label{display:flex;align-items:center;gap:6px;color:#4E5968}
+.edit input[type=range]{width:120px}
+.edit input[type=number]{width:62px;padding:3px 5px;border:1px solid #D5D9DD;border-radius:6px}
+.edit input[type=text]{width:90px;padding:3px 5px;border:1px solid #D5D9DD;border-radius:6px}
+.edit select{padding:3px 6px;border:1px solid #D5D9DD;border-radius:6px;background:#fff}
+.edit button{padding:5px 10px;border-radius:8px;border:1px solid #D5D9DD;background:#fff;cursor:pointer}
+.edit button.on{background:#1A1D1F;color:#fff;border-color:#1A1D1F}
+.edit .empty{color:#8B95A1}
+/* 아이템 목록 */
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.card{position:relative;background:#fff;border-radius:12px;padding:10px 8px 8px;border:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px}
+.card.sel{border-color:#1A1D1F}
+.card img{width:44px;height:44px}
+.card.off{opacity:.45}.card.off img{filter:grayscale(1)}
+.card .name{font-weight:700;text-align:center;line-height:1.3}
+.card .meta{font-size:10.5px;color:#8B95A1}
+.card label.use{position:absolute;left:8px;top:7px;font-size:10.5px;color:#4E5968;display:flex;gap:3px;align-items:center}
+.card .rm{position:absolute;right:6px;top:4px;border:0;background:none;color:#B0B8C1;cursor:pointer;font-size:14px}
+.card.add{justify-content:center;border:2px dashed #D5D9DD;background:transparent;color:#4E5968;min-height:104px}
+.card.add input{display:none}
+/* 내보내기 */
+.out{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.out>div{background:#fff;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.out h3{margin:0;font-size:13px;display:flex;align-items:center;gap:8px}
+.out h3 button{margin-left:auto;padding:4px 10px;border-radius:8px;border:1px solid #D5D9DD;background:#fff;font-size:12px;cursor:pointer}
+.out textarea{width:100%;height:170px;font:11.5px/1.45 ui-monospace,Consolas,monospace;border:1px solid #E5E8EB;border-radius:8px;padding:8px;resize:vertical;color:#333D4B;background:#FAFBFC}
+.files{display:flex;gap:6px;flex-wrap:wrap;font-size:12.5px;align-items:center}
+.files button,.files label{padding:5px 10px;border-radius:8px;border:1px solid #D5D9DD;background:#fff;cursor:pointer}
+.files input{display:none}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1A1D1F;color:#fff;padding:8px 14px;border-radius:999px;font-size:12.5px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:.95}
+@media (max-width:900px){body{flex-direction:column;height:auto}.left{padding:12px}.stage{width:360px;height:360px}.box{width:300px;height:300px}.out{grid-template-columns:1fr}}
+</style></head><body>
+<div class="left">
+  <div class="ctl">
+    <span class="mode"><button id="mode-body" class="on">전신</button><button id="mode-face">얼굴</button></span>
+    <button id="bg-sea" class="on">바다</button><button id="bg-light">흰 바탕</button><button id="grid">상자 선</button>
+    <button id="wear-all">쓰는 것 다 보기</button><button id="wear-sel">고른 것만</button>
+  </div>
+  <div class="stage" id="stage"><div class="box" id="box"></div></div>
+  <div class="tip" id="tip"></div>
+  <div class="minis" id="minis"></div>
+</div>
+<div class="right">
+  <div class="top"><h1>달이 옷장 맞추기</h1><span>전신과 얼굴 무대를 따로 맞춥니다. 「쓰기」를 끄면 내보내기에서 빠집니다. 자동 저장됩니다.</span></div>
+  <div class="edit" id="edit"><span class="empty">아래에서 아이템을 고르세요</span></div>
+  <div class="list" id="list"></div>
+  <div class="out">
+    <div><h3>CSS (얼굴 자리는 dali-wardrobe.css, 전신은 JS 인라인)<button id="copy-css">복사</button></h3><textarea id="css" readonly></textarea></div>
+    <div><h3>JSON (dali-data.js DALI_WEARS 자리)<button id="copy-json">복사</button></h3><textarea id="json" readonly></textarea></div>
+  </div>
+  <div class="files">
+    <button id="save">JSON 파일로 저장</button><label>JSON 불러오기<input type="file" id="load" accept="application/json"></label>
+    <button id="reset">처음 값으로</button><span style="color:#8B95A1">저장 파일을 Claude에게 주면 그대로 반영합니다.</span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function () {
+  var IMG = "../dali/img/", BODY = "../dali/dali-body.png", FACE = "../dali/dali-face.png";
+  var SLOTS = [["head", "머리"], ["face", "얼굴"], ["hand", "손"]];
+  // 시작 값. 전신: x,y 왼쪽 위(%), w 너비(%), r 기울기. 얼굴: fx,fy,fw,fr 같은 뜻, faceOn은 얼굴 자리에 보일지 (손에 든 건 기본으로 안 보임)
+  var DEFAULTS = [
+    { id: "ribbon", name: "빨간 리본", slot: "head", x: 28, y: -4, w: 23, r: -14, fx: 4, fy: 0, fw: 36, fr: -16 },
+    { id: "hibiscus", name: "바다 꽃", slot: "head", x: 70, y: 1, w: 21, r: 16, fx: 62, fy: 2, fw: 32, fr: 14 },
+    { id: "graduation_cap", name: "학사모", slot: "head", x: 41, y: -11, w: 34, r: 12, fx: 26, fy: -12, fw: 48, fr: 6 },
+    { id: "womans_hat", name: "밀짚모자", slot: "head", x: 26, y: -14, w: 38, r: 6, fx: 16, fy: -16, fw: 68, fr: 0 },
+    { id: "billed_cap", name: "야구모자", slot: "head", x: 27, y: -12, w: 36, r: 4, fx: 16, fy: -16, fw: 68, fr: 0 },
+    { id: "top_hat", name: "실크 모자", slot: "head", x: 28, y: -20, w: 34, r: 4, fx: 20, fy: -22, fw: 60, fr: 0 },
+    { id: "crown", name: "왕관", slot: "head", x: 29, y: -14, w: 32, r: 4, fx: 20, fy: -18, fw: 60, fr: 0 },
+    { id: "headphone", name: "헤드폰", slot: "head", x: 25, y: -2, w: 40, r: 0, fx: 10, fy: -8, fw: 80, fr: 0 },
+    { id: "glasses", name: "안경", slot: "face", x: 29, y: 16, w: 32, r: 2, fx: 14, fy: 28, fw: 72, fr: 0 },
+    { id: "sunglasses", name: "선글라스", slot: "face", x: 29, y: 16, w: 32, r: 2, fx: 14, fy: 28, fw: 72, fr: 0 },
+    { id: "scarf", name: "머플러", slot: "hand", x: 30, y: 36, w: 34, r: 0, fx: 20, fy: 60, fw: 60, fr: 0, faceOn: false },
+    { id: "necktie", name: "넥타이", slot: "hand", x: 46, y: 42, w: 16, r: 0, fx: 40, fy: 70, fw: 20, fr: 0, faceOn: false },
+    { id: "spiral_shell", name: "소라", slot: "hand", x: 52, y: 46, w: 24, r: 20, fx: 55, fy: 60, fw: 40, fr: 0, faceOn: false },
+    { id: "ring_buoy", name: "구명튜브", slot: "hand", x: 44, y: 42, w: 36, r: 0, fx: 30, fy: 50, fw: 50, fr: 0, faceOn: false },
+    { id: "gem_stone", name: "보석", slot: "hand", x: 54, y: 48, w: 22, r: 10, fx: 55, fy: 60, fw: 40, fr: 0, faceOn: false }
+  ].map(function (d) { d.use = true; d.back = false; d.flip = false; if (d.faceOn === undefined) d.faceOn = true; d.src = IMG + d.id + ".png"; return d; });
+
+  var KEY = "dali-wear-lab", FAB_IN = 6 / 62 * 100, FAB_K = 50 / 62; // 버튼: 62px 원 안 6px 들어간 자리에 얼굴 50px
+  var items, sel = null, showAll = true, mode = "body";
+  // 예전 저장이나 JSON에 얼굴 값이 없으면 시작 값으로 채움
+  function fill(list) {
+    return list.map(function (it) {
+      var d = DEFAULTS.filter(function (x) { return x.id === it.id; })[0] || { fx: 20, fy: 0, fw: 60, fr: 0, faceOn: it.slot !== "hand" };
+      ["fx", "fy", "fw", "fr", "faceOn"].forEach(function (k) { if (it[k] === undefined) it[k] = d[k]; });
+      if (it.slot === "neck") it.slot = "hand";
+      return it;
+    });
+  }
+  function load() {
+    try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.items && s.items.length) { items = fill(s.items); return; } } catch (e) { /* 처음 */ }
+    items = fill(JSON.parse(JSON.stringify(DEFAULTS)));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ items: items })); } catch (e) { /* 저장 못 해도 동작 */ } }
+  var $ = function (id) { return document.getElementById(id); };
+  var byId = function (id) { return items.filter(function (i) { return i.id === id; })[0]; };
+  function toast(t) { var el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(function () { el.classList.remove("show"); }, 1600); }
+  var slotName = function (s) { return (SLOTS.filter(function (x) { return x[0] === s; })[0] || ["", s])[1]; };
+  var F = mode === "face"; // 아래에서 갱신
+  var fld = function () { return mode === "face" ? { x: "fx", y: "fy", w: "fw", r: "fr" } : { x: "x", y: "y", w: "w", r: "r" }; };
+
+  /* --- 그리기 --- */
+  // fab이면 버튼(62px) 기준으로 환산한 얼굴 값
+  function styleOf(it, m, fab) {
+    var k = m === "face" ? { x: it.fx, y: it.fy, w: it.fw, r: it.fr } : { x: it.x, y: it.y, w: it.w, r: it.r };
+    if (fab) { k = { x: FAB_IN + k.x * FAB_K, y: FAB_IN + k.y * FAB_K, w: k.w * FAB_K, r: k.r }; }
+    var rd = function (v) { return Math.round(v * 10) / 10; };
+    return "left:" + rd(k.x) + "%;top:" + rd(k.y) + "%;width:" + rd(k.w) + "%;transform:rotate(" + k.r + "deg)" + (it.flip && m !== "face" ? " scaleX(-1)" : "");
+  }
+  // 다 보기: 부위마다 하나씩만 (고른 게 있으면 그것, 없으면 쓰는 것 중 첫째)
+  function visible(it, m) {
+    if (!it.use) return false;
+    if (m === "face" && !it.faceOn) return false;
+    if (!showAll) return !!sel && it.id === sel;
+    var s = byId(sel);
+    if (s && s.slot === it.slot) return it.id === sel;
+    return items.filter(function (x) { return x.use && x.slot === it.slot && (m !== "face" || x.faceOn); })[0] === it;
+  }
+  function drawBox(box, m, big, fab) {
+    box.innerHTML = "";
+    var b = document.createElement("img"); b.className = "body"; b.src = m === "face" ? FACE : BODY; b.alt = ""; box.appendChild(b);
+    items.forEach(function (it) {
+      if (!visible(it, m)) return;
+      var im = document.createElement("img");
+      im.className = "w " + (it.back && m !== "face" ? "back" : "front") + (big && it.id === sel ? " sel" : "");
+      im.src = it.src; im.alt = ""; im.dataset.id = it.id; im.draggable = false;
+      im.style.cssText = styleOf(it, m, fab);
+      box.appendChild(im);
+    });
+  }
+  function renderMinis() {
+    var m = $("minis");
+    if (mode === "face") {
+      m.innerHTML = '<div class="mini"><div class="head"><div class="box" id="m1" style="width:32px;height:32px"></div><div>달이<small>유진투자증권 앱에서</small></div></div>시트 머리 (32px)</div>' +
+        '<div class="mini"><div class="fabwrap"><div class="fab"><div class="box" id="m2"></div></div></div>플로팅 버튼 (62px 안 50px)</div>';
+      drawBox($("m1"), "face", false, false); drawBox($("m2"), "face", false, false);
+    } else {
+      m.innerHTML = '<div class="mini"><div class="sea"><div class="box" id="m1" style="width:120px;height:120px"></div></div>관리 탭 바다 (120px)</div>' +
+        '<div class="mini"><div class="hero"><div class="box" id="m2" style="width:84px;height:84px"></div></div>달이 키우기 (84px)</div>';
+      drawBox($("m1"), "body", false, false); drawBox($("m2"), "body", false, false);
+    }
+  }
+  function render() {
+    $("stage").classList.toggle("facemode", mode === "face");
+    $("tip").textContent = mode === "face" ? "얼굴 무대: 시트 머리와 플로팅 버튼에 보이는 자리입니다. 버튼은 얼굴 값을 비율로 환산해 같이 맞춰집니다. 끌기, 방향키, 휠은 전신과 같아요."
+      : "전신 무대: 끌어 옮기고, 방향키로 1%씩(Shift는 5%) 밉니다. 휠은 크기, Shift+휠은 기울기. 값은 달이 상자 기준 퍼센트라 바다 화면과 키우기 화면에 그대로 씁니다.";
+    drawBox($("box"), mode, true, false); renderMinis();
+    renderList(); renderEdit(); renderOut(); save();
+  }
+  function renderList() {
+    var html = items.map(function (it) {
+      return '<div class="card' + (it.id === sel ? " sel" : "") + (it.use ? "" : " off") + '" data-id="' + it.id + '">' +
+        '<label class="use" title="옷장에 넣기"><input type="checkbox" data-use="' + it.id + '"' + (it.use ? " checked" : "") + '>쓰기</label>' +
+        (it.custom ? '<button class="rm" data-rm="' + it.id + '" title="지우기">✕</button>' : "") +
+        '<img src="' + it.src + '" alt=""><span class="name">' + it.name + '</span><span class="meta">' + slotName(it.slot) + (it.back ? " · 뒤" : "") + (it.faceOn ? "" : " · 얼굴엔 없음") + "</span></div>";
+    }).join("");
+    html += '<label class="card add">+ 이미지 추가<br><small>PNG, 투명 배경</small><input type="file" id="addimg" accept="image/png,image/webp,image/svg+xml"></label>';
+    $("list").innerHTML = html;
+  }
+  function renderEdit() {
+    var it = byId(sel), e = $("edit"), f = fld();
+    if (!it) { e.innerHTML = '<span class="empty">아래에서 아이템을 고르세요</span>'; return; }
+    e.innerHTML =
+      '<b>' + it.name + '</b><span class="which">' + (mode === "face" ? "얼굴 값" : "전신 값") + "</span>" +
+      '<label>이름 <input type="text" id="e-name" value="' + it.name.replace(/"/g, "&quot;") + '"></label>' +
+      '<label>부위 <select id="e-slot">' + SLOTS.map(function (s) { return '<option value="' + s[0] + '"' + (s[0] === it.slot ? " selected" : "") + ">" + s[1] + "</option>"; }).join("") + "</select></label>" +
+      '<label>크기 <input type="range" id="e-w" min="6" max="100" value="' + it[f.w] + '"><input type="number" id="e-wn" value="' + it[f.w] + '">%</label>' +
+      '<label>기울기 <input type="range" id="e-r" min="-90" max="90" value="' + it[f.r] + '"><input type="number" id="e-rn" value="' + it[f.r] + '">°</label>' +
+      '<label>x <input type="number" id="e-x" value="' + it[f.x] + '">%</label><label>y <input type="number" id="e-y" value="' + it[f.y] + '">%</label>' +
+      (mode === "face" ? '<button id="e-faceon" class="' + (it.faceOn ? "on" : "") + '">얼굴 자리에 보이기</button>'
+        : '<button id="e-back" class="' + (it.back ? "on" : "") + '">달이 뒤로</button><button id="e-flip" class="' + (it.flip ? "on" : "") + '">좌우 뒤집기</button>') +
+      '<button id="e-reset">이 아이템 처음 값</button>';
+    var bind = function (id, k, parse) { var el = $(id); el.addEventListener("input", function () { it[k] = parse ? parse(el.value) : el.value; renderQuiet(); }); };
+    bind("e-name", "name"); bind("e-slot", "slot");
+    bind("e-w", f.w, Number); bind("e-wn", f.w, Number); bind("e-r", f.r, Number); bind("e-rn", f.r, Number); bind("e-x", f.x, Number); bind("e-y", f.y, Number);
+    if (mode === "face") $("e-faceon").addEventListener("click", function () { it.faceOn = !it.faceOn; render(); });
+    else { $("e-back").addEventListener("click", function () { it.back = !it.back; render(); }); $("e-flip").addEventListener("click", function () { it.flip = !it.flip; render(); }); }
+    $("e-reset").addEventListener("click", function () { var d = DEFAULTS.filter(function (x) { return x.id === it.id; })[0]; if (!d) return; ["x", "y", "w", "r", "fx", "fy", "fw", "fr", "faceOn", "back", "flip", "slot"].forEach(function (k) { it[k] = d[k]; }); render(); });
+  }
+  // 슬라이더 움직일 때는 그림과 출력만 (입력칸을 다시 그리면 포커스가 날아감)
+  function renderQuiet() { drawBox($("box"), mode, true, false); renderMinis(); syncEdit(); renderOut(); save(); }
+  function syncEdit() { var it = byId(sel), f = fld(); if (!it) return; [["e-w", it[f.w]], ["e-wn", it[f.w]], ["e-r", it[f.r]], ["e-rn", it[f.r]], ["e-x", it[f.x]], ["e-y", it[f.y]]].forEach(function (p) { var el = $(p[0]); if (el && document.activeElement !== el) el.value = p[1]; }); }
+  function renderOut() {
+    var used = items.filter(function (i) { return i.use; });
+    var rd = function (v) { return Math.round(v * 10) / 10; };
+    $("css").value = "/* 전신(바다, 키우기)은 JS가 pos를 인라인으로 넣음. 아래는 얼굴 자리 */\n" + used.filter(function (i) { return i.faceOn; }).map(function (i) {
+      return ".dali-sheet-head .dali-wear.w-face." + i.id + " { left: " + i.fx + "%; top: " + i.fy + "%; width: " + i.fw + "%; rotate: " + i.fr + "deg; }\n" +
+        ".dali-fab .dali-wear.w-face." + i.id + " { left: " + rd(FAB_IN + i.fx * FAB_K) + "%; top: " + rd(FAB_IN + i.fy * FAB_K) + "%; width: " + rd(i.fw * FAB_K) + "%; rotate: " + i.fr + "deg; }";
+    }).join("\n");
+    $("json").value = "[\n" + used.map(function (i) {
+      return '  { id: "' + i.id + '", name: "' + i.name + '", slot: "' + i.slot + '", pos: [' + i.x + ", " + i.y + ", " + i.w + ", " + i.r + "], face: " + (i.faceOn ? "[" + i.fx + ", " + i.fy + ", " + i.fw + ", " + i.fr + "]" : "null") + (i.back ? ", back: true" : "") + (i.flip ? ", flip: true" : "") + (i.custom ? ', file: "' + i.id + '.png"' : "") + " }";
+    }).join(",\n") + "\n]";
+  }
+
+  /* --- 무대: 끌기, 휠, 방향키 (지금 무대의 값만 바꿈) --- */
+  var box = $("box"), drag = null;
+  box.addEventListener("pointerdown", function (e) {
+    var im = e.target.closest(".w"); if (!im) return;
+    if (sel !== im.dataset.id) { sel = im.dataset.id; render(); im = box.querySelector('.w[data-id="' + sel + '"]'); }
+    var it = byId(sel), r = box.getBoundingClientRect(), f = fld();
+    drag = { it: it, f: f, sx: e.clientX, sy: e.clientY, x0: it[f.x], y0: it[f.y], k: 100 / r.width };
+    im.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  box.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    drag.it[drag.f.x] = Math.round((drag.x0 + (e.clientX - drag.sx) * drag.k) * 10) / 10;
+    drag.it[drag.f.y] = Math.round((drag.y0 + (e.clientY - drag.sy) * drag.k) * 10) / 10;
+    renderQuiet();
+  });
+  box.addEventListener("pointerup", function () { drag = null; save(); });
+  box.addEventListener("pointercancel", function () { drag = null; });
+  $("stage").addEventListener("wheel", function (e) {
+    var it = byId(sel), f = fld(); if (!it) return; e.preventDefault();
+    if (e.shiftKey) it[f.r] = Math.max(-90, Math.min(90, it[f.r] + (e.deltaY > 0 ? 2 : -2)));
+    else it[f.w] = Math.max(6, Math.min(100, Math.round((it[f.w] + (e.deltaY > 0 ? -1 : 1)) * 10) / 10));
+    renderQuiet();
+  }, { passive: false });
+  document.addEventListener("keydown", function (e) {
+    var it = byId(sel), f = fld(); if (!it || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    var d = e.shiftKey ? 5 : 1, m = { ArrowLeft: [-d, 0], ArrowRight: [d, 0], ArrowUp: [0, -d], ArrowDown: [0, d] }[e.key];
+    if (!m) return; e.preventDefault(); it[f.x] += m[0]; it[f.y] += m[1]; renderQuiet();
+  });
+
+  /* --- 목록 --- */
+  $("list").addEventListener("click", function (e) {
+    var use = e.target.closest("[data-use]"); if (use) { byId(use.dataset.use).use = use.checked; render(); return; }
+    var rm = e.target.closest("[data-rm]"); if (rm) { items = items.filter(function (i) { return i.id !== rm.dataset.rm; }); if (sel === rm.dataset.rm) sel = null; render(); return; }
+    if (e.target.closest(".add")) return;
+    var c = e.target.closest(".card[data-id]"); if (!c) return;
+    sel = c.dataset.id === sel ? null : c.dataset.id; render();
+  });
+  $("list").addEventListener("change", function (e) {
+    if (e.target.id !== "addimg" || !e.target.files[0]) return;
+    var f = e.target.files[0], rd = new FileReader();
+    rd.onload = function () {
+      var id = f.name.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9_]+/g, "_") || "item";
+      while (byId(id)) id += "2";
+      items.push({ id: id, name: f.name.replace(/\.[^.]+$/, ""), slot: "head", x: 30, y: 0, w: 30, r: 0, fx: 20, fy: -10, fw: 60, fr: 0, faceOn: true, use: true, back: false, flip: false, custom: true, src: rd.result });
+      sel = id; render(); toast("추가했어요. 실제로 넣을 땐 features/dali/img/" + id + ".png로 저장해 주세요");
+    };
+    rd.readAsDataURL(f);
+  });
+
+  /* --- 위 버튼, 내보내기 --- */
+  function setMode(m) { mode = m; $("mode-body").classList.toggle("on", m === "body"); $("mode-face").classList.toggle("on", m === "face"); if (m === "face") { $("bg-light").click(); } else { $("bg-sea").click(); } render(); }
+  $("mode-body").addEventListener("click", function () { setMode("body"); });
+  $("mode-face").addEventListener("click", function () { setMode("face"); });
+  $("bg-sea").addEventListener("click", function () { $("stage").classList.remove("light"); $("bg-sea").classList.add("on"); $("bg-light").classList.remove("on"); });
+  $("bg-light").addEventListener("click", function () { $("stage").classList.add("light"); $("bg-light").classList.add("on"); $("bg-sea").classList.remove("on"); });
+  $("grid").addEventListener("click", function () { $("stage").classList.toggle("grid"); $("grid").classList.toggle("on"); });
+  $("wear-all").addEventListener("click", function () { showAll = true; $("wear-all").classList.add("on"); $("wear-sel").classList.remove("on"); render(); });
+  $("wear-sel").addEventListener("click", function () { showAll = false; $("wear-sel").classList.add("on"); $("wear-all").classList.remove("on"); render(); });
+  $("wear-all").classList.add("on");
+  function copy(id) { var ta = $(id); ta.select(); try { navigator.clipboard.writeText(ta.value).then(function () { toast("복사했어요"); }); } catch (e) { document.execCommand("copy"); toast("복사했어요"); } }
+  $("copy-css").addEventListener("click", function () { copy("css"); });
+  $("copy-json").addEventListener("click", function () { copy("json"); });
+  $("save").addEventListener("click", function () {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({ items: items }, null, 2)], { type: "application/json" }));
+    a.download = "dali-wears.json"; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  $("load").addEventListener("change", function (e) {
+    var f = e.target.files[0]; if (!f) return; var rd = new FileReader();
+    rd.onload = function () { try { var s = JSON.parse(rd.result); if (s.items) { items = fill(s.items); sel = null; render(); toast("불러왔어요"); } } catch (err) { toast("JSON을 읽지 못했어요"); } };
+    rd.readAsText(f);
+  });
+  $("reset").addEventListener("click", function () { items = fill(JSON.parse(JSON.stringify(DEFAULTS))); sel = null; render(); toast("처음 값으로 돌렸어요"); });
+
+  load(); render();
+})();
+</script>
+</body></html>
