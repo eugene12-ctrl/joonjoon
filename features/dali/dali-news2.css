@@ -27,3 +27,11 @@
 
 /* 읽기 화면은 시트 머리와 탭 아래에서 열림 (위쪽 머리가 그대로 남게) */
 .phone .dali-sheet .dali-page { top: var(--dali-page-top, 0px); }
+
+/* 지금가 옆 등락: 시세 색 (빨강 오름, 파랑 내림) */
+.dali-n2-slide .dali-pro-act-big small { margin-left: 10px; font-size: 18px; font-weight: 700; }
+.dali-n2-slide .dali-pro-act-big small.up { color: #FF8A8F; }
+.dali-n2-slide .dali-pro-act-big small.down { color: #8FB0FF; }
+.dali-n2 .dali-pro-val b { color: var(--d-ink, #191F28); }
+.dali-n2 .dali-pro-val small.up { color: var(--d-up, #C8202C); }
+.dali-n2 .dali-pro-val small.down { color: var(--d-down, #2F5BD3); }
