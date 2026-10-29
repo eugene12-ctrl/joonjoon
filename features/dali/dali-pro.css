@@ -325,3 +325,28 @@
 /* 종목 로고: 그림이 오면 글자 위를 덮음 */
 .dali-pro-logo { position: relative; overflow: hidden; }
 .dali-pro-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #fff; }
+
+/* ===== 히어로 거래 맥락: 가격 막대와 사실 둘 (dali-pro.js gaugeHTML, factsHTML) ===== */
+.dali-pro-act .dali-pro-gauge { margin: 14px 0 4px; padding: 34px 6px 4px; }
+.dali-pro-act .dali-pro-gauge .bar { position: relative; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .22); }
+.dali-pro-act .dali-pro-gauge .mk { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.dali-pro-act .dali-pro-gauge .mk i { display: block; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, .25); }
+.dali-pro-act .dali-pro-gauge .mk.mine i { background: #7FD3DC; }
+.dali-pro-act .dali-pro-gauge .mk.ref i { width: 8px; height: 8px; background: rgba(255, 255, 255, .6); box-shadow: none; }
+.dali-pro-act .dali-pro-gauge .mk em {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-style: normal; white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; font-size: 10.5px; color: rgba(255, 255, 255, .7);
+}
+.dali-pro-act .dali-pro-gauge .mk em b { font-size: 12px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.dali-pro-act .dali-pro-gauge .mk:nth-child(2) em { bottom: auto; top: 14px; flex-direction: column-reverse; }
+.dali-pro-act .dali-pro-gauge .ends { display: flex; justify-content: space-between; margin-top: 30px; }
+.dali-pro-act .dali-pro-gauge .ends small { font-size: 10.5px; color: rgba(255, 255, 255, .55); font-variant-numeric: tabular-nums; }
+.dali-pro-act .dali-pro-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 2px; }
+.dali-pro-act .dali-pro-facts p { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, .1); display: flex; flex-direction: column; gap: 2px; }
+.dali-pro-act .dali-pro-facts b { font-size: 15px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -.2px; }
+.dali-pro-act .dali-pro-facts small { font-size: 11.5px; color: rgba(255, 255, 255, .65); line-height: 1.35; }
+/* 막대 표시 이름: 첫 표시는 위, 둘째는 아래, 셋째는 위. 아래 이름이 다음 줄과 겹치지 않게 여백 */
+.dali-pro-act .dali-pro-gauge { padding-bottom: 38px; }
+.dali-pro-act .dali-pro-gauge .ends { margin-top: 6px; position: relative; top: 34px; }
+.dali-pro-act .dali-pro-gauge:has(.ends) { padding-bottom: 44px; }
+.dali-pro-act .dali-pro-gauge .mk:nth-child(3) em { bottom: 14px; top: auto; flex-direction: column; }

@@ -55,25 +55,54 @@
   const memo = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } };
   const remember = (k, v) => { try { const m = memo(); m[k] = v; sessionStorage.setItem(KEY, JSON.stringify(m)); } catch (e) { /* 무시 */ } };
   // 숫자는 전부 규칙에서. 히어로 맨 위 라벨은 장면 이름이 아니라 상황
+  // 거래에 도움되는 맥락: 가격 막대(주문가, 지금가, 평단, 어제 종가의 자리)와 짧은 사실 둘. 판단은 고객이 하고, 달이는 자리와 숫자만
+  // 어제 장중 저가와 고가는 시연용 가상 값
+  const DAY_RANGE = { 현대차: { low: 291500, high: 298000 } };
+  const prevClose = sym => Math.round(DALI_SYMS[sym].price / (1 + DALI_SYMS[sym].chg / 100));
   function action() {
     const sc = pro.sc, m = R.money(sc), h = R.habits(), ss = m.pos.find(p => p.sym === "삼성전자"), pend = C.pending, did = memo();
-    if (sc === "morning") return did.keep
-      ? { top: "잊고 있던 것", big: won(pend.price), title: `${pend.sym} ${pend.qty}주 매수, 그대로 두었어요`, sub: "체결되면 바로 알려 드릴게요", btns: [["order", pend.sym, "주문 정정"]] }
-      : { top: "잊고 있던 것", big: won(pend.price), title: `어제 걸어 둔 ${pend.sym} ${pend.qty}주, 아직 안 됐어요`, sub: `지금가 ${won(R.nowPrice(pend.sym, sc))}`,
-          btns: [["order", pend.sym, "주문 정정"], ["keep", "", "그대로 두기"]] };
-    if (sc === "intraday") return did.wait
-      ? { top: "결정 직전", big: pct(ss.pct), title: "삼성전자, 팔지 않고 지켜보기로 했어요", sub: "마감 때 결과를 보여 드릴게요", btns: [["order", "삼성전자", "삼성전자 주문"]] }
-      : { top: "결정 직전", big: pct(ss.pct), title: `삼성전자, 지금 팔면 ${signed(R.flow("intraday").intraday.pnl)}이 확정돼요`,
-          sub: `손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올랐어요`, btns: [["order", "삼성전자", "삼성전자 주문"], ["wait", "", "내일 아침 다시 보기"]] };
+    if (sc === "morning") {
+      const now = R.nowPrice(pend.sym, sc), rg = DAY_RANGE[pend.sym], gap = (pend.price / now - 1) * 100;
+      const gauge = { lo: rg.low, hi: rg.high, marks: [["내 주문", pend.price, "mine"], ["지금", now, "now"]], ends: ["어제 저가", "어제 고가"] };
+      const hd = m.pos.find(p => p.sym === pend.sym), q2 = hd.qty + pend.qty, avg2 = Math.round((hd.avg * hd.qty + pend.price * pend.qty) / q2);
+      const facts = [[`지금가보다 ${pct(gap)}`, "내 주문가"], [`${q2}주, 평단 ${won(avg2)}`, "체결되면 현대차"]];
+      return did.keep
+        ? { top: "잊고 있던 것", big: won(pend.price), title: `${pend.sym} ${pend.qty}주 매수, 그대로 두었어요`, sub: "체결되면 바로 알려 드릴게요", gauge, facts, btns: [["order", pend.sym, "주문 정정"]] }
+        : { top: "잊고 있던 것", big: won(pend.price), title: `어제 걸어 둔 ${pend.sym} ${pend.qty}주, 아직 안 됐어요`, gauge, facts,
+            btns: [["order", pend.sym, "주문 정정"], ["keep", "", "그대로 두기"]] };
+    }
+    if (sc === "intraday") {
+      const now = ss.now, avg = ss.avg, pc = prevClose("삼성전자");
+      const gauge = { lo: Math.min(now, avg, pc) * 0.995, hi: Math.max(now, avg, pc) * 1.005, marks: [["지금", now, "now"], ["내 평단", avg, "mine"]] };
+      const facts = [[pct((now / avg - 1) * 100), "평단 대비"], [`내 돈의 ${Math.round(ss.value / m.total * 100)}%`, `${ss.qty}주`]];
+      const alertAt = Math.round(avg / 1000) * 1000;
+      return did.wait
+        ? { top: "결정 직전", big: pct(ss.pct), title: `삼성전자, ${won(alertAt)}이 되면 알려 드릴게요`, sub: "마감 때 결과도 같이 보여 드릴게요", gauge, facts, btns: [["order", "삼성전자", "삼성전자 주문"]] }
+        : { top: "결정 직전", big: pct(ss.pct), title: `삼성전자, 지금 팔면 ${signed(R.flow("intraday").intraday.pnl)}이 확정돼요`,
+            sub: `손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올랐어요`, gauge, facts,
+            btns: [["order", "삼성전자", "삼성전자 주문"], ["wait", "", `${won(alertAt)} 오면 알림`]] };
+    }
     if (sc === "close") {
       // 장중에 팔지 않았다면 그 결과가 여기로 돌아옴
-      const rc = R.flow("close").recover;
+      const rc = R.flow("close").recover, hd = m.pos.find(p => p.sym === pend.sym);
       const back = did.sold ? "" : `장중에 안 판 삼성전자는 마감 ${pct(rc.toPct)}, 그때보다 ${signed(rc.won)}`;
-      return { top: "결과", big: won(pend.price), title: `아침에 걸어 둔 ${pend.sym} ${pend.qty}주, 체결됐어요`, sub: back, btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
+      // 체결로 바뀐 것: 평단과 비중 (보유 ${hd.qty}주에 ${pend.qty}주가 더해짐)
+      const q2 = hd.qty + pend.qty, avg2 = Math.round((hd.avg * hd.qty + pend.price * pend.qty) / q2), w2 = Math.round(q2 * hd.now / m.total * 100);
+      const facts = [[`${hd.avg.toLocaleString("ko-KR")} → ${won(avg2)}`, "현대차 평단"], [`${Math.round(hd.value / m.total * 100)}% → ${w2}%`, "내 돈 중 현대차"]];
+      return { top: "결과", big: won(pend.price), title: `아침에 걸어 둔 ${pend.sym} ${pend.qty}주, 체결됐어요`, sub: back, facts, btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
     }
-    const q = R.flow("month").quickSell;
-    return { top: "한 달", big: signed(C.month.realized), title: "10월 실현 손익", sub: `손실 난 날 바로 판 건 ${q.oct}번이에요. 8월엔 ${q.aug}번, 9월엔 ${q.sep}번이었어요`, btns: [["journal", "", "매매일지"]] };
+    const q = R.flow("month").quickSell, c = R.costs();
+    const facts = [[won(c.cost), `수수료와 세금, 실현의 ${Math.round(c.costShare)}%`], [`${q.oct}번`, `손실 난 날 바로 판 날 (9월 ${q.sep}번)`]];
+    return { top: "한 달", big: signed(C.month.realized), title: "10월 실현 손익", facts, btns: [["journal", "", "매매일지"]] };
   }
+  // 가격 막대: 범위 안에 두 점(내 주문 또는 평단, 지금)만 찍음. 양 끝 라벨은 그리지 않음
+  function gaugeHTML(g) {
+    if (!g) return "";
+    const pos = v => Math.max(3, Math.min(97, (v - g.lo) / (g.hi - g.lo) * 100));
+    return `<div class="dali-pro-gauge"><div class="bar">${g.marks.map(([l, v, k]) => `<span class="mk ${k}" style="left:${pos(v)}%"><i></i><em>${l}<b>${won(v)}</b></em></span>`).join("")}</div>
+</div>`;
+  }
+  const factsHTML = f => f ? `<div class="dali-pro-facts">${f.map(([v, l]) => `<p><b>${v}</b><small>${l}</small></p>`).join("")}</div>` : "";
   function hero() {
     const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = action();
     const big = a.big, rest = a.title;
@@ -84,7 +113,7 @@
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
         <p class="dali-pro-act-big">${big}</p>
         <h2>${rest}</h2>
-        ${a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
+        ${a.gauge ? gaugeHTML(a.gauge) : a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
         <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
       </section>
       <section class="dali-pro-head">
@@ -152,7 +181,7 @@
     const g = e.target.closest("[data-go]");
     if (g) {
       const k = g.dataset.go, sym = g.dataset.sym;
-      if (k === "keep" || k === "wait") { remember(k, true); paint(); return; }
+      if (k === "keep" || k === "wait") { remember(k, true); paint(); if (k === "wait") toast("평단에 오면 알려 드릴게요"); return; }
       if (k === "order") { if (pro.sc === "intraday") remember("sold", true); window.dali.openOrder(sym); }
       else if (k === "news") { const n = newsOf(sym); if (n) window.dali.openNews(n.id); }
       else if (k === "journal") tabs.querySelector('[data-tab="journal"]').click();
