@@ -133,12 +133,27 @@ const DALI_STAGES = [
     gift: "내 이름으로 진짜 나무 한 그루", preview: "노을공원에 홍길동님 이름으로 나무 한 그루를 심어요." },
 ];
 
-// 옷장. stage 단계가 되면 열림. 한 번에 하나만 입음
+// 옷장. slot: head 머리, face 얼굴, hand 손. 부위마다 하나씩 겹쳐 입음
+// pos는 전신 상자 기준 [left%, top%, width%, 기울기deg], face는 얼굴 그림(시트 머리 32px) 기준 같은 꼴. null이면 얼굴 자리엔 안 보임
+// 플로팅 버튼(62px 원 안 얼굴 50px)은 face 값을 비율로 환산. flip은 좌우 뒤집기. 모두 features/wear-lab에서 맞춘 값
+// stage가 있으면 그 단계에 받고, rarity가 있으면 조개 열기에서 나옴 (c 흔함, u 드묾, s 반짝). 그림은 img/의 Fluent 3D
 const DALI_WEARS = [
-  { id: "ribbon", name: "빨간 리본", stage: 0 },
-  { id: "hibiscus", name: "바다 꽃", stage: 1 },
-  { id: "graduation_cap", name: "학사모", stage: 3 },
+  { id: "ribbon", name: "빨간 리본", slot: "head", stage: 0, pos: [28, -4, 23, -14], face: [4, 0, 36, -16] },
+  { id: "hibiscus", name: "바다 꽃", slot: "head", stage: 1, pos: [70, 1, 21, 16], face: [62, 2, 32, 14] },
+  { id: "graduation_cap", name: "학사모", slot: "head", stage: 3, pos: [47.9, -11, 34, 12], face: [26, -12, 48, 6] },
+  { id: "womans_hat", name: "밀짚모자", slot: "head", rarity: "c", pos: [50, -17.3, 38, 18], face: [16, -33.3, 68, 0] },
+  { id: "billed_cap", name: "야구모자", slot: "head", rarity: "c", pos: [36.3, -21.7, 55, 18], face: [7.5, -26.9, 77, 0] },
+  { id: "top_hat", name: "실크 모자", slot: "head", rarity: "u", pos: [56.2, -11.1, 26, 17], face: [29.1, -15.8, 44, 0] },
+  { id: "crown", name: "왕관", slot: "head", rarity: "s", pos: [57, -15.3, 29, 25], face: [28.7, -23.3, 44, 0] },
+  { id: "glasses", name: "안경", slot: "face", rarity: "c", pos: [33.5, 3.1, 42, 14], face: [13.3, 10.6, 72, 0] },
+  { id: "sunglasses", name: "선글라스", slot: "face", rarity: "u", pos: [34.6, 2, 42, 15], face: [14.2, 8.7, 72, 0] },
+  { id: "spiral_shell", name: "소라", slot: "hand", rarity: "c", pos: [28.2, 34.2, 28, 20], face: null, flip: true },
+  { id: "gem_stone", name: "보석", slot: "hand", rarity: "s", pos: [26.7, 33.7, 32, 15], face: null },
 ];
+const DALI_SLOTS = [["head", "머리"], ["face", "얼굴"], ["hand", "손"]];
+// 조개 열기: 미션으로 모은 조약돌을 씀 (거래엔 조약돌을 안 주는 규칙 그대로). 하루 perDay번, 한 번에 cost개. 같은 게 나오면 refund개 돌려줌
+const DALI_SHELL = { cost: 3, perDay: 3, refund: 1, odds: { c: 60, u: 30, s: 10 }, names: { c: "흔함", u: "드묾", s: "반짝" },
+  say: { c: "오늘도 바다에서 주웠어요.", u: "오, 이건 잘 안 나오는 건데!", s: "반짝반짝! 달이가 제일 아끼는 거예요." } };
 
 // 뉴스 읽기 화면에 나오는 제목과 본문 (가상)
 const DALI_NEWS_TEXT = {

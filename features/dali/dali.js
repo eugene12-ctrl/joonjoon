@@ -23,17 +23,23 @@
     done: {},
     quiz: {},
     forest: 72,
-    wear: "ribbon",
+    worn: { head: "ribbon", face: null, hand: null }, // 부위별로 입은 것
+    owned: [], // 조개에서 나온 것 (단계 선물은 단계로 열림)
+    spent: 0, // 조개 여는 데 쓴 조약돌. 단계는 모은 총량(pebbles)으로, 쓸 수 있는 건 pebbles - spent
+    shells: { day: "", n: 0 }, // 오늘 연 조개 수
+    shell: null, // 방금 연 조개 결과 { id, dup, fresh }
     gift: null, // 관리 탭에서 펼쳐 본 단계 선물
     fx: null, // 관리 탭을 다시 그린 뒤 보여 줄 연출 { gain, grew }
     editing: null,
     order: null, // { sym, side, qty } MTS 주문 화면
   };
 
-  const SHARED = ["pebbles", "done", "forest", "wear"];
+  const SHARED = ["pebbles", "done", "forest", "worn", "owned", "spent", "shells"];
   try {
     const saved = JSON.parse(localStorage.getItem("dali-shared") || "{}");
     SHARED.forEach(k => { if (k in saved) state[k] = saved[k]; });
+    if (!("worn" in saved) && "wear" in saved) state.worn.head = saved.wear; // 예전 저장(하나만 입던 때)
+    if (state.worn && typeof state.worn !== "object") state.worn = { head: null, face: null, hand: null };
   } catch (e) { /* 저장소를 못 쓰면 처음 상태로 */ }
   function saveShared() {
     try { localStorage.setItem("dali-shared", JSON.stringify(Object.fromEntries(SHARED.map(k => [k, state[k]])))); } catch (e) { /* 무시 */ }
@@ -80,13 +86,26 @@
 
   // 옷장에서 고른 장식. 얼굴만 나오는 자리(버튼, 시트 머리)는 w-face, 전신은 w-body로 위치를 다르게 잡음 (dali-wear.css)
   // 클래스에 w- 접두어를 붙이는 건 앱 CSS(src/css/main.css)의 .body 같은 이름과 겹치지 않게 하려는 것
-  const wearImg = where => state.wear ? `<img class="dali-wear w-${where} ${state.wear}" src="${IMG(state.wear)}" alt="">` : "";
+  const wearOf = id => DALI_WEARS.find(w => w.id === id);
+  const wornList = () => DALI_SLOTS.map(([s]) => wearOf(state.worn[s])).filter(Boolean);
+  // where: body 전신(바다, 키우기), face 시트 머리, fab 플로팅 버튼(얼굴 값을 62px 원 기준으로 환산). 위치는 DALI_WEARS의 pos, face
+  const FAB_IN = 6 / 62 * 100, FAB_K = 50 / 62;
+  const wearImg = where => wornList().map(w => {
+    let p = where === "body" ? w.pos : w.face;
+    if (!p) return ""; // 얼굴 자리엔 안 보이는 것 (손에 든 것)
+    if (where === "fab") p = [FAB_IN + p[0] * FAB_K, FAB_IN + p[1] * FAB_K, p[2] * FAB_K, p[3]];
+    const rd = v => Math.round(v * 10) / 10;
+    const style = ` style="left:${rd(p[0])}%;top:${rd(p[1])}%;width:${rd(p[2])}%;rotate:${p[3]}deg${w.flip && where === "body" ? ";scale:-1 1" : ""}"`;
+    return `<img class="dali-wear w-${where === "body" ? "body" : "face"} ${w.id}" src="${IMG(w.id)}" alt=""${style}>`;
+  }).join("");
+  const wallet = () => Math.max(0, state.pebbles - state.spent);
+  const ownsWear = w => w.stage != null ? stageAt(state.pebbles) >= w.stage : state.owned.includes(w.id);
 
   const fab = document.createElement("button");
   fab.type = "button";
   fab.className = "dali-fab";
   fab.setAttribute("aria-label", "달이 열기");
-  fab.innerHTML = `<img src="${FACE}" alt="">${wearImg("face")}<span class="dali-alert" aria-hidden="true">!</span>`;
+  fab.innerHTML = `<img src="${FACE}" alt="">${wearImg("fab")}<span class="dali-alert" aria-hidden="true">!</span>`;
 
   const bubble = document.createElement("div");
   bubble.className = "dali-bubble";
@@ -118,7 +137,7 @@
     [fab, sheet.querySelector(".dali-sheet-head .dali-face")].forEach(el => {
       el.querySelector(".dali-wear")?.remove();
       const alert = el.querySelector(".dali-alert");
-      if (alert) alert.insertAdjacentHTML("beforebegin", wearImg("face"));
+      if (alert) alert.insertAdjacentHTML("beforebegin", wearImg("fab"));
       else el.insertAdjacentHTML("beforeend", wearImg("face"));
     });
   }
@@ -370,7 +389,7 @@
       <div class="dali-sea st${si}">
         ${prop("sun", "sun")}
         <span class="dali-sea-chip stage"><img src="${IMG(s.icon)}" alt="">${s.name}</span>
-        <span class="dali-sea-chip pebble dali-sea-pebbles"><img src="${IMG("rock")}" alt="">조약돌 <b>${state.pebbles}</b></span>
+        <span class="dali-sea-chip pebble dali-sea-pebbles"><img src="${IMG("rock")}" alt="">조약돌 <b>${wallet()}</b></span>
         ${si >= 1 ? prop("coral", "coral") : ""}
         ${si >= 3 ? prop("lotus", "lotus") : ""}
         <div class="dali-wave far"></div>
@@ -435,12 +454,98 @@
     state.justDone = null; // 체크 톡 연출은 한 번만
     return html;
   }
-  // 달이 키우기 자세히 (관리 탭의 다음 선물 줄을 누르면): 단계별 선물, 숲, 옷장
+  // 조개 열기: 조약돌을 쓰는 곳. 오늘 남은 횟수와 확률을 같이 보여 줌
+  function shellLeft() { const d = new Date().toDateString(); return state.shells.day === d ? Math.max(0, DALI_SHELL.perDay - state.shells.n) : DALI_SHELL.perDay; }
+  function shellHTML() {
+    const left = shellLeft(), can = left > 0 && wallet() >= DALI_SHELL.cost;
+    const gacha = DALI_WEARS.filter(w => w.rarity), have = gacha.filter(ownsWear).length;
+    const pop = state.shell ? (() => {
+      const w = wearOf(state.shell.id), dup = state.shell.dup;
+      return `
+      <div class="dali-shell-pop r-${w.rarity}">
+        <span class="dali-shell-big"><img class="sp a" src="${IMG("sparkles")}" alt=""><img class="it" src="${IMG(w.id)}" alt=""><img class="sp b" src="${IMG("sparkles")}" alt=""></span>
+        <small>${DALI_SHELL.names[w.rarity]}${dup ? " · 이미 있어요" : ""}</small><b>${w.name}</b>
+        <p>${dup ? `같은 게 나왔어요. 조약돌 ${DALI_SHELL.refund}개를 돌려줄게요.` : DALI_SHELL.say[w.rarity]}</p>
+        <div class="dali-shell-btns">${dup ? `<button type="button" class="no" data-act="shell-close">알겠어요</button>`
+          : `<button type="button" class="no" data-act="shell-close">옷장에 두기</button><button type="button" class="yes" data-act="shell-wear" data-id="${w.id}">바로 입히기</button>`}</div>
+      </div>`;
+    })() : "";
+    return `
+        <p class="dali-gsec">조개 열기 <small class="dali-left">${left ? `오늘 ${left}번 남음` : "오늘은 다 열었어요"}</small></p>
+        <div class="dali-shell">
+          <div class="dali-shell-top">
+            <div><b>조약돌 ${DALI_SHELL.cost}개로 하나</b><small>달이가 바다에서 주워 온 조개예요.<br>열면 액세서리가 하나 나와요.</small></div>
+            <span class="dali-shell-oy${state.shell ? " open" : ""}"><img src="${IMG("oyster")}" alt=""></span>
+          </div>
+          <div class="dali-odds" aria-label="흔함 ${DALI_SHELL.odds.c}%, 드묾 ${DALI_SHELL.odds.u}%, 반짝 ${DALI_SHELL.odds.s}%">
+            <i><b class="c" style="width:${DALI_SHELL.odds.c}%"></b><b class="u" style="width:${DALI_SHELL.odds.u}%"></b><b class="s" style="width:${DALI_SHELL.odds.s}%"></b></i>
+            <span><em class="c">흔함 ${DALI_SHELL.odds.c}%</em><em class="u">드묾 ${DALI_SHELL.odds.u}%</em><em class="s">반짝 ${DALI_SHELL.odds.s}%</em></span>
+          </div>
+          <button type="button" class="dali-shell-go" data-act="shell" ${can ? "" : "disabled"}><img src="${IMG("rock")}" alt="">${!left ? "내일 다시 열 수 있어요" : wallet() < DALI_SHELL.cost ? `조약돌이 ${DALI_SHELL.cost - wallet()}개 모자라요` : `조약돌 ${DALI_SHELL.cost}개로 열기`}</button>
+          <small class="dali-shell-sub">지금까지 ${have}/${gacha.length}개 모았어요 · 같은 게 나오면 조약돌 ${DALI_SHELL.refund}개를 돌려줘요</small>
+        </div>
+        ${pop}`;
+  }
+  // 옷장: 부위별로 하나씩 입음. 조개 아이템은 나오기 전엔 ???, 단계 선물은 단계 이름
+  function closetHTML(si) {
+    return DALI_SLOTS.map(([slot, label]) => `
+        <p class="dali-gsec">${label}</p>
+        <div class="dali-closet">${DALI_WEARS.filter(w => w.slot === slot).map(w => {
+          const own = ownsWear(w), on = state.worn[slot] === w.id;
+          const cls = (on ? "on" : "") + (own ? "" : w.stage != null ? " lock" : " no") + (state.shell?.fresh === w.id ? " new" : "");
+          const name = own ? w.name : w.stage != null ? DALI_STAGES[w.stage].name.replace(" 달이", "") + "에 열려요" : "???";
+          return `<button type="button" class="${cls.trim()}" data-act="wear" data-id="${w.id}" ${own ? "" : "disabled"}>
+            ${w.rarity ? `<i class="dali-rar ${w.rarity}"></i>` : ""}<img src="${IMG(w.id)}" alt=""><small>${name}</small></button>`;
+        }).join("")}</div>`).join("");
+  }
+  // 조개 열기: 확률대로 하나 뽑음. 같은 게 나오면 조약돌을 조금 돌려줌
+  function openShell() {
+    if (shellLeft() <= 0 || wallet() < DALI_SHELL.cost) return;
+    const d = new Date().toDateString();
+    state.shells = { day: d, n: (state.shells.day === d ? state.shells.n : 0) + 1 };
+    state.spent += DALI_SHELL.cost;
+    const pool = DALI_WEARS.filter(w => w.rarity);
+    let x = Math.random() * pool.reduce((a, w) => a + DALI_SHELL.odds[w.rarity], 0), pick = pool[pool.length - 1];
+    for (const w of pool) { x -= DALI_SHELL.odds[w.rarity]; if (x <= 0) { pick = w; break; } }
+    const dup = state.owned.includes(pick.id);
+    if (dup) state.spent = Math.max(0, state.spent - DALI_SHELL.refund);
+    else state.owned.push(pick.id);
+    state.shell = { id: pick.id, dup, fresh: dup ? null : pick.id };
+    say(dup ? "같은 게 나왔어요. 조약돌 하나 돌려줄게요." : `${pick.name}! ${DALI_SHELL.say[pick.rarity]}`);
+  }
+  // 키우기 화면의 꾸미기 진입 줄: 지금 입은 달이, 옷장 개수, 오늘 남은 조개
+  function dressEntryHTML() {
+    const have = DALI_WEARS.filter(ownsWear).length, left = shellLeft();
+    return `
+        <button type="button" class="dali-dress-entry" data-act="dress-page">
+          <span class="dali-dress-otter"><img src="${BODY}" alt="">${wearImg("body")}</span>
+          <span class="dali-dress-txt"><b>달이 꾸미기</b><small>옷장 ${have}/${DALI_WEARS.length} · 조개 ${left ? `오늘 ${left}번 남음` : "내일 다시"}</small></span>
+          <em>›</em>
+        </button>`;
+  }
+  // 달이 꾸미기 (키우기 화면의 진입 줄을 누르면): 입은 모습, 조개 열기, 옷장
+  function dressPage() {
+    const si = stageAt(state.pebbles), worn = wornList();
+    return `
+      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>달이 꾸미기</strong><span class="dali-page-pebbles" aria-label="쓸 수 있는 조약돌"><img src="${IMG("rock")}" alt="">조약돌 <b>${wallet()}</b></span></header>
+      <div class="dali-page-body">
+      <article class="dali-card grow">
+        <div class="dali-ghero">
+          <span class="dali-gotter"><img src="${BODY}" alt="">${wearImg("body")}</span>
+          <div><small>지금 입은 것</small><b>${worn.length ? worn.map(w => w.name).join(", ") : "아무것도 안 입었어요"}</b>
+            <span>${DALI_SLOTS.map(([s, l]) => `${l} ${state.worn[s] ? wearOf(state.worn[s]).name : "없음"}`).join(" · ")}</span></div>
+        </div>
+        ${shellHTML()}
+        ${closetHTML(si)}
+      </article>
+      </div>`;
+  }
+  // 달이 키우기 자세히 (관리 탭의 다음 선물 줄을 누르면): 단계별 선물, 꾸미기 진입, 숲
   function growPage() {
     const s = stage(), n = nextStage(), si = stageAt(state.pebbles);
     const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
     return `
-      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>달이 키우기</strong></header>
+      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>달이 키우기</strong><span class="dali-page-pebbles" aria-label="쓸 수 있는 조약돌"><img src="${IMG("rock")}" alt="">조약돌 <b>${wallet()}</b></span></header>
       <div class="dali-page-body">
       <article class="dali-card grow">
         <div class="dali-ghero">
@@ -468,12 +573,9 @@
             ${state.gift === i ? `<p class="dali-say">${x.preview}</p>` : ""}
           </li>`;
         }).join("")}</ol>
-        <p class="dali-gsec">옷장</p>
-        <div class="dali-closet">${DALI_WEARS.map(w => {
-          const open = si >= w.stage;
-          return `<button type="button" class="${state.wear === w.id ? "on" : ""}" data-act="wear" data-id="${w.id}" ${open ? "" : "disabled"}>
-            <img src="${IMG(w.id)}" alt=""><small>${open ? w.name : DALI_STAGES[w.stage].name.replace(" 달이", "") + "에 열려요"}</small></button>`;
-        }).join("")}</div>
+      </article>
+      <article class="dali-card">
+        ${dressEntryHTML()}
       </article>
       <article class="dali-card forest">
         <h3>달이네 숲 <small class="dali-left">${state.forest}%</small></h3>
@@ -677,7 +779,7 @@
   function render() {
     saveShared();
     sheet.querySelector(".dali-where").textContent = `${DALI_APPS[state.app].name} 앱에서`;
-    sheet.querySelector(".dali-pebbles").textContent = `조약돌 ${state.pebbles}`;
+    sheet.querySelector(".dali-pebbles").textContent = `조약돌 ${wallet()}`;
     sheet.querySelectorAll(".dali-tabs button").forEach(b => {
       const on = b.dataset.tab === state.tab;
       b.classList.toggle("on", on);
@@ -689,10 +791,10 @@
     else if (state.fx && !state.fx.grew) state.fx = null;
     if (state.page) {
       // 같은 화면을 다시 그릴 때(뉴스, 공시 탭 전환, 공시 도착)는 스크롤 위치를 지킴
-      const key = ["grow", "report", "week"].includes(state.page.type) ? state.page.type : state.page.id;
+      const key = ["grow", "dress", "report", "week"].includes(state.page.type) ? state.page.type : state.page.id;
       const same = !pageEl.hidden && pageEl.dataset.id === key;
       const y = same ? pageEl.querySelector(".dali-page-body")?.scrollTop || 0 : 0;
-      pageEl.innerHTML = state.page.type === "grow" ? growPage() : state.page.type === "report" ? DaliReport.page()
+      pageEl.innerHTML = state.page.type === "grow" ? growPage() : state.page.type === "dress" ? dressPage() : state.page.type === "report" ? DaliReport.page()
         : state.page.type === "week" ? DaliWeek.page() : state.page.type === "article" ? articlePage(state.page) : newsPage(state.page.id);
       pageEl.dataset.id = key;
       const pb = pageEl.querySelector(".dali-page-body");
@@ -732,11 +834,15 @@
     if (act === "back") { state.page = state.page?.from || null; render(); }
     else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
-    else if (act === "wear") { state.wear = state.wear === id ? null : id; syncWear(); render(); }
+    else if (act === "wear") { const w = wearOf(id); if (w && ownsWear(w)) { state.worn[w.slot] = state.worn[w.slot] === id ? null : id; if (state.shell) state.shell.fresh = null; syncWear(); render(); } }
+    else if (act === "shell") { openShell(); render(); }
+    else if (act === "shell-wear") { const w = wearOf(id); if (w) state.worn[w.slot] = id; state.shell = null; syncWear(); render(); }
+    else if (act === "shell-close") { state.shell = null; render(); }
     else if (act === "trade") { state.openTrade = state.openTrade === id ? null : id; render(); }
     else if (act === "jview") { state.jview = b.dataset.v; state.openTrade = null; render(); }
     else if (act === "jday") { state.openTrade = id; render(); sheet.querySelector(".dali-jrow.open")?.scrollIntoView({ block: "center", behavior: "smooth" }); }
     else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
+    else if (act === "dress-page") { state.page = { type: "dress", from: state.page }; render(); }
     else if (act === "report") { state.page = { type: "report", from: state.page }; render(); }
     else if (act === "week") { state.page = { type: "week", from: state.page }; render(); }
     else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
