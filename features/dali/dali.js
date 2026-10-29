@@ -193,12 +193,31 @@
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
   // 매매 돌아보기: 차트 아래 두 칸. 왼쪽 살 때, 오른쪽 팔 때(들고 있으면 지금). 칸마다 날짜와 그때 시황 한 구절
   // 시황 한 구절은 그날 시장 흐름 수준의 가상 요약(buy.news, sell.news). 지금 칸은 그 종목 최신 소식 한 줄
+  // 칸 머리: 살 때(나눠 샀으면 평단), 팔 때, 지금 가격을 작게. 날짜는 아래 회색
   const dayKo = d => { const [m, dd] = (d === "오늘" ? "10/29" : d).split("/").map(Number); return `${m}월 ${dd}일`; };
+  // 판 매매의 원래 기록(dali-customer.js, dali-customer-fut.js). 증권 카드는 tid, 선물 카드는 id "f<번호>"
+  function srcTrade(t) {
+    if (t.app === "stock" && typeof DALI_CUSTOMER !== "undefined") return DALI_CUSTOMER.trades.find(x => x.id === t.tid);
+    if (t.app === "fut" && typeof DALI_CUSTOMER_FUT !== "undefined") return DALI_CUSTOMER_FUT.trades.find(x => `f${x.id}` === t.id);
+    return null;
+  }
+  function tradePrices(t) {
+    const s = DALI_SYMS[t.sym], src = srcTrade(t);
+    const pos = !t.sell && (t.app === "stock" ? typeof DALI_CUSTOMER !== "undefined" && DALI_CUSTOMER : typeof DALI_CUSTOMER_FUT !== "undefined" && DALI_CUSTOMER_FUT);
+    const p = pos ? pos.positions.find(x => x.sym === t.sym) : null;
+    const buy = src && src.price ? src.price : p ? p.avg : null;
+    // 선물 판 값은 등락으로 되짚은 값이라 호가 단위(tick)에 맞춰 반올림
+    const sell = t.sell && src && src.price ? (src.sellSnap ? src.sellSnap.price : Math.round(src.price * (1 + src.pct / 100) / tick(t.sym)) * tick(t.sym)) : null;
+    const now = t.app === "stock" && typeof DaliRules !== "undefined" ? DaliRules.nowPrice(t.sym, window.daliPro ? window.daliPro.sc : "morning") : s.price;
+    const f = v => v == null ? "" : t.app === "fut" ? v.toLocaleString("en-US", { minimumFractionDigits: s.dec || 2, maximumFractionDigits: s.dec || 2 }) : `${Math.round(v).toLocaleString("ko-KR")}원`;
+    return { buy: f(buy), sell: f(sell), now: f(now), avg: !!(p && t.buys && t.buys.length > 1) };
+  }
   function sides(t) {
-    const side = (label, when, line) => `<div class="dali-jside-col"><small>${label}<em>${when}</em></small><b>${line}</b></div>`;
+    const pr = tradePrices(t);
+    const side = (label, price, when, line) => `<div class="dali-jside-col"><small>${label}${price ? `<strong>${price}</strong>` : ""}</small><em>${when}</em>${line ? `<b>${line}</b>` : ""}</div>`;
     const now = state.news.find(x => x.sym === t.sym);
-    const right = t.sell ? side("팔 때", dayKo(t.sell.date), t.sell.news) : now ? side("지금", now.time, now.why) : "";
-    return `<div class="dali-jside">${side("살 때", dayKo(t.buy.date), t.buy.news)}${right}</div>`;
+    const right = t.sell ? side("팔 때", pr.sell, dayKo(t.sell.date), t.sell.news) : side("지금", pr.now, now ? now.time : "", now ? now.why : "");
+    return `<div class="dali-jside">${side(pr.avg ? "평단" : "살 때", pr.buy, dayKo(t.buy.date), t.buy.news)}${right}</div>`;
   }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };

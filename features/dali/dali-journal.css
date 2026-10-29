@@ -34,8 +34,11 @@
 .phone .dali-sheet .dali-jmore > svg { display: block; width: 100%; height: auto; margin: 0 0 10px; }
 .phone .dali-sheet .dali-jside { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .phone .dali-sheet .dali-jside-col { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 14px; background: var(--d-band); }
-.phone .dali-sheet .dali-jside-col small { display: flex; justify-content: space-between; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--d-ink2); }
-.phone .dali-sheet .dali-jside-col small em { font-style: normal; font-weight: 500; color: var(--d-sub); white-space: nowrap; }
+.phone .dali-sheet .dali-jside-col { gap: 2px; }
+.phone .dali-sheet .dali-jside-col small { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--d-ink2); }
+.phone .dali-sheet .dali-jside-col small strong { font-size: 13px; font-weight: 700; color: var(--d-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.phone .dali-sheet .dali-jside-col > em { font-style: normal; font-size: 12px; color: var(--d-sub); }
+.phone .dali-sheet .dali-jside-col > b { margin-top: 6px; }
 .phone .dali-sheet .dali-jside-col b { font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--d-ink); word-break: keep-all; }
 
 /* 종목 로고: 저장소의 img/logo-<종목코드>.png. 없으면 글자 동그라미 */
