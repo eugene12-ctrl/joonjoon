@@ -18,7 +18,6 @@ function screenHTML() {
 
   return `
   <div class="menu">
-    <div class="demo-band">시연용 가상 화면</div>
     <header class="app-head">
       <div class="who"><strong>홍길동님</strong>
         <div class="mode" role="group" aria-label="화면 모드"><button type="button" class="on">기본</button><button type="button">간편</button></div>
@@ -56,7 +55,6 @@ function screenHTML() {
     </nav>
   </div>
   <section class="sub" aria-label="${NEW_FEATURE_TITLE}" inert>
-    <div class="demo-band">시연용 가상 화면</div>
     <header class="sub-head">
       <button type="button" class="back" aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
       <h1>${NEW_FEATURE_TITLE}</h1>
@@ -187,7 +185,7 @@ function createScreen(host) {
   catsVp.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") td = { x: e.clientX, s: catsVp.scrollLeft, moved: false }; });
   catsVp.addEventListener("pointermove", e => {
     if (!td) return;
-    const dx = e.clientX - td.x;
+    const dx = (e.clientX - td.x) / (window.phoneZoom ? window.phoneZoom() : 1); // 확대된 휴대폰(fit.js)이면 안쪽 좌표로
     if (!td.moved && Math.abs(dx) > 5) { td.moved = true; catsVp.setPointerCapture(e.pointerId); }
     if (td.moved) catsVp.scrollLeft = td.s - dx;
   });
@@ -200,7 +198,7 @@ function createScreen(host) {
   vp.addEventListener("pointerdown", e => { gd = { x: e.clientX, y: e.clientY, w: vp.clientWidth, dx: 0, drag: false }; });
   vp.addEventListener("pointermove", e => {
     if (!gd) return;
-    const dx = e.clientX - gd.x, dy = e.clientY - gd.y;
+    const z = (window.phoneZoom ? window.phoneZoom() : 1), dx = (e.clientX - gd.x) / z, dy = (e.clientY - gd.y) / z;
     if (!gd.drag) {
       if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
         gd.drag = true; vp.setPointerCapture(e.pointerId); track.style.transition = "none";
@@ -239,6 +237,7 @@ function createScreen(host) {
     const ci = +tile.closest(".page").dataset.c;
     select(ci, +tile.dataset.t);
     if (tile.classList.contains("new")) openNewFeature(api);
+    else openTileLink(ci, tile.querySelector(".lbl").textContent);
   });
 
   // 펼쳐보기 / 접기

@@ -1,0 +1,51 @@
+/* ===== 읽기 화면(뉴스 본문, 기사 본문)을 오늘 탭과 같은 틀로 =====
+   흰 바탕, 맨 위 짙은 띠 하나(숫자 하나, AI 요약 한 줄), 그 아래는 글과 줄 목록. 카드, 알약, 그림자 없음.
+   dali-renew.css 뒤에 불러와서 그쪽 카드 모양을 덮는다. 되돌리려면 각 페이지에서 이 파일을 불러오는 줄을 지우면 된다. */
+
+/* 머리: 뒤로 화살표와 오른쪽 "주문" 글자뿐 */
+.phone .dali-sheet .dali-page { background: #fff; }
+.phone .dali-sheet .dali-page-head { display: flex; align-items: center; gap: 0; padding: 4px 8px 4px 6px; background: #fff; border: 0; box-shadow: none; }
+.phone .dali-sheet .dali-page-head .dali-back { width: 36px; height: 36px; font-size: 24px; color: var(--d-ink); border-radius: 10px; }
+.phone .dali-sheet .dali-page-head .dali-symlink {
+  flex: 0 0 auto; margin-left: auto; padding: 8px 10px; gap: 2px; border-radius: 10px; background: none; box-shadow: none;
+  font-size: 14px; font-weight: 700; color: var(--d-brand2);
+}
+.phone .dali-sheet .dali-page-head .dali-symlink .dali-go { margin: 0; padding: 0; background: none; color: inherit; font-size: 16px; font-weight: 700; line-height: 1; }
+.phone .dali-sheet .dali-page-body { padding: 0 0 24px; }
+.phone .dali-sheet .dali-page-body > * + * { margin-top: 0; }
+
+/* 맨 위 띠: 오늘 탭 히어로(dali-pro.css .dali-pro-act) 모양 그대로. 로고는 작게 */
+.phone .dali-sheet .dali-read .dali-pro-act { margin: 0; padding: 18px 20px 20px; }
+.phone .dali-sheet .dali-read-act .dali-pro-act-top { gap: 8px; margin-bottom: 12px; font-size: 13.5px; }
+.phone .dali-sheet .dali-read-act .dali-pro-act-top .dali-pro-logo { flex: 0 0 auto; width: 26px; height: 26px; font-size: 11px; }
+.phone .dali-sheet .dali-read-act .dali-pro-act-top > span { margin-left: auto; font-weight: 500; color: rgba(255, 255, 255, .6); }
+.phone .dali-sheet .dali-read-act h2 { margin-top: 8px; font-size: 17px; font-weight: 600; line-height: 1.45; }
+
+/* 글: 상자 없이 흰 바탕에 바로 */
+.phone .dali-sheet .dali-page-body .dali-article { margin: 0; padding: 22px 20px 10px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.phone .dali-sheet .dali-page-body .dali-article h3 { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.4; letter-spacing: -.02em; color: var(--d-ink); word-break: keep-all; }
+.phone .dali-sheet .dali-page-body .dali-article .dali-hint { margin: 6px 0 14px; font-size: 13px; color: var(--d-sub); }
+.phone .dali-sheet .dali-page-body .dali-article p:not(.dali-hint) { margin: 0 0 10px; font-size: 15px; line-height: 1.75; color: var(--d-ink2); word-break: keep-all; }
+
+/* 뉴스 | 공시: 밑줄 탭 */
+.phone .dali-sheet .dali-page-body .dali-subtabs {
+  display: flex; gap: 20px; margin: 8px 0 0; padding: 0 20px; border: 0; border-bottom: 1px solid var(--d-line); border-radius: 0; background: none;
+}
+.phone .dali-sheet .dali-page-body .dali-subtabs button {
+  flex: 0 0 auto; height: auto; margin-bottom: -1px; padding: 12px 0 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+  background: none; box-shadow: none; font-size: 15px; font-weight: 500; color: var(--d-sub);
+}
+.phone .dali-sheet .dali-page-body .dali-subtabs button.on { background: none; box-shadow: none; color: var(--d-ink); font-weight: 700; border-bottom-color: var(--d-ink); }
+
+/* 기사 목록: 얇은 선으로 나눈 줄 */
+.phone .dali-sheet .dali-page-body .dali-feed { gap: 0; padding: 0 20px; }
+.phone .dali-sheet .dali-page-body .dali-feed-row {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--d-line); border-radius: 0;
+  background: none; box-shadow: none; text-align: left; color: var(--d-ink);
+}
+.phone .dali-sheet .dali-page-body .dali-feed-row:last-child { border-bottom: 0; }
+.phone .dali-sheet .dali-page-body .dali-feed-date { flex: none; padding-top: 2px; font-size: 12px; font-weight: 500; color: var(--d-sub); }
+.phone .dali-sheet .dali-page-body .dali-feed-row b { display: block; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--d-ink); word-break: keep-all; }
+.phone .dali-sheet .dali-page-body .dali-feed-row.on b { color: var(--d-brand2); }
+.phone .dali-sheet .dali-page-body .dali-feed-row small { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.45; color: var(--d-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.phone .dali-sheet .dali-page-body .dali-feed-empty { padding: 24px 20px; font-size: 14px; color: var(--d-sub); }

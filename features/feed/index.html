@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>시장 소식 · 시연용 가상 화면</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../../src/css/main.css">
+<link rel="stylesheet" href="feed.css">
+<script src="../../src/js/fit.js"></script>
+</head>
+<body>
+
+<main class="phone">
+  <div class="demo-band">시연용 가상 화면</div>
+  <header class="feed-head">
+    <a class="back" href="../../index.html" aria-label="전체메뉴로 돌아가기">←</a>
+    <h1>시장 소식</h1>
+    <button class="feed-refresh" type="button" aria-label="새로고침">↻</button>
+  </header>
+
+  <!-- 캐릭터 디자인 확정 전: 원 도형으로 대신합니다 -->
+  <section class="buddy">
+    <div class="buddy-face" aria-hidden="true"></div>
+    <p class="buddy-say">소식을 가져오는 중이에요…</p>
+  </section>
+
+  <nav class="feed-tabs">
+    <button class="feed-tab on" type="button" data-tab="disclosures">공시</button>
+    <button class="feed-tab" type="button" data-tab="news">뉴스</button>
+  </nav>
+
+  <section class="feed-list"></section>
+
+  <!-- 뉴스를 누르면 밖으로 나가지 않고 여기에 본문을 보여 줍니다 -->
+  <section class="feed-detail" hidden></section>
+
+  <footer class="feed-foot">
+    <p class="source-note"></p>
+    <p>원문 정보를 그대로 옮긴 것이며, 투자 권유가 아닙니다.</p>
+  </footer>
+</main>
+
+<!-- 불러오는 순서: 연결 정보 → 가상 데이터 → 화면 -->
+<script src="supabase-config.js"></script>
+<script src="mock-feed.js"></script>
+<script src="feed.js"></script>
+</body>
+</html>

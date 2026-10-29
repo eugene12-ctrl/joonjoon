@@ -1,0 +1,273 @@
+/* ===== 달이 기존 화면 리뉴얼 (뉴스, 뉴스 읽기, 매매일지, 관리, 달이 키우기, 시트 머리와 탭) =====
+   모양만 바꾼다. 마크업과 JS는 dali.js 그대로. 가장 마지막에 불러온다.
+   기준은 오늘 탭(dali-pro.css)과 같은 값: 흰 카드 18px 모서리, 회색 바탕 #F4F6F8, 포인트 청록 #1B5F6B.
+   되돌리려면 각 페이지에서 이 파일을 불러오는 <link> 한 줄만 지우면 된다. */
+.phone {
+  --r-bg: #F4F6F8;
+  --r-card: #FFFFFF;
+  --r-ink: #191F28;
+  --r-ink2: #4E5968;
+  --r-sub: #6B7684;
+  --r-line: #EEF0F2;
+  --r-brand: #1B5F6B;
+  --r-brand-d: #0E3A4A;
+  --r-tint: #EAF2F3;
+  --r-up: #E42939;
+  --r-up-t: #FDECEE;
+  --r-down: #3182F6;
+  --r-down-t: #E8F1FE;
+  --r-shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 6px 16px -10px rgba(0, 0, 0, .12);
+}
+
+/* ---------- 시트 머리와 탭 ---------- */
+.phone .dali-sheet .dali-sheet-head { padding: 8px 20px 12px; }
+.phone .dali-sheet .dali-sheet-head strong { font-size: 19px; font-weight: 800; letter-spacing: -.3px; color: var(--r-ink); }
+.phone .dali-sheet .dali-where { font-size: 12.5px; color: var(--r-sub); }
+.phone .dali-sheet .dali-pebbles { background: var(--r-tint); color: var(--r-brand); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+.phone .dali-sheet .dali-tabs {
+  display: flex; gap: 2px; margin: 0 16px 4px; padding: 4px; border: 0; border-radius: 14px; background: #F2F4F6; position: relative;
+}
+.phone .dali-sheet .dali-tabs .dali-tabpill { display: none; }
+.phone .dali-sheet .dali-tabs button {
+  flex: 1; height: 38px; border-radius: 10px; border: 0; font-size: 14.5px; font-weight: 600; color: var(--r-sub); background: transparent;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.phone .dali-sheet .dali-tabs button.on { background: #fff; color: var(--r-ink); font-weight: 800; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.phone .dali-sheet .dali-tabs button::after { display: none; }
+
+/* 오늘 탭이 아닐 때는 회색 바탕 위에 흰 카드 */
+.phone .dali-sheet:has(.dali-tabs button.on:not([data-tab="today"])) .dali-body { background: var(--r-bg); padding: 12px 0 28px; }
+
+/* ---------- 뉴스 탭 ---------- */
+.phone .dali-sheet .dali-track {
+  display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 12px; padding: 0 16px; background: none; border: 0;
+}
+.phone .dali-sheet .dali-track::-webkit-scrollbar { display: none; }
+.phone .dali-sheet .dali-track > span { flex: 0 0 auto; font-size: 12.5px; font-weight: 700; color: var(--r-brand); margin-right: 2px; }
+.phone .dali-sheet .dali-track i {
+  flex: 0 0 auto; font-style: normal; font-size: 13px; font-weight: 600; color: var(--r-ink2); background: #fff;
+  padding: 7px 12px; border-radius: 999px; box-shadow: var(--r-shadow);
+}
+.phone .dali-sheet .dali-track i.hold::after { content: "보유"; margin-left: 5px; font-size: 11px; font-weight: 700; color: var(--r-brand); }
+
+.phone .dali-sheet .dali-news {
+  display: grid; grid-template-columns: 1fr 76px; align-items: center; gap: 12px; width: calc(100% - 32px); margin: 0 16px 10px;
+  padding: 16px 16px 16px 18px; border: 0; border-radius: 18px; background: var(--r-card); box-shadow: var(--r-shadow); text-align: left;
+  transition: transform .15s ease;
+}
+.phone .dali-sheet .dali-news:active { transform: scale(.985); }
+.phone .dali-sheet .dali-news.unseen { box-shadow: 0 0 0 1.5px var(--r-brand), var(--r-shadow); }
+.phone .dali-sheet .dali-news::before { display: none; }
+.phone .dali-sheet .dali-news-main { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.phone .dali-sheet .dali-news-top { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.phone .dali-sheet .dali-news-top > b { font-size: 16.5px; font-weight: 800; color: var(--r-ink); letter-spacing: -.2px; }
+.phone .dali-sheet .dali-bang {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 0; background: var(--r-up); color: #fff; font-size: 12px; font-weight: 900;
+}
+.phone .dali-sheet .dali-news .dali-quote { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--r-ink2); }
+.phone .dali-sheet .dali-news .dali-quote b { padding: 2px 8px; border-radius: 7px; font-size: 13px; font-weight: 800; }
+.phone .dali-sheet .dali-news .dali-quote.up b { background: var(--r-up-t); color: var(--r-up); }
+.phone .dali-sheet .dali-news .dali-quote.down b { background: var(--r-down-t); color: var(--r-down); }
+.phone .dali-sheet .dali-news .dali-quote.up, .phone .dali-sheet .dali-news .dali-quote.down { color: var(--r-ink2); }
+.phone .dali-sheet .dali-time { margin-left: auto; font-size: 12px; color: var(--r-sub); }
+.phone .dali-sheet .dali-why { display: block; font-size: 14px; line-height: 1.5; color: var(--r-ink2); }
+.phone .dali-sheet .dali-why em {
+  font-style: normal; display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 6px; background: var(--r-tint); color: var(--r-brand); font-size: 12px; font-weight: 800; vertical-align: 1px;
+}
+.phone .dali-sheet .dali-news > svg { width: 76px; height: 44px; }
+.phone .dali-sheet .dali-hint.center { margin: 14px 24px 0; font-size: 12.5px; color: var(--r-sub); }
+
+/* ---------- 뉴스 읽기 화면 ---------- */
+.phone .dali-sheet .dali-page { background: var(--r-bg); }
+.phone .dali-sheet .dali-page-head { background: #fff; padding: 10px 14px 12px; border-bottom: 0; box-shadow: 0 1px 0 var(--r-line); }
+.phone .dali-sheet .dali-back { font-size: 24px; color: var(--r-ink); width: 36px; height: 36px; border-radius: 10px; }
+.phone .dali-sheet .dali-symlink {
+  flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 0; border-radius: 14px; background: #F2F4F6; font-size: 16px; font-weight: 800; color: var(--r-ink);
+}
+.phone .dali-sheet .dali-symlink .dali-quote { font-size: 14px; font-weight: 700; }
+.phone .dali-sheet .dali-go { margin-left: auto; padding: 6px 12px; border-radius: 999px; background: var(--r-brand); color: #fff; font-size: 13px; font-weight: 800; }
+.phone .dali-sheet .dali-page-body { padding: 12px 0 28px; }
+.phone .dali-sheet .dali-chartbox { margin: 0 16px 10px; padding: 14px 12px 10px; border-radius: 18px; background: #fff; box-shadow: var(--r-shadow); }
+.phone .dali-sheet .dali-ctx { margin: 0 16px 10px; padding: 14px 16px; border-radius: 16px; background: var(--r-tint); border: 0; }
+.phone .dali-sheet .dali-ctx p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--r-brand-d); font-weight: 600; }
+.phone .dali-sheet .dali-ctx em { font-style: normal; display: inline-block; margin-right: 6px; padding: 1px 7px; border-radius: 6px; background: var(--r-brand); color: #fff; font-size: 12px; font-weight: 800; }
+.phone .dali-sheet .dali-article { margin: 0 16px 10px; padding: 20px; border-radius: 18px; background: #fff; box-shadow: var(--r-shadow); }
+.phone .dali-sheet .dali-article h3 { margin: 0 0 4px; font-size: 20px; font-weight: 800; line-height: 1.4; letter-spacing: -.3px; color: var(--r-ink); }
+.phone .dali-sheet .dali-article .dali-hint { margin: 0 0 12px; font-size: 12.5px; color: var(--r-sub); }
+.phone .dali-sheet .dali-article p:not(.dali-hint) { font-size: 15.5px; line-height: 1.75; color: #333D4B; }
+.phone .dali-sheet .dali-subtabs { display: flex; gap: 2px; margin: 6px 16px 10px; padding: 4px; border: 0; border-radius: 12px; background: #E9ECEF; }
+.phone .dali-sheet .dali-subtabs button { flex: 1; height: 34px; border: 0; border-radius: 9px; background: transparent; font-size: 14px; font-weight: 600; color: var(--r-sub); }
+.phone .dali-sheet .dali-subtabs button.on { background: #fff; color: var(--r-ink); font-weight: 800; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.phone .dali-sheet .dali-subtabs button::after { display: none; }
+.phone .dali-sheet .dali-feed { display: flex; flex-direction: column; gap: 8px; padding: 0 16px; }
+.phone .dali-sheet .dali-feed-row {
+  display: flex; gap: 12px; width: 100%; padding: 14px 16px; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--r-shadow); text-align: left; color: inherit; text-decoration: none;
+}
+.phone .dali-sheet .dali-feed-date { flex: 0 0 44px; font-size: 12px; font-weight: 700; color: var(--r-brand); padding-top: 2px; }
+.phone .dali-sheet .dali-feed-row b { display: block; font-size: 14.5px; font-weight: 700; line-height: 1.45; color: var(--r-ink); }
+.phone .dali-sheet .dali-feed-row small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: var(--r-sub); }
+
+/* ---------- 매매일지 탭 ---------- */
+.phone .dali-sheet .dali-sum {
+  display: flex; flex-direction: column; gap: 2px; margin: 0 16px 12px; padding: 20px; border: 0; border-radius: 22px;
+  background: linear-gradient(145deg, #0E3A4A 0%, #1B5F6B 100%); color: #fff; box-shadow: 0 12px 24px -16px rgba(14, 58, 74, .7);
+}
+.phone .dali-sheet .dali-sum > span { font-size: 13px; color: rgba(255, 255, 255, .72); }
+.phone .dali-sheet .dali-sum > b { font-size: 32px; font-weight: 800; letter-spacing: -.6px; line-height: 1.25; }
+.phone .dali-sheet .dali-sum > b.up { color: #FF9AA2; }
+.phone .dali-sheet .dali-sum > b.down { color: #9CC3FF; }
+.phone .dali-sheet .dali-sum > small { font-size: 12.5px; color: rgba(255, 255, 255, .66); margin-bottom: 10px; }
+.phone .dali-sheet .dali-sum .dali-bars { border-top: 1px solid rgba(255, 255, 255, .14); padding-top: 12px; margin-top: 2px; }
+.phone .dali-sheet .dali-sum .dali-barrow { display: grid; grid-template-columns: 84px 1fr auto; align-items: center; gap: 10px; padding: 5px 0; }
+.phone .dali-sheet .dali-sum .lbl { font-size: 13px; color: rgba(255, 255, 255, .85); }
+.phone .dali-sheet .dali-sum .track { position: relative; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .12); overflow: hidden; }
+.phone .dali-sheet .dali-sum .zero { background: rgba(255, 255, 255, .4); }
+.phone .dali-sheet .dali-sum .bar { border-radius: 4px; }
+.phone .dali-sheet .dali-sum .bar.up { background: #FF8A94; }
+.phone .dali-sheet .dali-sum .bar.down { background: #8DB8FF; }
+.phone .dali-sheet .dali-sum .val { font-size: 13px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.phone .dali-sheet .dali-body > .dali-hint { margin: 0 24px 12px; font-size: 12.5px; color: var(--r-sub); }
+
+.phone .dali-sheet .dali-trade { margin: 0 16px 12px; padding: 18px; border: 0; border-radius: 20px; background: #fff; box-shadow: var(--r-shadow); }
+.phone .dali-sheet .dali-trade.live { box-shadow: 0 0 0 1.5px var(--r-brand), var(--r-shadow); }
+.phone .dali-sheet .dali-trade > header { display: flex; align-items: baseline; gap: 6px; }
+.phone .dali-sheet .dali-trade > header b { font-size: 17px; font-weight: 800; color: var(--r-ink); }
+.phone .dali-sheet .dali-trade > header span { font-size: 13px; color: var(--r-sub); }
+.phone .dali-sheet .dali-state { margin-left: auto; padding: 4px 10px; border-radius: 999px; font-size: 12px !important; font-weight: 700; background: #F2F4F6; color: var(--r-ink2) !important; }
+.phone .dali-sheet .dali-state.open, .phone .dali-sheet .dali-state.hold { background: var(--r-tint); color: var(--r-brand) !important; }
+.phone .dali-sheet .dali-pnl { margin: 8px 0 4px; font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+.phone .dali-sheet .dali-pnl.up { color: var(--r-up); }
+.phone .dali-sheet .dali-pnl.down { color: var(--r-down); }
+.phone .dali-sheet .dali-pnl span { margin-left: 6px; padding: 2px 8px; border-radius: 7px; font-size: 13px; font-weight: 800; vertical-align: 5px; }
+.phone .dali-sheet .dali-pnl.up span { background: var(--r-up-t); }
+.phone .dali-sheet .dali-pnl.down span { background: var(--r-down-t); }
+.phone .dali-sheet .dali-trade > svg { margin: 4px -4px 8px; }
+.phone .dali-sheet .dali-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border: 0; padding: 0; }
+.phone .dali-sheet .dali-side-box { padding: 12px 14px; border: 0 !important; border-radius: 14px; background: #F7F8FA; }
+.phone .dali-sheet .dali-side-label { margin: 0 0 6px; font-size: 13px; font-weight: 800; color: var(--r-ink); }
+.phone .dali-sheet .dali-side-label span { margin-left: 4px; font-size: 12px; font-weight: 500; color: var(--r-sub); }
+.phone .dali-sheet .dali-side-box p:not(.dali-side-label):not(.dali-mood) { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--r-ink2); }
+.phone .dali-sheet .dali-mood { display: inline-block; margin: 8px 0 0; padding: 3px 8px; border-radius: 6px; background: #fff; font-size: 11.5px; font-weight: 600; color: var(--r-sub); }
+.phone .dali-sheet .dali-trade .dali-row, .phone .dali-sheet .dali-trade .dali-mine { margin-top: 12px; }
+.phone .dali-sheet .dali-trade .dali-link { font-weight: 700; color: var(--r-brand); }
+.phone .dali-sheet .dali-btn { border-radius: 12px; font-weight: 800; }
+
+/* ---------- 관리 탭 ---------- */
+.phone .dali-sheet .dali-body > .dali-card {
+  margin: 0 16px 12px; padding: 18px; border: 0; border-radius: 22px; background: #fff; box-shadow: var(--r-shadow); overflow: hidden;
+}
+.phone .dali-sheet .dali-body > .dali-card.grow.compact { padding: 0; }
+.phone .dali-sheet .dali-card.grow.compact .dali-sea { border-radius: 22px 22px 0 0; }
+.phone .dali-sheet .dali-card h3 { margin: 0 0 6px; font-size: 18px; font-weight: 800; letter-spacing: -.3px; color: var(--r-ink); }
+.phone .dali-sheet .dali-next { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px 18px 18px; border: 0; background: #fff; text-align: left; }
+.phone .dali-sheet .dali-next > img { width: 40px; height: 40px; padding: 6px; border-radius: 12px; background: var(--r-tint); }
+.phone .dali-sheet .dali-next > span { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.phone .dali-sheet .dali-next small { font-size: 12.5px; color: var(--r-sub); }
+.phone .dali-sheet .dali-next b { font-size: 16px; font-weight: 800; color: var(--r-ink); }
+.phone .dali-sheet .dali-next em { font-style: normal; font-size: 20px; color: var(--r-sub); }
+.phone .dali-sheet .dali-bar { display: block; height: 8px; margin-top: 6px; border-radius: 4px; background: #EEF0F2; overflow: hidden; }
+.phone .dali-sheet .dali-bar > i, .phone .dali-sheet .dali-bar > span { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2A8C98, #1B5F6B); }
+.phone .dali-sheet .dali-row-m { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--r-line); font-size: 15px; }
+.phone .dali-sheet .dali-card h3 + .dali-row-m { border-top: 0; padding-top: 6px; }
+.phone .dali-sheet .dali-row-m > img { width: 40px; height: 40px; padding: 7px; border-radius: 12px; background: #F2F4F6; flex: 0 0 auto; }
+.phone .dali-sheet .dali-row-m > span:first-of-type { flex: 1; min-width: 0; font-weight: 600; color: var(--r-ink); line-height: 1.4; }
+.phone .dali-sheet .dali-row-m.done > img { opacity: .55; }
+.phone .dali-sheet .dali-row-m.done > span:first-of-type { color: var(--r-sub); font-weight: 500; }
+.phone .dali-sheet .dali-tag { display: inline-block; margin-left: 4px; padding: 2px 7px; border-radius: 6px; background: var(--r-tint); color: var(--r-brand); font-size: 11px; font-weight: 700; font-style: normal; vertical-align: 1px; }
+.phone .dali-sheet .dali-btn.small { height: 34px; padding: 0 14px; border-radius: 10px; background: var(--r-brand); color: #fff; font-size: 13.5px; font-weight: 800; border: 0; }
+.phone .dali-sheet .dali-check { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--r-tint); color: var(--r-brand); font-size: 14px; font-weight: 900; }
+.phone .dali-sheet .dali-reward { padding: 4px 10px; border-radius: 999px; background: #FFF4E6; color: #C26A00; font-size: 12.5px; font-weight: 800; }
+
+/* ---------- 달이 키우기 화면 ---------- */
+.phone .dali-sheet .dali-page-head strong { font-size: 17px; font-weight: 800; color: var(--r-ink); }
+.phone .dali-sheet .dali-page-body > .dali-card { margin: 0 16px 12px; padding: 20px; border: 0; border-radius: 22px; background: #fff; box-shadow: var(--r-shadow); }
+.phone .dali-sheet .dali-page-body > .dali-card > .dali-hint { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--r-sub); }
+.phone .dali-sheet .dali-ladder { position: relative; list-style: none; margin: 0 0 16px; padding: 0; }
+.phone .dali-sheet .dali-ladder::before { content: ""; position: absolute; left: 21px; top: 24px; bottom: 24px; width: 2px; background: #E5E8EB; }
+.phone .dali-sheet .dali-ladder li {
+  position: relative; display: flex; align-items: center; gap: 12px; margin: 0 0 6px; padding: 10px 12px 10px 4px; border: 0; border-radius: 16px; background: transparent;
+}
+.phone .dali-sheet .dali-ladder li > img { position: relative; z-index: 1; width: 36px; height: 36px; padding: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #E5E8EB; }
+.phone .dali-sheet .dali-ladder li > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.phone .dali-sheet .dali-ladder li small { font-size: 12px; color: var(--r-sub); }
+.phone .dali-sheet .dali-ladder li b { font-size: 15px; font-weight: 700; color: var(--r-ink); line-height: 1.4; }
+.phone .dali-sheet .dali-ladder li.past > img { box-shadow: 0 0 0 2px var(--r-brand); }
+.phone .dali-sheet .dali-ladder li.now { background: var(--r-tint); }
+.phone .dali-sheet .dali-ladder li.now > img { box-shadow: 0 0 0 3px var(--r-brand); }
+.phone .dali-sheet .dali-ladder li.now small { color: var(--r-brand); font-weight: 700; }
+.phone .dali-sheet .dali-ladder li.lock { opacity: .6; }
+.phone .dali-sheet .dali-ladder .dali-link { padding: 6px 12px; border-radius: 999px; background: #fff; color: var(--r-brand); font-size: 13px; font-weight: 800; border: 0; }
+.phone .dali-sheet .dali-ladder .dali-left { font-size: 12.5px; font-weight: 700; color: var(--r-brand); }
+.phone .dali-sheet .dali-closet { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.phone .dali-sheet .dali-closet button {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 6px 12px; border: 0; border-radius: 16px; background: #F7F8FA; box-shadow: none;
+}
+.phone .dali-sheet .dali-closet button img { width: 40px; height: 40px; }
+.phone .dali-sheet .dali-closet button small { font-size: 12px; font-weight: 600; color: var(--r-ink2); }
+.phone .dali-sheet .dali-closet button.on { background: var(--r-tint); box-shadow: 0 0 0 2px var(--r-brand); }
+.phone .dali-sheet .dali-closet button:disabled { opacity: .5; }
+.phone .dali-sheet .dali-card.forest h3 { display: flex; align-items: baseline; gap: 8px; }
+.phone .dali-sheet .dali-card.forest .dali-left { font-size: 14px; font-weight: 800; color: var(--r-brand); }
+.phone .dali-sheet .dali-trees { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin: 10px 0; padding: 12px; border-radius: 14px; background: #F2F7F0; }
+.phone .dali-sheet .dali-trees span { display: grid; place-items: center; }
+.phone .dali-sheet .dali-trees span img { width: 24px; height: 24px; }
+.phone .dali-sheet .dali-trees span:not(.on) img { filter: grayscale(1); opacity: .3; }
+
+@media (prefers-reduced-motion: reduce) { .phone .dali-sheet .dali-news, .phone .dali-sheet .dali-tabs button { transition: none; } }
+
+/* ---------- 1차 확인 뒤 고친 것 ---------- */
+/* 카드가 오른쪽으로 삐져나가던 것: 바깥 여백을 쓰는 카드는 폭을 자동으로 */
+.phone .dali-sheet .dali-body > .dali-card,
+.phone .dali-sheet .dali-page-body > .dali-card,
+.phone .dali-sheet .dali-body > .dali-sum,
+.phone .dali-sheet .dali-body > .dali-trade { width: auto; max-width: none; box-sizing: border-box; }
+/* 뉴스 읽기 머리: 종목 이름이 두 줄로 꺾이지 않게 */
+.phone .dali-sheet .dali-symlink { white-space: nowrap; min-width: 0; overflow: hidden; }
+.phone .dali-sheet .dali-symlink .dali-quote { flex: 0 0 auto; }
+.phone .dali-sheet .dali-go { flex: 0 0 auto; }
+/* 달이 키우기 단계: 그림이 보이게 하고 세로 선은 그림 뒤로 */
+.phone .dali-sheet .dali-ladder li > img { display: block; flex: 0 0 auto; }
+.phone .dali-sheet .dali-ladder::before { z-index: 0; }
+.phone .dali-sheet .dali-ladder li > div { position: relative; z-index: 1; }
+.phone .dali-sheet .dali-row-m > img, .phone .dali-sheet .dali-next > img { display: block; }
+.phone .dali-sheet .dali-row-m::before { display: none; }
+/* 느낌표: 빨강은 등락 전용이라 청록 테두리 원 */
+.phone .dali-sheet .dali-bang { background: #fff; color: var(--r-brand); box-shadow: inset 0 0 0 1.6px var(--r-brand); }
+/* 달이 키우기 화면 카드가 오른쪽에 붙던 것 */
+.phone .dali-sheet .dali-page-body { box-sizing: border-box; width: 100%; overflow-x: hidden; }
+.phone .dali-sheet .dali-symlink > b, .phone .dali-sheet .dali-symlink { white-space: nowrap; }
+.phone .dali-sheet .dali-row-m > span:first-of-type::before { display: none; }
+.phone .dali-sheet .dali-next { padding-left: 18px; }
+
+/* 관리 탭 카드가 세로로 눌려 잘리던 것: 본문이 flex 세로 줄이라 카드가 줄어들면서 overflow로 잘렸음 */
+.phone .dali-sheet .dali-body > * { flex-shrink: 0; }
+
+/* ---------- 달이 키우기 화면 2차: 지금 단계가 맨 위, 단계 목록은 같은 버튼, 옷장에 제목 ---------- */
+.phone .dali-sheet .dali-ghero { display: flex; align-items: center; gap: 14px; margin: -4px 0 18px; padding: 14px; border-radius: 18px; background: linear-gradient(145deg, #0E3A4A, #1B5F6B); color: #fff; }
+.phone .dali-sheet .dali-gotter { position: relative; flex: 0 0 auto; width: 84px; height: 84px; }
+.phone .dali-sheet .dali-gotter > img:first-child { width: 100%; height: 100%; object-fit: contain; }
+.phone .dali-sheet .dali-gotter .dali-wear { position: absolute; }
+.phone .dali-sheet .dali-ghero > div { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.phone .dali-sheet .dali-ghero small { font-size: 12px; color: rgba(255, 255, 255, .7); }
+.phone .dali-sheet .dali-ghero b { font-size: 19px; font-weight: 800; letter-spacing: -.3px; }
+.phone .dali-sheet .dali-ghero span { font-size: 13px; line-height: 1.45; color: rgba(255, 255, 255, .85); }
+.phone .dali-sheet .dali-ghero .dali-bar { margin-top: 8px; background: rgba(255, 255, 255, .18); }
+.phone .dali-sheet .dali-ghero .dali-bar > i { background: #7FD3DC; }
+.phone .dali-sheet .dali-gsec { margin: 4px 0 8px; font-size: 13px; font-weight: 700; color: #6B7684; }
+/* 단계 목록: 연 단계는 같은 알약 버튼, 지금 단계만 바탕색 */
+.phone .dali-sheet .dali-ladder li.past, .phone .dali-sheet .dali-ladder li.now { opacity: 1; }
+.phone .dali-sheet .dali-ladder li.past > img, .phone .dali-sheet .dali-ladder li.now > img { box-shadow: 0 0 0 2px #1B5F6B; }
+.phone .dali-sheet .dali-ladder .dali-link { min-width: 52px; padding: 7px 12px; border-radius: 999px; background: #EAF2F3; color: #1B5F6B; font-size: 13px; font-weight: 800; text-align: center; }
+.phone .dali-sheet .dali-ladder li.now .dali-link { background: #fff; }
+.phone .dali-sheet .dali-ladder li.next, .phone .dali-sheet .dali-ladder li.lock { opacity: .55; }
+.phone .dali-sheet .dali-ladder .dali-say { flex-basis: 100%; margin: 4px 0 0 48px; font-size: 13px; line-height: 1.5; color: #4E5968; }
+.phone .dali-sheet .dali-ladder li { flex-wrap: wrap; }
+/* 옷장: 작게 한 줄 */
+.phone .dali-sheet .dali-closet button { padding: 10px 6px 8px; }
+.phone .dali-sheet .dali-closet button img { width: 32px; height: 32px; }
+.phone .dali-sheet .dali-ghero, .phone .dali-sheet .dali-gsec { text-align: left; }
+.phone .dali-sheet .dali-ghero > div { align-items: flex-start; }
+
+/* 관리 탭도 오늘, 뉴스, 매매일지처럼 흰 바탕. 카드는 그림자 대신 옅은 테두리로 */
+.phone .dali-sheet:has(.dali-tabs button.on[data-tab="manage"]) .dali-body { background: #fff; }
+.phone .dali-sheet:has(.dali-tabs button.on[data-tab="manage"]) .dali-body > .dali-card { box-shadow: none; border: 1px solid #E9EDF0; }

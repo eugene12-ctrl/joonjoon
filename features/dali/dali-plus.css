@@ -1,0 +1,68 @@
+/* ===== 달이 움직임 더하기 (dali-plus.js 짝) =====
+   되돌리려면 이 파일과 dali-plus.js를 불러오는 줄을 지우면 됩니다. */
+.phone {
+  /* 넘침 4% 정도의 차분한 스프링 */
+  --dali-spring: linear(0, .071 3%, .255 7.1%, .513 12.1%, .762 17.9%, .932 24.1%, 1.019 30.6%, 1.045 36.6%, 1.037 44.3%, 1.012 56.6%, .998 70.4%, 1);
+}
+
+/* 날아가는 해달, 조약돌 */
+.dali-flyer { position: absolute; z-index: 30; pointer-events: none; transform-origin: 0 0; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .25)); }
+
+/* 시트: 스프링으로 열리고, 닫힐 땐 빠르게 */
+.dali-sheet { transition: transform .26s cubic-bezier(.4, 0, 1, 1); }
+.dali-sheet.open { transition: transform .58s var(--dali-spring); }
+.dali-grab { display: flex; justify-content: center; padding: 8px 0 0; cursor: grab; touch-action: none; }
+.dali-grab::before { content: ""; width: 38px; height: 5px; border-radius: 999px; background: #D5D9DD; }
+.dali-sheet-head { padding-top: 6px; cursor: grab; touch-action: none; }
+
+/* 미끄러지는 탭 표시 */
+.dali-tabs { position: relative; }
+.dali-tabs button { position: relative; z-index: 1; transition: color .2s ease; }
+.dali-tabs button.on { background: transparent; }
+.dali-tabpill {
+  position: absolute; left: 0; top: 0; z-index: 0; background: transparent;
+  transition: transform .42s var(--dali-spring), width .42s var(--dali-spring);
+}
+
+.dali-tabpill::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; border-radius: 2px; background: #1A1D1F; }
+
+/* 누르는 손맛 */
+.dali-sheet button, .dali-fab, .dali-peek button { transition: transform .12s ease; }
+.dali-sheet button:active, .dali-peek button:active { transform: scale(.97); }
+.dali-fab:active { transform: scale(.93); }
+
+/* 말풍선은 달이 버튼에서 피어나듯 */
+.dali-bubble { transform-origin: 100% 100%; transform: scale(.6); transition: opacity .18s ease, transform .5s var(--dali-spring); }
+.dali-bubble.show { transform: none; }
+
+/* 느낌표가 있을 땐 버튼 둘레에 잔잔한 물결 */
+.dali-fab::after {
+  content: ""; position: absolute; inset: -2px; border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 0 rgba(27, 95, 107, .45); opacity: 0;
+}
+.dali-fab.has-alert::after { animation: dali-ring 2.4s ease-out infinite; }
+@keyframes dali-ring { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(27, 95, 107, .45); } 100% { opacity: 0; box-shadow: 0 0 0 14px rgba(27, 95, 107, 0); } }
+
+/* 꾹 눌러 3초 요약 */
+.dali-peek {
+  position: absolute; right: 12px; bottom: 144px; z-index: 12; width: 236px; padding: 12px 14px;
+  background: rgba(255, 255, 255, .96); border-radius: 18px; color: #1A1D1F;
+  box-shadow: 0 18px 36px -16px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .06);
+  display: flex; flex-direction: column; gap: 6px;
+  transform-origin: 90% 100%; transform: scale(.4) translateY(30px); opacity: 0; pointer-events: none;
+  transition: opacity .16s ease, transform .5s var(--dali-spring);
+}
+.dali-peek.show { transform: none; opacity: 1; pointer-events: auto; }
+.dali-peek p { margin: 0; }
+.dali-peek-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+.dali-peek-top span, .dali-peek-foot { font-size: 11.5px; color: #646F7C; }
+.dali-peek-line { font-size: 12.5px; color: #4E5968; }
+.dali-peek-news { display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 9px 10px; border-radius: 12px; background: #F4F6F8; font-size: 13px; }
+.dali-peek-news i { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dali-peek-news small { font-size: 12px; line-height: 1.45; color: #1A1D1F; word-break: keep-all; }
+.dali-sheet-on .dali-peek { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dali-sheet, .dali-sheet.open, .dali-tabpill, .dali-bubble, .dali-peek { transition: none; }
+  .dali-fab.has-alert::after { animation: none; }
+}
