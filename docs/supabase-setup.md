@@ -21,9 +21,10 @@ Edge Function(Deno)은 이 방식을 지원하지 않아 `HandshakeFailure`로 �
 | `supabase/migrations/20261029000000_create_feed_tables.sql` | 테이블, 읽기 권한, 14일 지난 데이터 정리 함수 |
 | `supabase/migrations/20261029000100_schedule_sync_feeds.sql` | 10분마다 sync-feeds 호출 예약 |
 | `supabase/migrations/20261029000200_dart_via_pg_net.sql` | 공시: 10분마다 OpenDART 요청, 1분마다 응답을 테이블에 저장 |
-| `supabase/migrations/20261029000300_dart_tracked_corps.sql` | 공시를 정해 둔 회사(`dart_corps` 표: 삼성전자, SK하이닉스, 현대차, NAVER)만 받도록 바꿈. 10분마다 회사별 최근 1년 중 최신 20건 |
+| `supabase/migrations/20261029000300_dart_tracked_corps.sql` | 공시를 정해 둔 회사(`dart_corps` 표: 삼성전자, SK하이닉스, 현대차, NAVER, 이후 유진투자증권 추가)만 받도록 바꿈. 10분마다 회사별 최근 1년 중 최신 20건 |
 | `supabase/migrations/20261029000400_news_toss_source.sql` | `news` 표에 출처(source)·종목코드·언론사 열 추가 |
 | `supabase/migrations/20261029000500_news_content.sql` | `news` 표에 본문(content) 열 추가 |
+| `supabase/migrations/20261030000000_dart_corps_eugene.sql` | `dart_corps` 표에 유진투자증권(고유번호 00131054, 종목코드 001200) 추가. 증권 앱 종목인데 빠져 있어 공시·뉴스가 0건이던 것 |
 | `supabase/functions/sync-feeds/index.ts` | 뉴스: 토스증권 뉴스(`dart_corps` 회사별 20건 + 시장 주요 뉴스)를 본문까지 테이블에 저장. 네이버 키가 있으면 검색 결과도 함께 |
 | `features/feed/` | 시장 소식 화면. 연결 정보가 비어 있으면 가상 데이터로 보여 줌 |
 
