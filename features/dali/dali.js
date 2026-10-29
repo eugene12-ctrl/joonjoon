@@ -176,6 +176,17 @@
 
   /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
+  // 살 때와 팔 때 그 순간의 시황 한 줄 (dali-customer.js 매매 사진의 코스피, 미국 지수, 업종, 수급, 그 종목 등락)
+  const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
+  const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
+  const sgn = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
+  const FLOW = { buy: "순매수", sell: "순매도", flat: "보합" };
+  const SECT = { up: "5일 흐름 오름세", flat: "5일 흐름 보합", down: "5일 흐름 내림세" };
+  function market(sym, sn) {
+    if (!sn) return "";
+    const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "";
+    return `${sn.at} 코스피 ${sgn(sn.kospi)}, 전날 ${sn.usRef.name} ${sgn(sn.usRef.chg)}, ${sec} 업종 ${SECT[sn.sector]}, 외국인 ${FLOW[sn.flow5.foreign]}, 기관 ${FLOW[sn.flow5.inst]}. 이 종목은 그날 ${sgn(sn.dayChg)}`;
+  }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
     let qty = 0, cost = 0, water = 0, fire = 0;
@@ -194,31 +205,11 @@
     const s = DALI_SYMS[sym], src = s.code ? IMG(`logo-${s.code}`) : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
     return src ? `<img src="${src}" alt="" onerror="this.remove()">` : "";
   }
-  /* --- 달이 3.0: 매매일지 줄마다 산 순간 사진 ---
-     줄에는 살 때 축 두 개와 팔 때 같음 또는 달라짐(보유 중이면 지금과 비교). 누르면 사진 두 칸.
-     사진이 있는 건 국내주식뿐이라 선물 매매는 예전 모양 그대로 */
-  const SNAP = typeof DaliRules !== "undefined" && DaliRules.brief && window.DaliSnap;
-  const scNow = () => (window.daliPro ? window.daliPro.sc : "morning");
-  // 매매일지 카드 → 고객 매매 id. 판 카드는 tid, 보유 카드는 그 종목에서 아직 안 판 첫 매매
-  const tidOf = t => t.tid || (typeof DALI_CUSTOMER !== "undefined" && t.app === "stock" ? (DALI_CUSTOMER.trades.find(x => x.sym === t.sym && !x.sell) || {}).id : null);
-  function snapLine(t) {
-    const id = SNAP && tidOf(t), b = id && DaliRules.brief(id, scNow());
-    if (!b) return "";
-    return `<span class="dali-jsnap">살 때 ${b.buy.join(" ")}, ${b.held ? "지금" : "팔 때"} <em>${b.same ? "같음" : "달라짐"}</em></span>`;
-  }
-  function snapMore(t) {
-    const id = SNAP && tidOf(t);
-    if (!id) return "";
-    const ct = DALI_CUSTOMER.trades.find(x => x.id === id);
-    if (ct.sellSnap) return DaliSnap.cells(ct.buySnap, ct.sellSnap, DaliRules.same(ct.buySnap, ct.sellSnap).diff) + DaliSnap.laterLine(ct.sellSnap.later);
-    const a = DaliRules.alive(ct.sym, scNow());
-    return DaliSnap.cells(a.buySnap, { ...a.nowSnap, at: "10/29" }, a.diff, "지금");
-  }
   // mode "day": 일간 화면의 보유 줄은 산 뒤 전체 손익 대신 그날 하루 움직인 금액과 등락
   function tradeRow(t, mode) {
     const open = state.openTrade === t.id, add = addInfo(t), day = mode === "day" && !t.sell;
     const val = day ? heldToday(t) : t.pnl, valPct = day ? (DALI_SYMS[t.sym].chg || 0) : t.pct;
-    const sub = (t.sell ? `${t.sell.date} 팜, ${t.qty}` : t.qty) + snapLine(t);
+    const sub = t.sell ? `${t.sell.date} 팜, ${t.qty}` : t.qty;
     return `
       <li class="dali-jrow${open ? " open" : ""}${t.live ? " new" : ""}">
         <button type="button" class="dali-jline" data-act="trade" data-id="${t.id}" aria-expanded="${open}">
@@ -226,9 +217,10 @@
           <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
-        ${open && snapMore(t) ? `<div class="dali-jmore">${snapMore(t)}</div>` : open ? `<div class="dali-jmore">${DaliChart.trade(t)}
-          <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
-          <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>` : ""}
+        ${open ? (() => { const ct = tradeOf(t), mb = ct && market(t.sym, ct.buySnap), ms = ct && t.sell && market(t.sym, ct.sellSnap);
+          return `<div class="dali-jmore">${DaliChart.trade(t)}
+          <p><b>살 때</b><span>${mb || t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
+          <p><b>팔 때</b><span>${t.sell ? ms || t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
       </li>`;
   }
   // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
@@ -294,11 +286,6 @@
     } else if (view === "week") {
       head = `<span>이번 주 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>${inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"}</small>`;
       body = jweekHTML(closed); closedTitle = "이번 주에 판 것";
-    } else if (SNAP && state.app === "stock") {
-      // 월간은 10월 리포트: 판 매매 목록 하나. 요약, 관찰, 해석, 통계는 넣지 않는다
-      return `
-      <div class="dali-jseg">${tabs}</div>
-      <section class="dali-snap-report"><h2>10월 리포트</h2>${DaliSnap.report({ act: "trade", id: t => `c${t.id}`, open: state.openTrade })}</section>`;
     } else {
       head = `<span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${inView.length}번 중 ${wins}번 수익</small>`;
       body = jcalHTML(closed); closedTitle = "10월에 판 것";
@@ -752,5 +739,5 @@
 
   render();
   syncOrdering();
-  setTimeout(() => sayOnce("아침이에요. 따라가는 종목에 확인할 소식이 있어요."), 800);
+  setTimeout(() => sayOnce("좋은 아침이에요! 따라가는 종목에 확인할 소식이 있어요."), 800);
 })();

@@ -1,8 +1,8 @@
 /* ---------- 달이 뉴스 탭 다시 그리기 (dali.js 위에 얹음) ----------
    오늘 탭과 같은 틀: 흰 바탕, 맨 위 짙은 띠 하나, 아래 목록 줄.
-   맨 위 띠는 옆으로 넘기는 이야기. 한 장에 숫자 하나(그 소식에 걸린 내 돈), 한 줄(AI 요약), 버튼 하나.
+   맨 위 띠는 옆으로 넘기는 이야기. 한 장에 지금가와 등락, 한 줄(AI 요약), 버튼 하나.
    소식을 누르면 열리는 읽기 화면은 시트 머리와 탭 아래에 열려서, 위쪽 머리가 사라지지 않음.
-   아래 목록은 내 돈에 준 영향이 큰 순서. 관심 종목은 등락으로.
+   아래 목록은 느낌표 소식, 보유 종목, 관심 종목 순서이고 줄마다 지금가와 등락.
    dali.js가 그린 뉴스 목록에서 소식 id와 순서(느낌표 먼저)만 읽고 본문을 바꿔 그린다. 뉴스 읽기 화면은 dali.openNews 그대로.
    되돌리려면 각 페이지에서 이 파일과 dali-news2.css를 불러오는 줄을 지우면 된다. */
 (function () {
@@ -39,16 +39,18 @@
     }
     return { held: false };
   }
+  // 지금가: 국내주식은 원, 선물은 종목 소수 자리
+  const price = sym => { const s = DALI_SYMS[sym], p = nowP(sym); return s.app === "stock" ? `${Math.round(p).toLocaleString("ko-KR")}원` : p.toLocaleString("en-US", { minimumFractionDigits: s.dec || 2, maximumFractionDigits: s.dec || 2 }); };
   function logo(sym) {
     const s = DALI_SYMS[sym];
     const src = s.code ? `${BASE}img/logo-${s.code}.png` : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
     return `<i class="dali-pro-logo${s.icon ? " icon" : ""}">${sym[0]}${src ? `<img src="${src}" alt="" onerror="this.remove()">` : ""}</i>`;
   }
-  // 한 장: 숫자 하나, 한 줄, 버튼 하나
+  // 한 장: 지금가와 등락, 한 줄, 버튼 하나
   function slide(n, i) {
-    const s = DALI_SYMS[n.sym], me = mine(n.sym);
-    const big = me.held ? me.fmt(me.money) : pct(chg(n.sym));
-    const top = me.held ? `${n.sym} ${me.qty}` : `${n.sym} 관심`;
+    const me = mine(n.sym), c = chg(n.sym);
+    const big = `${price(n.sym)}<small class="${tone(c)}">${pct(c)}</small>`;
+    const top = me.held ? `${n.sym} 보유` : `${n.sym} 관심`;
     return `<article class="dali-n2-slide" data-i="${i}">
       <p class="dali-pro-act-top">${logo(n.sym)}${top}<span>${n.time}</span></p>
       <p class="dali-pro-act-big">${big}</p>
@@ -58,7 +60,7 @@
   }
   function row(n) {
     const s = DALI_SYMS[n.sym], me = mine(n.sym);
-    const val = me.held ? `<b class="${tone(me.money)}">${me.fmt(me.money)}</b><small>내 ${me.qty}</small>` : `<b class="${tone(chg(n.sym))}">${pct(chg(n.sym))}</b><small>관심</small>`;
+    const c = chg(n.sym), val = `<b>${price(n.sym)}</b><small class="${tone(c)}">${pct(c)}</small>`;
     return `<li><button type="button" class="dali-pro-row" data-n2-news="${n.id}">
       ${logo(n.sym)}
       <span class="dali-pro-name"><b>${n.sym}<em>${n.time}</em></b><small>${n.why}</small></span>
@@ -69,8 +71,8 @@
   function html(ids) {
     const byId = Object.fromEntries(allNews().map(n => [n.id, n]));
     const list = ids.map(x => byId[x.id] && { ...byId[x.id], flag: x.flag }).filter(Boolean);
-    // 느낌표 소식 먼저, 그다음 내 돈에 걸린 금액이 큰 순서, 관심 종목은 등락이 큰 순서
-    const score = n => { const me = mine(n.sym); return (n.flag ? 1e12 : 0) + (me.held ? 1e9 + Math.abs(me.money) : Math.abs(chg(n.sym))); };
+    // 느낌표 소식 먼저, 그다음 보유 종목, 관심 종목. 같은 묶음 안에서는 등락이 큰 순서
+    const score = n => (n.flag ? 1e6 : 0) + (mine(n.sym).held ? 1e3 : 0) + Math.abs(chg(n.sym));
     const sorted = list.slice().sort((a, b) => score(b) - score(a));
     // 넘기는 이야기는 종목마다 한 장, 최대 다섯 장
     const seen = new Set(), stories = sorted.filter(n => !seen.has(n.sym) && seen.add(n.sym)).slice(0, 5);

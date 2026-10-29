@@ -18,8 +18,8 @@
   const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
   const tone = n => (n > 0 ? "up" : n < 0 ? "down" : "flat");
 
-  // legacy: 달이 2.0 첫 화면(히어로, 내 돈, 관심 목록). 3.0에선 꺼 두고 코드만 남긴다
-  const pro = { on: false, sc: "morning", under: null, open: {}, legacy: false, why: false, rep: null };
+  // legacy: 달이 2.0 첫 화면(히어로, 내 돈, 관심 목록). false로 바꾸면 3.0 첫 화면(샀을 때랑 같아요)
+  const pro = { on: false, sc: "morning", under: null, open: {}, legacy: true, why: false, rep: null };
   const SCENES = [["morning", "07:00 아침"], ["intraday", "장중 급변"], ["close", "15:40 마감"], ["month", "월말"]];
 
   /* --- 탭 하나 더하기: 맨 앞 "오늘" --- */
