@@ -75,9 +75,39 @@ const DaliChart = (function () {
   }
 
   // 매매 한 번: 살 때부터 팔 때(또는 지금)까지
+  // 나눠 산 매매: 첫 매수가를 100으로 두고 산 날마다 그 가격을 지나는 흐름. 점선은 평단
+  const dayNo = d => { const [m, dd] = d.split("/").map(Number); return m * 31 + dd; };
+  function tradeSplit(t) {
+    const N = 32, W = 300, H = 70, b0 = t.buys[0], now = DALI_SYMS[t.sym].price, c = COL[tone(t.pnl)];
+    const d0 = dayNo(b0.date), span = dayNo("10/29") - d0;
+    const anchors = [...t.buys.map(b => ({ x: (dayNo(b.date) - d0) / span, v: b.price / b0.price * 100 })), { x: 1, v: now / b0.price * 100 }];
+    const raw = walk(t.id + t.sym, N, 0, 10), noise = raw.map((v, i) => v - 10 * i / (N - 1));
+    const vals = Array.from({ length: N }, (_, i) => {
+      const x = i / (N - 1), k = anchors.findIndex((a, j) => j && a.x >= x), a = anchors[k - 1], b = anchors[k];
+      const f = (x - a.x) / ((b.x - a.x) || 1), near = Math.min(Math.abs(x - a.x), Math.abs(b.x - x)) * (N - 1);
+      return a.v + (b.v - a.v) * f + noise[i] * Math.min(1, near / 2) * 0.35;
+    });
+    const qty = t.buys.reduce((s, b) => s + b.qty, 0), avg = t.buys.reduce((s, b) => s + b.qty * b.price, 0) / qty / b0.price * 100;
+    const lo = Math.min(...vals, avg), hi = Math.max(...vals, avg), p = pathOf(vals, W, H, 14, lo, hi);
+    const X = x => p.x(x * (N - 1)), ay = p.y(avg), ex = X(1), ey = p.y(vals[N - 1]);
+    const marks = anchors.slice(0, -1).map((a, i) => {
+      const x = X(a.x), y = p.y(a.v);
+      return `<path d="M${x} ${y + 2}l6 10h-12z" fill="${COL.up}" stroke="#fff" stroke-width="1.5"/>
+        <text x="${x + (i ? 0 : 8)}" y="${y > H / 2 ? y - 6 : y + 24}" text-anchor="${i ? "middle" : "start"}" class="dali-axis">${i ? "+" : ""}${t.buys[i].qty}주</text>`;
+    }).join("");
+    return `<svg class="dali-tchart" viewBox="0 0 ${W} ${H}" aria-label="${t.sym} ${t.buys.length}번 나눠 산 뒤 지금 평단 대비 ${pct(t.pct)}">
+      <line x1="14" x2="${W - 14}" y1="${ay}" y2="${ay}" stroke="${COL.grid}" stroke-dasharray="3 4"/>
+      <text x="${W - 14}" y="${ay < H / 2 ? ay + 13 : ay - 5}" text-anchor="end" class="dali-axis">평단</text>
+      <path d="${p.d}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>
+      ${marks}
+      <circle cx="${ex}" cy="${ey}" r="5" fill="#fff" stroke="${c}" stroke-width="2.5"/>
+      <text x="${ex - 10}" y="${ey < H / 2 ? ey + 4 : ey - 9}" text-anchor="end" class="dali-axis">지금 ${pct(t.pct)}</text>
+    </svg>`;
+  }
   function trade(t) {
+    if (t.buys && t.buys.length > 1) return tradeSplit(t);
     const end = 100 * (1 + t.pct / 100), vals = walk(t.id + t.sym, 24, 100, end), c = COL[tone(t.pnl)];
-    const W = 300, H = 86, lo = Math.min(...vals), hi = Math.max(...vals), p = pathOf(vals, W, H, 14, lo, hi);
+    const W = 300, H = 70, lo = Math.min(...vals), hi = Math.max(...vals), p = pathOf(vals, W, H, 14, lo, hi);
     const ex = p.x(vals.length - 1), ey = p.y(end), by = p.y(100), bx = p.x(0);
     const endMark = t.sell
       ? `<path d="M${ex} ${ey + 8}l6 -10h-12z" fill="${COL.down}" stroke="#fff" stroke-width="1.5"/>`

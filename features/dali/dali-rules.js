@@ -66,8 +66,8 @@ const DaliRules = (function () {
     const m = money(sc), h = habits(), ss = m.pos.find(p => p.sym === "삼성전자");
     const pend = C.pending, gap = nowPrice(pend.sym, sc) - pend.price;
     const L = (k, hd, t) => ({ k, h: hd, t });
-    // 한 숫자는 한 곳에만: 줄 제목에 쓴 숫자는 본문에 다시 안 쓰고, 맨 위에 쓴 것은 아래 카드에서 뺀다 (cards, skipCal)
-    let lines = [], todo = [], noTodo = "", cards = [], skipCal = [];
+    // 한 숫자는 한 곳에만: 줄 제목에 쓴 숫자는 본문에 다시 안 씀
+    let lines = [], todo = [], noTodo = "";
     if (sc === "morning") {
       lines = [
         L("night", "밤사이 미국 반도체가 올랐어요", `어제 ${sgn(ss.pct)}로 끝난 삼성전자, 내 ${ss.qty}주는 ${man(ss.today)}`),
@@ -75,7 +75,6 @@ const DaliRules = (function () {
         L("event", "내일 삼성전자 실적 발표", "지난 4번 실적일엔 평균 ±6% 움직였어요"),
       ];
       noTodo = "오늘 아침은 보기만 해도 괜찮아요";
-      cards = ["money", "calendar", "costs", "habits"]; skipCal = ["삼성전자"];
     } else if (sc === "intraday") {
       lines = [
         L("shock", `삼성전자 ${sgn(ss.pct)}, 내 돈 ${man(ss.today)}`, `장 시작 뒤 4시간 동안 꾸준히 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
@@ -83,7 +82,6 @@ const DaliRules = (function () {
         L("watch", `SK하이닉스 ${sgn(todayPct("SK하이닉스", sc))}`, `관심종목이에요. 급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}로 끝났고요`),
       ];
       noTodo = "팔거나 살 이유가 새로 생긴 건 아니라서, 지금은 지켜보기만 해도 돼요";
-      cards = ["money", "calendar", "costs"]; // 습관은 맨 위 두 줄이 이미 말함
     } else if (sc === "close") {
       lines = [
         L("close", `삼성전자 ${sgn(ss.pct)} 마감`, `내 ${ss.qty}주가 오늘 ${man(ss.today)}, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
@@ -91,19 +89,50 @@ const DaliRules = (function () {
         L("event", "내일 삼성전자 실적 발표", "지난 4번 중 2번은 발표 전날 크게 올랐어요"),
       ];
       noTodo = "오늘 안에 할 건 없어요. 내일 아침에 다시 알려 드릴게요";
-      cards = ["money", "calendar", "costs", "habits"]; skipCal = ["삼성전자"];
     } else {
       const cost = C.month.fee + C.month.tax;
       lines = [
-        L("month", `10월 실현 ${man(C.month.realized)}`, `한 달 동안 ${C.month.trades}번 매매한 결과예요`),
+        L("month", `10월 실현 ${man(C.month.realized)}`, `10월에 사고팔아 끝낸 ${C.month.trades}건의 결과예요`),
         L("cost", `수수료와 세금 ${man(cost).replace("+", "")}`, `실현 수익의 ${Math.round(cost / C.month.realized * 100)}%가 비용으로 나갔어요`),
       ];
       noTodo = "월말 정리를 읽어 보기만 하면 돼요";
       // 네 장면 중 할 일이 있는 장면 하나: 쉬는 현금
       todo.push({ t: `현금 ${man(C.cash).replace("+", "")}이 ${C.idleCashDays}일째 이자 없이 그대로예요` });
-      cards = ["review", "habits", "costs", "money"];
     }
-    return { lines, todo, noTodo, cards, skipCal, since: C.lastSeen[sc], hours: C.lastSeenHours[sc] };
+    return { lines, todo, noTodo, since: C.lastSeen[sc], hours: C.lastSeenHours[sc] };
+  }
+
+  /* --- 오늘 탭 맨 위 행동 카드 하나 ---
+     { top, title, sub, sym, btns: [[kind, sym, label]] }. kind: "order"(주문), "news"(그 종목 뉴스), "journal"(매매일지 탭) */
+  function action(sc) {
+    const m = money(sc), ss = m.pos.find(p => p.sym === "삼성전자"), pend = C.pending;
+    if (sc === "morning") return { sym: pend.sym, top: "걸어 둔 주문", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)} 매수 대기`,
+      sub: `지금 ${won(nowPrice(pend.sym, sc))}, 9시 시가에 다시 봐요`, btns: [["order", pend.sym, "주문 정정"], ["news", pend.sym, `${pend.sym} 보기`]] };
+    if (sc === "intraday") return { sym: ss.sym, top: "지금 크게 움직여요", title: `${ss.sym} ${sgn(ss.pct)}, 내 ${ss.qty}주 ${fmtWon(ss.today)}`,
+      sub: `장 시작 뒤 4시간 동안 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`, btns: [["order", ss.sym, `${ss.sym} 주문`], ["news", ss.sym, "차트 보기"]] };
+    if (sc === "close") return { sym: pend.sym, top: "체결됐어요", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)}에 체결`,
+      sub: "살 때 상황은 매매일지에 적어 뒀어요", btns: [["journal", "", "매매일지"], ["news", pend.sym, `${pend.sym} 보기`]] };
+    return { sym: "", top: "이번 달", title: `10월 실현 ${fmtWon(C.month.realized)}`,
+      sub: `끝낸 매매 ${C.month.trades}건, 수수료와 세금 ${won(C.month.fee + C.month.tax)}`, btns: [["journal", "", "매매일지"]] };
+  }
+
+  /* --- 알림 → 행동 → 결과 흐름에 쓰는 숫자 ---
+     intraday: 오늘 내린 금액과 평단 기준 평가손익(지금 팔면 확정될 손익)
+     close: 장중 11:40 대비 마감까지 삼성전자가 되돌아온 폭
+     month: 손실 난 날 바로 판 횟수, 달별 (판 날 기준) */
+  function flow(sc) {
+    const ss = sc === "month" ? null : money(sc).pos.find(p => p.sym === "삼성전자");
+    const out = { sc };
+    if (sc === "intraday") out.intraday = { sym: ss.sym, today: Math.round(ss.today), pnl: Math.round(ss.pnl), pnlPct: ss.pnlPct, pct: ss.pct };
+    if (sc === "close") {
+      const a = money("intraday").pos.find(p => p.sym === "삼성전자");
+      out.recover = { sym: ss.sym, fromPct: a.pct, toPct: ss.pct, from: a.now, to: ss.now, won: (ss.now - a.now) * ss.qty, pnlFrom: Math.round(a.pnl), pnlTo: Math.round(ss.pnl) };
+    }
+    if (sc === "month") {
+      const by = mo => C.trades.filter(t => t.soldIn24h && t.sell && t.sell.startsWith(mo + "/")).length;
+      out.quickSell = { aug: by("08"), sep: by("09"), oct: by("10") };
+    }
+    return out;
   }
 
   /* --- 내 시간 띠: 마지막으로 닫은 때부터 지금까지, 나에게 영향 준 선 하나와 달이가 본 일 ---
@@ -165,5 +194,5 @@ const DaliRules = (function () {
     return Object.keys(s).sort((a, b) => s[b] - s[a]);
   }
 
-  return { money, habits, costs, diff, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
+  return { money, habits, costs, diff, action, flow, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
 })();

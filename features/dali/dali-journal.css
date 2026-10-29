@@ -1,0 +1,45 @@
+/* ===== 매매일지 탭 (dali-renew.css 뒤에 불러옴) =====
+   "너무 커서 한눈에 안 들어온다"에 대한 답: 숫자 크기를 한 단계 낮추고, 살 때와 팔 때를 두 칸 대신 위아래 두 줄로,
+   카드 안 여백을 줄여 한 화면에 카드가 두 장 가까이 보이게. 물타기와 불타기는 살 때 줄 아래 한 줄(.dali-add) */
+
+/* 맨 위 요약: 높이를 절반 가까이 */
+.phone .dali-sheet .dali-body .dali-sum { padding: 16px 18px 12px; border-radius: 18px; }
+.phone .dali-sheet .dali-body .dali-sum > span { font-size: 12.5px; }
+.phone .dali-sheet .dali-body .dali-sum > b { font-size: 24px; line-height: 1.2; }
+.phone .dali-sheet .dali-body .dali-sum > small { font-size: 12px; margin-bottom: 6px; }
+.phone .dali-sheet .dali-body .dali-sum .dali-bars { padding-top: 8px; gap: 0; }
+.phone .dali-sheet .dali-body .dali-sum .dali-barrow { grid-template-columns: 96px 1fr auto; padding: 3px 0; }
+.phone .dali-sheet .dali-body .dali-sum .lbl { font-size: 12.5px; white-space: nowrap; }
+.phone .dali-sheet .dali-body .dali-sum .val { font-size: 12.5px; }
+
+/* 매매 카드 */
+.phone .dali-sheet .dali-body .dali-trade { margin: 0 16px 10px; padding: 14px 16px 12px; border-radius: 16px; }
+.phone .dali-sheet .dali-body .dali-trade > header b { font-size: 16px; }
+.phone .dali-sheet .dali-body .dali-trade > header span { font-size: 12.5px; }
+.phone .dali-sheet .dali-body .dali-state { padding: 3px 8px; font-size: 11.5px !important; }
+.phone .dali-sheet .dali-body .dali-pnl { margin: 4px 0 0; font-size: 20px; letter-spacing: -.3px; }
+.phone .dali-sheet .dali-body .dali-pnl small { font-size: 12px; font-weight: 600; color: var(--d-sub, #646F7C); }
+.phone .dali-sheet .dali-body .dali-pnl span { font-size: 12px; padding: 1px 6px; vertical-align: 2px; }
+.phone .dali-sheet .dali-body .dali-trade > svg { display: block; width: 100%; height: auto; margin: 4px 0 6px; }
+.phone .dali-sheet .dali-body .dali-axis { font-size: 10px; }
+
+/* 살 때, 팔 때: 두 칸 대신 위아래 두 줄. 이름 칸 / 무슨 일이 있었나 / 그날 분위기 */
+.phone .dali-sheet .dali-body .dali-sides { grid-template-columns: 1fr; gap: 0; border-top: 1px solid #EEF0F2; }
+.phone .dali-sheet .dali-body .dali-side-box {
+  display: grid; grid-template-columns: 64px 1fr; column-gap: 10px; align-items: baseline;
+  padding: 9px 0; border-radius: 0; background: none; border-bottom: 1px solid #EEF0F2 !important;
+}
+.phone .dali-sheet .dali-body .dali-side-box:last-child { border-bottom: 0 !important; padding-bottom: 2px; }
+.phone .dali-sheet .dali-body .dali-side-label { grid-row: 1 / span 3; margin: 0; font-size: 12.5px; display: flex; flex-direction: column; gap: 1px; }
+.phone .dali-sheet .dali-body .dali-side-label span { margin: 0; font-size: 11.5px; }
+.phone .dali-sheet .dali-body .dali-side-box p:not(.dali-side-label):not(.dali-mood) { font-size: 13.5px; line-height: 1.45; }
+.phone .dali-sheet .dali-body .dali-mood { margin: 3px 0 0; padding: 0; background: none; font-size: 12px; font-weight: 500; }
+
+/* 물타기, 불타기: 사실만 한 줄. 굵은 글자는 횟수, 옆은 평단 변화, 아래 작은 글자는 언제 얼마나 더 샀는지 */
+.phone .dali-sheet .dali-body .dali-add {
+  grid-column: 2; margin: 6px 0 0; padding: 6px 9px; border-radius: 8px; background: #F4F6F8;
+  font-size: 12.5px; line-height: 1.45; color: #4E5968; font-variant-numeric: tabular-nums;
+}
+.phone .dali-sheet .dali-body .dali-add b { margin-right: 6px; font-weight: 700; color: #1A1D1F; }
+.phone .dali-sheet .dali-body .dali-add small { display: block; font-size: 11.5px; color: #646F7C; }
+.phone .dali-sheet .dali-body .dali-add span { white-space: nowrap; }
