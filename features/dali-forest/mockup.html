@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>달이네 숲 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* ===== 달이네 숲 화면 목업 (정적, 데이터 없음) =====
+   달이 관리 탭 > 달이네 숲을 눌렀을 때 덮이는 화면. 색은 dali-palette.css와 같은 넷:
+   #005461 #0C7779 #249E94 #3BC1A8, 옅은 바탕 #E6F7F3. 글꼴, 카드, 머리는 dali.css / dali-theme.css 규칙을 그대로 옮김.
+   화면 안 숫자는 모두 가상. 숲의 역사(연도, 그루 수)는 유진에버 공개 기사 기준(docs/research-eugene-ever.md). */
+:root { --brand: #005461; --brand-d: #003D47; --brand-m: #0C7779; --mint: #3BC1A8; --tint: #E6F7F3; --ink: #1A1D1F; --ink2: #4E5968; --sub: #646F7C; --line: #EEF0F2; --band: #F4F6F8; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 12px; background: #EEF2F3; font-family: Pretendard, "Malgun Gothic", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; word-break: keep-all;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+/* 휴대폰 틀 (src/css/main.css .phone과 같음) */
+.phone { position: relative; width: 375px; height: 780px; background: #FBF7F3; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 30px 60px -24px rgba(11, 51, 64, .45), 0 0 0 1px rgba(0,0,0,.05); }
+
+/* 달이 시트 머리 (dali-theme.css) */
+.head { display: flex; align-items: center; gap: 10px; padding: 18px 16px 10px; background: #fff; }
+.head img { width: 36px; height: 36px; border-radius: 50%; }
+.head b { display: block; font-size: 17px; }
+.head small { font-size: 12px; color: var(--sub); }
+.head .x { margin-left: auto; font-size: 20px; color: var(--ink2); }
+.tabs { display: flex; padding: 0 8px; background: #fff; border-bottom: 1px solid var(--line); }
+.tabs span { flex: 1; text-align: center; padding: 12px 0 11px; font-size: 15px; color: var(--sub); font-weight: 500; }
+.tabs span.on { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--ink); }
+
+/* 덮는 화면 머리 (dali.css .dali-page-head) */
+.ph { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #fff; border-bottom: 1px solid var(--line); }
+.ph .back { font-size: 22px; line-height: 1; color: var(--ink2); padding: 0 4px; }
+.ph strong { font-size: 16px; }
+.ph .r { margin-left: auto; font-size: 13px; color: var(--brand); font-weight: 600; }
+.body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+.body::-webkit-scrollbar { display: none; }
+.body > * { flex: none; } /* 세로 flex 안에서 overflow:hidden 카드(히어로)가 눌려 납작해지지 않게 */
+
+/* 카드 (dali.css .dali-card) */
+.card { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px -8px rgba(42, 20, 22, .35); font-size: 13.5px; line-height: 1.55; }
+.card h3 { margin: 0 0 8px; font-size: 14.5px; display: flex; align-items: center; gap: 6px; }
+.card h3 small { font-weight: 600; font-size: 12px; color: var(--sub); margin-left: auto; }
+.hint { color: var(--sub); font-size: 12.5px; margin: 0; }
+
+/* 1. 내 나무 히어로: 언덕과 나무, 단계 */
+.hero { position: relative; overflow: hidden; border-radius: 14px; padding: 16px 16px 0; color: #fff; background: linear-gradient(160deg, var(--brand-d) 0%, var(--brand) 55%, var(--brand-m) 100%); box-shadow: 0 12px 24px -16px rgba(0, 61, 71, .7); }
+.hero .top { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,.8); }
+.hero .top i { font-style: normal; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); color: #fff; font-weight: 700; }
+.hero .top i img { width: 14px; height: 14px; }
+.hero .name { margin: 10px 0 0; font-size: 12.5px; color: rgba(255,255,255,.8); }
+.hero .big { margin: 2px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+.hero .big small { font-size: 13px; font-weight: 600; color: var(--mint); margin-left: 6px; }
+.stages { display: flex; align-items: center; gap: 0; margin: 12px 0 0; font-size: 11px; color: rgba(255,255,255,.65); }
+.stages li { list-style: none; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
+.stages li::before { content: ""; position: absolute; top: 7px; left: -50%; width: 100%; height: 2px; background: rgba(255,255,255,.22); }
+.stages li:first-child::before { display: none; }
+.stages li span { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.22); border: 2px solid rgba(255,255,255,.4); position: relative; }
+.stages li.on span { background: var(--mint); border-color: var(--mint); }
+.stages li.on::before { background: var(--mint); }
+.stages li.now { color: #fff; font-weight: 700; }
+.stages li.now span { box-shadow: 0 0 0 4px rgba(59,193,168,.3); }
+.hill { position: relative; height: 96px; margin: 8px -16px 0; }
+.hill svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hill .trees { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; justify-content: center; align-items: flex-end; gap: 10px; }
+.hill .trees img { width: 30px; height: 30px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.25)); }
+.hill .trees img.me { width: 44px; height: 44px; margin: 0 4px; }
+.hill .trees img.dim { opacity: .35; filter: grayscale(1); }
+.hill .tag { position: absolute; left: 50%; bottom: 66px; translate: -50% 0; font-size: 11px; font-weight: 700; color: var(--brand-d); background: #fff; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.hill .tag::after { content: ""; position: absolute; left: 50%; bottom: -5px; translate: -50% 0; border: 5px solid transparent; border-top-color: #fff; border-bottom: 0; }
+.say { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--tint); color: var(--ink2); font-size: 13px; }
+.say img { width: 26px; height: 26px; border-radius: 50%; flex: none; }
+
+/* 2. 모두의 숲 게이지 */
+.gauge { height: 12px; border-radius: 999px; background: var(--band); overflow: hidden; display: flex; margin: 6px 0 6px; }
+.gauge i { display: block; height: 100%; }
+.gauge .staff { width: 58%; background: var(--brand-m); }
+.gauge .cust { width: 14%; background: var(--mint); }
+.legend { display: flex; gap: 12px; font-size: 12px; color: var(--sub); margin: 0; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+.legend .a i { background: var(--brand-m); } .legend .b i { background: var(--mint); }
+.nums { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 8px; }
+.nums div { background: var(--band); border-radius: 10px; padding: 9px 11px; }
+.nums small { display: block; font-size: 11.5px; color: var(--sub); }
+.nums b { font-size: 17px; font-variant-numeric: tabular-nums; letter-spacing: -.3px; }
+.nums b em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--sub); margin-left: 2px; }
+
+/* 3. 숲의 시작 이야기: 연도 줄 */
+.story { list-style: none; margin: 0; padding: 0; }
+.story li { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.story li:first-child { border-top: 0; padding-top: 2px; }
+.story li b { flex: none; width: 66px; font-size: 12.5px; color: var(--brand); font-variant-numeric: tabular-nums; }
+.story li span { flex: 1; color: var(--ink2); }
+.link { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--brand); font-weight: 600; }
+
+/* 4. 심어지면 */
+.then { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.then li { display: flex; align-items: center; gap: 10px; }
+.then li img { width: 26px; height: 26px; flex: none; }
+.then li span small { display: block; font-size: 12px; color: var(--sub); }
+.btn { display: block; width: 100%; padding: 12px; border-radius: 12px; background: var(--brand); color: #fff; font-weight: 700; font-size: 14px; text-align: center; }
+.btn.ghost { background: var(--tint); color: var(--brand); }
+
+/* 5. 숲 소식 */
+.log { list-style: none; margin: 0; padding: 0; }
+.log li { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.log li:first-child { border-top: 0; padding-top: 2px; }
+.log li small { flex: none; width: 40px; font-size: 12px; color: var(--sub); padding-top: 2px; }
+.log li span { flex: 1; color: var(--ink2); }
+.log li span b { color: var(--ink); font-weight: 700; }
+
+/* 발표자 상자: 화면 밖 (dali.css .dali-demo와 같은 틀) */
+.demo { display: flex; flex-direction: column; gap: 8px; width: 240px; margin: 16px auto 0; padding: 14px; background: #fff; border-radius: 14px; box-shadow: 0 10px 24px -14px rgba(0, 0, 0, .4); font-size: 13px; line-height: 1.5; }
+.demo .t { margin: 0 0 2px; font-weight: 700; color: #5A4A45; }
+.demo .n { margin: -4px 0 4px; font-size: 11.5px; color: #8A7670; }
+.demo ol { margin: 0; padding-left: 18px; color: #4E5968; font-size: 12.5px; }
+.demo ol li { margin: 0 0 6px; }
+.demo p.s { margin: 4px 0 0; padding-top: 8px; border-top: 1px solid #EEE6DE; font-size: 11.5px; color: #8A7670; }
+@media (min-width: 900px) { .demo { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); margin: 0; } }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="head"><img src="../dali/dali-face.png" alt=""><div><b>달이</b><small>유진투자증권 앱에서</small></div><span class="x">✕</span></div>
+  <div class="tabs"><span>오늘</span><span>뉴스</span><span>매매일지</span><span class="on">관리</span></div>
+
+  <div class="ph"><span class="back">‹</span><strong>달이네 숲</strong><span class="r">숲 소식 받는 중</span></div>
+  <div class="body">
+
+    <!-- 1. 내 나무: 산책이 쌓여 자라는 내 나무 한 그루 -->
+    <section class="hero">
+      <p class="top"><i><img src="../dali/img/footprints.png" alt="">산책 7번</i><i><img src="../dali/img/tree.png" alt="">숲 72%</i><span style="margin-left:auto">노을공원</span></p>
+      <p class="name">홍길동님의 나무</p>
+      <p class="big">묘목이 됐어요 <small>산책 3번 더 하면 심을 준비 끝</small></p>
+      <ul class="stages">
+        <li class="on"><span></span>씨앗</li><li class="on"><span></span>새싹</li><li class="on now"><span></span>묘목</li><li><span></span>나무</li>
+      </ul>
+      <div class="hill">
+        <svg viewBox="0 0 375 96" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 70 C 80 30, 150 40, 200 50 S 320 70, 375 44 L375 96 L0 96 Z" fill="#249E94" opacity=".55"/>
+          <path d="M0 80 C 90 56, 180 70, 260 62 S 340 48, 375 60 L375 96 L0 96 Z" fill="#3BC1A8" opacity=".7"/>
+          <path d="M0 96 C 100 78, 250 86, 375 76 L375 96 Z" fill="#E6F7F3"/>
+        </svg>
+        <span class="tag">내 나무</span>
+        <div class="trees">
+          <img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img class="me" src="../dali/img/seedling.png" alt=""><img class="dim" src="../dali/img/tree.png" alt=""><img class="dim" src="../dali/img/tree.png" alt="">
+        </div>
+      </div>
+    </section>
+    <p class="say"><img src="../dali/dali-face.png" alt=""><span>유진 사람들이 2014년부터 걸어서 심어 온 숲이에요. 이번 봄엔 홍길동님 걸음도 같이 심어요.</span></p>
+
+    <!-- 2. 모두의 숲: 임직원 걸음 + 고객 걸음 -->
+    <section class="card">
+      <h3>모두의 숲, 이번 시즌 <small>10월 1일 ~ 31일</small></h3>
+      <div class="nums">
+        <div><small>모인 걸음</small><b>3,120<em>만 보</em></b></div>
+        <div><small>심을 나무</small><b>104<em>그루 예정</em></b></div>
+      </div>
+      <div class="gauge"><i class="staff"></i><i class="cust"></i></div>
+      <p class="legend"><span class="a"><i></i>임직원 걸음</span><span class="b"><i></i>고객 걸음 (올해 처음)</span><span style="margin-left:auto">30만 보 = 1그루</span></p>
+    </section>
+
+    <!-- 3. 이 숲이 시작된 이야기: 홍보 문구 대신 연도와 사실 세 줄 -->
+    <section class="card">
+      <h3>이 숲이 시작된 이야기</h3>
+      <ul class="story">
+        <li><b>2014년</b><span>임직원이 걸은 만큼 하늘공원, 노을공원에 나무를 심기 시작했어요</span></li>
+        <li><b>2023년</b><span>1억 보를 모아 나무 500그루를 심었어요</span></li>
+        <li><b>2026년 봄</b><span>600여 명이 1억 1,561만 보를 걸어 노을공원에 400그루를 심었어요</span></li>
+      </ul>
+      <span class="link">심던 날 사진과 기사 보기 ›</span>
+    </section>
+
+    <!-- 4. 내 나무가 심어지면 -->
+    <section class="card">
+      <h3>내 나무가 심어지면</h3>
+      <ul class="then">
+        <li><img src="../dali/img/memo.png" alt=""><span>홍길동님 이름 팻말이 달려요<small>심은 자리는 달이가 지도로 알려 줘요</small></span></li>
+        <li><img src="../dali/img/sun.png" alt=""><span>봄 심는 날 초대장이 와요<small>임직원과 같은 날, 같은 공원에서</small></span></li>
+        <li><img src="../dali/img/sparkles.png" alt=""><span>자라는 사진을 가져다줘요<small>봄, 여름 한 번씩 달이가 숲에 다녀와요</small></span></li>
+      </ul>
+      <button type="button" class="btn">심는 날 소식 받기</button>
+    </section>
+
+    <!-- 5. 숲 소식 -->
+    <section class="card">
+      <h3>숲 소식</h3>
+      <ul class="log">
+        <li><small>10/28</small><span><b>홍길동님 나무가 묘목이 됐어요.</b> 산책 7번째였어요</span></li>
+        <li><small>10/20</small><span>모두의 숲 걸음이 3,000만 보를 넘었어요. 100그루째 예약</span></li>
+        <li><small>9/15</small><span>지난 시즌 나무 <b>400그루</b>가 노을공원에 심어졌어요</span></li>
+      </ul>
+    </section>
+    <p class="hint" style="padding:0 4px 6px">걸음은 휴대폰 건강 앱과 연결해 하루 한 번 가져와요. 걸음 수 외 다른 정보는 가져오지 않아요.</p>
+  </div>
+</div>
+
+<aside class="demo">
+  <p class="t">발표자용 메모 · 달이네 숲</p>
+  <p class="n">시연용 가상 화면입니다</p>
+  <ol>
+    <li><b>내 나무</b>: 달이랑 산책(가치걸음)이 쌓이면 씨앗→새싹→묘목→나무. 다 자라면 봄에 진짜로 심어요.</li>
+    <li><b>모두의 숲</b>: 임직원이 해 오던 걷기 기부에 고객 걸음을 처음으로 더해요. 게이지 두 색이 그 뜻이에요.</li>
+    <li><b>숲의 시작</b>: 홍보 문구 대신 연도와 사실 세 줄. 달이가 유진을 "소개"하지 "광고"하지 않아요.</li>
+    <li><b>심어지면</b>: 이름 팻말, 심는 날 초대, 자라는 사진. 고객이 돌아올 이유가 돼요.</li>
+  </ol>
+  <p class="s">내 나무, 고객 걸음, 이번 시즌 숫자는 가상. 2014·2023·2026년 줄은 유진에버 공개 기사 기준 (docs/research-eugene-ever.md).</p>
+</aside>
+
+</body>
+</html>
