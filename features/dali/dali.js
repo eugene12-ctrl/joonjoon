@@ -180,12 +180,22 @@
   const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
   const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
   const sgn = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
-  const FLOW = { buy: "순매수", sell: "순매도", flat: "보합" };
-  const SECT = { up: "5일 흐름 오름세", flat: "5일 흐름 보합", down: "5일 흐름 내림세" };
-  function market(sym, sn) {
-    if (!sn) return "";
-    const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "";
-    return `${sn.at} 코스피 ${sgn(sn.kospi)}, 전날 ${sn.usRef.name} ${sgn(sn.usRef.chg)}, ${sec} 업종 ${SECT[sn.sector]}, 외국인 ${FLOW[sn.flow5.foreign]}, 기관 ${FLOW[sn.flow5.inst]}. 이 종목은 그날 ${sgn(sn.dayChg)}`;
+  const FLOW = { buy: ["순매수", "up"], sell: ["순매도", "down"], flat: ["보합", "flat"] };
+  const SECT = { up: ["↑ 오름세", "up"], flat: ["→ 보합", "flat"], down: ["↓ 내림세", "down"] };
+  const pc = n => [sgn(n), n > 0 ? "up" : n < 0 ? "down" : "flat"];
+  // 한 칸: 그 순간의 시황 다섯 줄. 오르면 빨강, 내리면 파랑
+  function mkCol(title, sym, sn) {
+    const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "업종";
+    const rows = [["그날 " + sym, pc(sn.dayChg)], ["코스피", pc(sn.kospi)], [`전날 ${sn.usRef.name}`, pc(sn.usRef.chg)],
+      [`${sec} 업종 5일`, SECT[sn.sector]], ["외국인", FLOW[sn.flow5.foreign]], ["기관", FLOW[sn.flow5.inst]]];
+    return `<div class="dali-mk-col"><p class="dali-mk-head"><b>${title}</b><small>${sn.at}</small></p>
+      <ul>${rows.map(([k, [v, c]]) => `<li><span>${k}</span><b class="${c}">${v}</b></li>`).join("")}</ul></div>`;
+  }
+  function market(t) {
+    const ct = tradeOf(t);
+    if (!ct || !ct.buySnap) return "";
+    const sell = t.sell && ct.sellSnap ? mkCol("팔 때", t.sym, ct.sellSnap) : `<div class="dali-mk-col dali-mk-hold"><p class="dali-mk-head"><b>팔 때</b></p><p>아직 들고 있어요</p></div>`;
+    return `<div class="dali-mk">${mkCol("살 때", t.sym, ct.buySnap)}${sell}</div>`;
   }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
@@ -217,10 +227,11 @@
           <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
-        ${open ? (() => { const ct = tradeOf(t), mb = ct && market(t.sym, ct.buySnap), ms = ct && t.sell && market(t.sym, ct.sellSnap);
-          return `<div class="dali-jmore">${DaliChart.trade(t)}
-          <p><b>살 때</b><span>${mb || t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
-          <p><b>팔 때</b><span>${t.sell ? ms || t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
+        ${open ? (() => { const mk = market(t);
+          return mk ? `<div class="dali-jmore">${DaliChart.trade(t)}${mk}${add.text ? `<p class="dali-mk-add">${add.text}</p>` : ""}</div>`
+            : `<div class="dali-jmore">${DaliChart.trade(t)}
+          <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
+          <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
       </li>`;
   }
   // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
