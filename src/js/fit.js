@@ -10,26 +10,10 @@
   const css = document.createElement("style");
   css.textContent = "html:not(.fit-ready) .phone{opacity:0}";
   document.head.appendChild(css);
-  // 페이지가 바뀔 때 방향: 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어옴
-  const DIR_KEY = "page-dir";
-  const dirIn = () => { try { const d = sessionStorage.getItem(DIR_KEY); sessionStorage.removeItem(DIR_KEY); return d === "back" ? -1 : 1; } catch (e) { return 1; } };
-  function enter(p) {
-    document.documentElement.classList.add("fit-ready");
-    if (calm || !p.animate) return;
-    p.animate([{ opacity: 0, transform: `translateX(${dirIn() * 28}px)` }, { opacity: 1, transform: "none" }],
-      { duration: 340, easing: "cubic-bezier(.2, .8, .2, 1)" });
-  }
-  // 다른 페이지로 갈 때: 휴대폰이 반대쪽으로 스르륵 빠진 뒤 이동
-  window.goPage = (url, dir = "forward") => {
-    try { sessionStorage.setItem(DIR_KEY, dir); } catch (e) { /* 방향만 못 기억함 */ }
-    const p = document.querySelector(".phone");
-    if (calm || !p || !p.animate) { location.href = url; return; }
-    const s = dir === "back" ? 1 : -1;
-    p.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${s * 28}px)` }],
-      { duration: 200, easing: "cubic-bezier(.4, 0, 1, 1)", fill: "forwards" }).finished.then(() => { location.href = url; });
-  };
-  // 뒤로 가기로 돌아온 페이지가 나갈 때 모습 그대로 남아 있지 않게
-  addEventListener("pageshow", e => { if (e.persisted) { const p = document.querySelector(".phone"); p && p.getAnimations().forEach(a => a.cancel()); } });
+  // 페이지가 바뀔 때는 스르륵 없이 바로 바뀜 (실제 앱처럼 딱딱 움직이게. 특히 주문 화면으로 갈 때)
+  function enter() { document.documentElement.classList.add("fit-ready"); }
+  // 다른 페이지로 갈 때. dir(forward, back)은 부르는 쪽 호환용이고 지금은 쓰지 않음
+  window.goPage = (url, dir = "forward") => { location.href = url; };
   window.phoneZoom = () => {
     const p = document.querySelector(".phone");
     return (p && parseFloat(p.style.zoom)) || 1;

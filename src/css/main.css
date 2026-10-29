@@ -126,13 +126,12 @@ input, textarea, [contenteditable="true"] { user-select: text; -webkit-user-sele
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ===== 신규 기능 페이지 (오른쪽에서 밀려 들어옴) ===== */
+/* ===== 신규 기능 페이지 (스르륵 없이 바로 열림) ===== */
 .sub {
   position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; background: #F2F6F7;
-  transform: translateX(100%); visibility: hidden;
-  transition: transform .3s ease, visibility 0s linear .3s;
+  visibility: hidden;
 }
-.sub.open { transform: none; visibility: visible; transition: transform .3s ease, visibility 0s; }
+.sub.open { visibility: visible; }
 .sub-head { flex: 0 0 auto; display: flex; align-items: center; gap: 2px; height: 52px; padding: 0 8px; background: #fff; border-bottom: 1px solid #E3E8EB; }
 .back { width: 40px; height: 40px; display: grid; place-items: center; color: #0E3A4A; }
 .back svg { width: 22px; height: 22px; }

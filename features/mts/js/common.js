@@ -108,11 +108,9 @@ const App = {
   },
   render() {
     const s = Screens[this.current];
-    const moved = this.shown && this.shown !== this.current;
+    // 화면 사이 이동은 스르륵 없이 바로 바꿈 (실제 앱처럼)
     this.shown = this.current;
     this.screen.innerHTML = s.render(this.params);
-    if (moved && this.screen.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches)
-      this.screen.animate([{ opacity: 0, transform: "translateX(16px)" }, { opacity: 1, transform: "none" }], { duration: 240, easing: "cubic-bezier(.2, .8, .2, 1)" });
     this.screen.querySelector(".back")?.addEventListener("click", () => { window.goPage ? window.goPage("../../index.html", "back") : (location.href = "../../index.html"); });
     if (s.mount) s.mount(this.screen, this.params);
     this.root.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("on", b.dataset.go === this.current));
