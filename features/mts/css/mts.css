@@ -294,3 +294,6 @@
 /* 주문 화면 헤더의 달이 버튼 (order.js daliJump) */
 .dali-jump { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 4px; border-radius: 14px; background: #EAF2F3; color: #1B5F6B; font-size: 12.5px; font-weight: 700; }
 .dali-jump img { width: 22px; height: 22px; }
+
+/* 관심 등록 별: 담긴 종목이면 채운 별 */
+.icon-btn.star.on svg { fill: #F5B100; stroke: #F5B100; }

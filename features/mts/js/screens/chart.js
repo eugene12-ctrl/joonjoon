@@ -88,7 +88,7 @@ Screens.chart = {
       </div>
       <div class="news-ticker"><b>${NEWS_TICKER[0].src}</b><span>${esc(NEWS_TICKER[0].text)}</span></div>`
       : `<div class="mts-body"><p class="empty">${this.tab}는 준비 중이에요</p></div>`;
-    return header("차트", `${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("kebab", "더보기")}`)
+    return header("차트", `${select("KRX", "krx")}${starBtn()}${iconBtn("kebab", "더보기")}`)
       + topTabs(CHART_TABS, this.tab) + `<div class="mts-body chart-body">${body}</div>`;
   },
   mount(el) {

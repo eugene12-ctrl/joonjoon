@@ -13,7 +13,7 @@ Screens.order = {
     const s = stockBy(App.code);
     if (this.price == null || this.priceOf !== s.code) { this.price = s.price; this.priceOf = s.code; } // 처음엔 현재가
     if (this.tab !== "일반주문") {
-      return header("주문", `${daliJump()}${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
+      return header("주문", `${daliJump()}${select("KRX", "krx")}${starBtn()}${iconBtn("gear", "주문 설정")}`)
         + topTabs(ORDER_TABS, this.tab) + `<div class="mts-body"><p class="empty">${this.tab}은 준비 중이에요</p></div>`;
     }
     const buy = this.side === "매수", sell = this.side === "매도";
@@ -38,7 +38,7 @@ Screens.order = {
         <div class="ord-btns"><button type="button" class="btn dark" data-act="reset" aria-label="초기화">${icon("undo")}</button>
           <button type="button" class="btn ${buy ? "red" : "blue"}" data-act="submit">${this.credit ? "신용" : "현금"}${this.side}</button></div>
       </div>` : `<div class="ord-form"><p class="empty small">${this.side} 내역이 없어요</p></div>`;
-    return header("주문", `${daliJump()}${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
+    return header("주문", `${daliJump()}${select("KRX", "krx")}${starBtn()}${iconBtn("gear", "주문 설정")}`)
       + topTabs(ORDER_TABS, this.tab)
       + `<div class="order-top">${stockInfo(s)}</div>`
       + subTabs(SIDES, this.side, "data-side").replace('class="sub-tabs"', 'class="sub-tabs side-tabs"')
