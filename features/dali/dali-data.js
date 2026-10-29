@@ -12,9 +12,11 @@ const DALI_SYMS = {
   "SK하이닉스": { app: "stock", kind: "watch", price: 1487000, chg: 10.9 },
   "현대차": { app: "stock", kind: "hold", price: 297000, chg: 1.9 },
   "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8 },
-  "마이크로 나스닥100 선물": { app: "fut", kind: "hold", price: 29650.25, chg: 1.2 },
-  "마이크로 금 선물": { app: "fut", kind: "hold", price: 4037.3, chg: -0.6 },
-  "WTI 원유 선물": { app: "fut", kind: "watch", price: 101.93, chg: 2.0 },
+  // 유진투자선물 앱(futures.html): 미국 주식옵션 기초자산. 달러 표시, 앱 목업과 같은 숫자
+  "SPX": { app: "fut", kind: "watch", price: 7743.98, chg: 0.28 },
+  "XSP": { app: "fut", kind: "hold", price: 774.40, chg: 0.28 },
+  "QQQ": { app: "fut", kind: "hold", price: 718.05, chg: 0.59 },
+  "NVDA": { app: "fut", kind: "watch", price: 213.99, chg: -1.15 },
 };
 
 // 느낌표는 AI의 감이 아니라 객관 기준(공시, 실적, 큰 변동)일 때만
@@ -29,19 +31,21 @@ const DALI_NEWS = [
     why: "유진 리서치가 메모리 업황 점검 리포트를 냈어요" },
   { id: "n4", sym: "NAVER", type: "소식", time: "어제",
     why: "플랫폼 관련 논의가 다시 나왔어요" },
-  { id: "n5", sym: "마이크로 나스닥100 선물", type: "큰 변동", time: "어젯밤",
-    why: "미국 고용지표가 예상보다 강했어요" },
-  { id: "n6", sym: "마이크로 금 선물", type: "소식", time: "07:50",
-    why: "전날보다 조금 내렸어요" },
-  { id: "n7", sym: "WTI 원유 선물", type: "소식", time: "07:20",
-    why: "100달러 위에서 오름세를 이어 갔어요" },
+  { id: "n5", sym: "NVDA", type: "큰 변동", time: "어젯밤",
+    why: "AI 반도체주가 하루 쉬어 갔어요" },
+  { id: "n6", sym: "QQQ", type: "소식", time: "06:10",
+    why: "기술주 강세가 이어졌어요" },
+  { id: "n7", sym: "SPX", type: "소식", time: "06:05",
+    why: "S&P 500이 조금 올라 마감했어요" },
+  { id: "n8", sym: "XSP", type: "소식", time: "06:05",
+    why: "S&P 500을 10분의 1로 줄인 지수라 같이 움직였어요" },
 ];
 
 // 시연 버튼으로 도착하는 의미 있는 뉴스
 const DALI_ALERT_NEWS = {
   stock: { id: "a1", sym: "삼성전자", type: "큰 변동", time: "방금",
     why: "반도체 대형주와 함께 크게 올랐어요" },
-  fut: { id: "a2", sym: "마이크로 나스닥100 선물", type: "큰 변동", time: "방금",
+  fut: { id: "a2", sym: "SPX", type: "큰 변동", time: "방금",
     why: "중앙은행 의장 발언에 크게 움직였어요" },
 };
 
@@ -59,13 +63,18 @@ const DALI_TRADES = [
   { id: "t3", app: "stock", sym: "현대차", qty: "10주",
     buy: { date: "10/21", news: "환율 상승 기사", mood: "차분한 날" },
     sell: null, pnl: 58200, pct: 2.0, memo: "" },
-  { id: "t4", app: "fut", sym: "마이크로 나스닥100 선물", qty: "1계약",
+  // 선물 앱은 달러 손익. qty에 옵션 전략을 함께 적음
+  { id: "t4", app: "fut", sym: "QQQ", qty: "롱 콜 스프레드 1계약",
+    buy: { date: "10/14", news: "기술주 반등 기사", mood: "차분한 날" },
+    sell: { date: "10/22", news: "기술주 강세 이어져", mood: "거래가 많은 날" },
+    pnl: 185, pct: 12.4, memo: "만기 전에 목표가 와서 정리" },
+  { id: "t5", app: "fut", sym: "NVDA", qty: "롱콜 1계약",
     buy: { date: "10/16", news: "미국 지수 급락 속보", mood: "밤사이 크게 흔들린 날" },
-    sell: { date: "10/17", news: "지수 반등 기사", mood: "반등한 날" },
-    pnl: -2900000, pct: -3.4, memo: "" },
-  { id: "t5", app: "fut", sym: "마이크로 금 선물", qty: "1계약",
-    buy: { date: "10/23", news: "안전자산 선호 기사", mood: "거래가 많은 날" },
-    sell: null, pnl: 640000, pct: 1.1, memo: "" },
+    sell: { date: "10/17", news: "AI 반도체주 반등", mood: "반등한 날" },
+    pnl: -240, pct: -18.5, memo: "" },
+  { id: "t6", app: "fut", sym: "XSP", qty: "숏 풋 스프레드 1계약",
+    buy: { date: "10/27", news: "S&P 500 강보합", mood: "차분한 날" },
+    sell: null, pnl: 42, pct: 6.1, memo: "" },
 ];
 
 // 관리 탭 미션. 거래에는 조약돌을 주지 않음
@@ -107,9 +116,10 @@ const DALI_NEWS_TEXT = {
   n2: { title: "원달러 환율 상승, 수출주 관심", body: "원달러 환율이 오르며 수출 비중이 큰 기업에 관심이 모였다. 자동차 업종이 대표적으로 거론됐다." },
   n3: { title: "메모리 업황 점검 리포트 (가상)", body: "메모리 반도체 업황 흐름을 점검한 리포트가 나왔다. 재고와 수요 흐름을 함께 짚었다." },
   n4: { title: "국내 플랫폼 관련 논의 재개", body: "국내 플랫폼 기업 관련 정책 논의가 다시 이어졌다. 구체적인 일정은 아직 정해지지 않았다." },
-  n5: { title: "미국 고용지표 예상 상회, 지수선물 급변", body: "미국 고용지표가 시장 예상보다 강하게 나왔다. 금리 인하 기대가 줄며 지수선물이 크게 움직였다." },
-  n6: { title: "금값 숨 고르기", body: "금 선물이 전날보다 소폭 내리며 숨을 골랐다." },
-  n7: { title: "유가 100달러 위 오름세", body: "WTI 원유 선물이 배럴당 100달러 위에서 오름세를 이어 갔다." },
+  n5: { title: "AI 반도체주 숨 고르기 (가상 요약)", body: "간밤 미국 증시에서 AI 반도체주가 하루 쉬어 갔다. 개별 회사의 새 공시는 없었다." },
+  n6: { title: "기술주 강세 이어져 (가상 요약)", body: "나스닥 대형 기술주 중심으로 강세가 이어지며 QQQ도 함께 올랐다." },
+  n7: { title: "S&P 500 소폭 상승 마감 (가상 요약)", body: "S&P 500 지수가 소폭 올라 마감했다. 시장은 다음 주 지표 발표를 기다리는 분위기다." },
+  n8: { title: "XSP, S&P 500과 같은 흐름", body: "XSP는 S&P 500 지수를 10분의 1 크기로 줄인 미니 지수라 같은 흐름을 보였다." },
   a1: { title: "반도체 대형주 강세 이어져 (가상 요약)", body: "반도체 대형주가 함께 크게 오르며 장을 이끌었다. 개별 회사의 새 공시는 없었다." },
-  a2: { title: "미국 중앙은행 의장 발언, 지수선물 급변", body: "의장 발언 직후 금리 전망이 바뀌며 지수선물이 크게 움직였다." },
+  a2: { title: "미국 중앙은행 의장 발언, 지수 급변 (가상 요약)", body: "의장 발언 직후 금리 전망이 바뀌며 S&P 500 지수가 크게 움직였다." },
 };

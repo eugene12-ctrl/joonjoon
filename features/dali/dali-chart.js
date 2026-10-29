@@ -94,14 +94,14 @@ const DaliChart = (function () {
   }
 
   // 손익 막대: 0을 가운데 두고 이익은 오른쪽, 손실은 왼쪽
-  function pnlBars(list) {
+  function pnlBars(list, money = won) {
     const max = Math.max(1, ...list.map(t => Math.abs(t.pnl)));
     return `<div class="dali-bars">${list.map(t => {
       const w = Math.max(1.5, Math.abs(t.pnl) / max * 50);
       const side = t.pnl >= 0 ? "left:50%" : "right:50%";
       return `<div class="dali-barrow"><span class="lbl">${t.sym}${t.sell ? "" : " (평가)"}</span>
         <span class="track"><span class="zero"></span><span class="bar ${tone(t.pnl)}" style="${side};width:${w}%"></span></span>
-        <span class="val">${won(t.pnl)}</span></div>`;
+        <span class="val">${money(t.pnl, t.app)}</span></div>`;
     }).join("")}</div>`;
   }
 

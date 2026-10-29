@@ -9,7 +9,7 @@
   const FACE = "features/dali/dali-otter.png";
   const IMG = n => `features/dali/img/${n}.png`;
   const state = {
-    app: "stock",
+    app: window.DALI_PAGE_APP || "stock",
     pebbles: 7,
     tab: "news",
     page: null, // { type: "news", id } | { type: "order", sym, side, qty }
@@ -26,6 +26,15 @@
     order: null, // { sym, side, qty } MTS 주문 화면
   };
 
+  const SHARED = ["pebbles", "done", "forest", "wear"];
+  try {
+    const saved = JSON.parse(localStorage.getItem("dali-shared") || "{}");
+    SHARED.forEach(k => { if (k in saved) state[k] = saved[k]; });
+  } catch (e) { /* 저장소를 못 쓰면 처음 상태로 */ }
+  function saveShared() {
+    try { localStorage.setItem("dali-shared", JSON.stringify(Object.fromEntries(SHARED.map(k => [k, state[k]])))); } catch (e) { /* 무시 */ }
+  }
+
   const isFlag = n => DALI_FLAG_TYPES.includes(n.type);
   const appOf = sym => DALI_SYMS[sym].app;
   const mine = list => list.filter(x => appOf(x.sym) === state.app);
@@ -33,12 +42,14 @@
     const c = w.charCodeAt(w.length - 1) - 0xac00;
     return w + (c >= 0 && c <= 11171 && c % 28 ? a : b);
   };
-  const won = n => `${n > 0 ? "+" : ""}${Math.round(n).toLocaleString("ko-KR")}원`;
+  const won = (n, app = state.app) => app === "fut"
+    ? `${n > 0 ? "+" : n < 0 ? "-" : ""}$${Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+    : `${n > 0 ? "+" : ""}${Math.round(n).toLocaleString("ko-KR")}원`;
   const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
   const tone = n => (n > 0 ? "up" : n < 0 ? "down" : "flat");
   const priceText = sym => {
     const s = DALI_SYMS[sym];
-    return s.app === "fut" ? s.price.toLocaleString("en-US") : `${s.price.toLocaleString("ko-KR")}원`;
+    return s.app === "fut" ? `$${s.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `${s.price.toLocaleString("ko-KR")}원`;
   };
   const quote = sym => `<span class="dali-quote ${tone(DALI_SYMS[sym].chg)}">${priceText(sym)} <b>${pct(DALI_SYMS[sym].chg)}</b></span>`;
   const stageAt = p => DALI_STAGES.findLastIndex(s => p >= s.min);
@@ -185,7 +196,7 @@
     const closed = list.filter(t => t.sell);
     const total = closed.reduce((a, t) => a + t.pnl, 0);
     return `
-      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small>${DaliChart.pnlBars(list)}</div>
+      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small>${DaliChart.pnlBars(list, won)}</div>
       <p class="dali-hint">살 때와 팔 때의 뉴스, 분위기는 달이가 알아서 적어요. 메모는 쓰고 싶을 때만.</p>` +
       list.map(tradeCard).join("");
   }
@@ -352,6 +363,7 @@
     render();
   }
   function openOrder(sym) {
+    if (window.DALI_ORDER && appOf(sym) === state.app) { if (state.open) close(); bubble.classList.remove("show"); window.DALI_ORDER(sym); return; }
     if (state.open) close();
     bubble.classList.remove("show");
     state.order = { sym, side: "매수", qty: 1 };
@@ -386,6 +398,7 @@
   });
 
   function render() {
+    saveShared();
     sheet.querySelector(".dali-where").textContent = `${DALI_APPS[state.app].name} 앱에서`;
     sheet.querySelector(".dali-pebbles").textContent = `조약돌 ${state.pebbles}`;
     sheet.querySelectorAll(".dali-tabs button").forEach(b => {
@@ -456,13 +469,15 @@
   demo.className = "dali-demo";
   demo.innerHTML = `
     <p class="dali-demo-title">발표자용 시연 버튼</p>
-    <div class="dali-demo-apps"><button type="button" data-app="stock" class="on">유진투자증권</button><button type="button" data-app="fut">유진투자선물</button></div>
+    <div class="dali-demo-apps"><button type="button" data-app="stock" class="${state.app === "stock" ? "on" : ""}">유진투자증권</button><button type="button" data-app="fut" class="${state.app === "fut" ? "on" : ""}">유진투자선물</button></div>
     <button type="button" data-demo="alert">의미 있는 뉴스 도착</button>
     <button type="button" data-demo="pebble">조약돌 3개 주기</button>
     <button type="button" data-demo="reset" class="ghost">처음으로</button>`;
   document.body.appendChild(demo);
 
   function setApp(app) {
+    const page = app === "fut" ? "futures.html" : "index.html";
+    if (!location.pathname.endsWith(page)) { location.href = page; return; }
     state.app = app;
     state.page = null;
     state.order = null;
@@ -487,7 +502,7 @@
     if (b.dataset.app) setApp(b.dataset.app);
     else if (b.dataset.demo === "alert") alertNews();
     else if (b.dataset.demo === "pebble") { gain(3); open("manage"); }
-    else if (b.dataset.demo === "reset") location.reload();
+    else if (b.dataset.demo === "reset") { try { localStorage.removeItem("dali-shared"); } catch (e) { /* 무시 */ } location.reload(); }
   });
 
   window.dali = { open, close, openNews, openOrder, setApp, alertNews };
