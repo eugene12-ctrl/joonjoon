@@ -10,7 +10,7 @@ const STOCKS = [
   { code: "005380", name: "현대차", margin: "현20 신45", nxt: "NXT가능", price: 297000, change: 5500, rate: 1.89, volume: 1032800, volRate: 96.3, dir: "up" },
   { code: "035420", name: "NAVER", margin: "현20 신45", nxt: "NXT가능", price: 220500, change: 4000, rate: 1.85, volume: 815400, volRate: 88.7, dir: "up" },
   // 아직 관심에 없는 종목: 종목 고르기에서 들어가 별을 누르면 관심1과 달이에 같이 담김 (달이 쪽 이름 키와 같은 이름)
-  { code: "001200", name: "유진투자증권", margin: "현40 신50", nxt: "NXT가능", price: 4820, change: 55, rate: 1.15, volume: 1386200, volRate: 118.4, dir: "up" },
+  { code: "001200", name: "유진투자증권", margin: "현40 신50", nxt: "NXT가능", price: 3850, change: 35, rate: 0.92, volume: 1386200, volRate: 118.4, dir: "up" },
   { code: "373220", name: "LG에너지솔루션", margin: "현20 신45", nxt: "NXT가능", price: 412000, change: -2900, rate: -0.70, volume: 284600, volRate: 74.1, dir: "down" },
 ];
 
