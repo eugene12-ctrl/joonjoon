@@ -1,0 +1,18 @@
+선물 종목 그림: 토스 3D 이모지 (https://static.toss.im/3d-emojis/u<코드포인트>.png)
+원본 500~1024px를 128px로 줄여 넣었다. 시연용. 바꾸려면 같은 이름으로 PNG를 덮어쓰면 된다.
+
+chart_increasing   u1F4C8  S&P 500 (ES, MES)
+laptop             u1F4BB  나스닥 100 (NQ, MNQ)
+classical_building u1F3DB  다우 (YM)
+bar_chart          u1F4CA  러셀 2000 (RTY)
+oil_drum           u1F6E2  크루드 오일 (CL, MCL)
+fire               u1F525  천연가스 (NG)
+1st_place_medal    u1F947  금 (GC, MGC)
+2nd_place_medal    u1F948  은 (SI)
+3rd_place_medal    u1F949  구리 (HG)
+ear_of_corn        u1F33D  옥수수 (ZC)
+beans              u1FAD8  대두 (ZS)
+sheaf_of_rice      u1F33E  밀 (ZW)
+bank               u1F3E6  미국 10년 국채 (ZN)
+credit_card        u1F4B3  유로 (6E, 유로 지폐 그림은 CDN에 없음)
+yen_banknote       u1F4B4  엔 (6J)

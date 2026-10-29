@@ -1156,8 +1156,8 @@ const FUTS = [
   { k: '6E', m: 'Z26', ko: '유로', en: 'Euro FX', cat: '통화', p: 1.1645, c: 0.12, mult: 125000, tick: 0.00005, dec: 5, mg: 2700, unit: '125,000유로', last: '26년 12월 14일' },
   { k: '6J', m: 'Z26', ko: '일본 엔', en: 'Japanese Yen', cat: '통화', p: 0.0065550, c: -0.18, mult: 12500000, tick: 0.0000005, dec: 7, mg: 3300, unit: '12,500,000엔', last: '26년 12월 14일' },
 ];
-// 종목 그림: Fluent 3D 이모지 (MIT, features/futures/img/LICENSE-fluentui-emoji.txt)
-const FIMG = {ES: 'chart_increasing', MES: 'chart_increasing', NQ: 'laptop', MNQ: 'laptop', YM: 'classical_building', RTY: 'bar_chart', CL: 'oil_drum', MCL: 'oil_drum', NG: 'fire', GC: 'coin', MGC: 'coin', SI: '2nd_place_medal', HG: 'nut_and_bolt', ZC: 'ear_of_corn', ZS: 'beans', ZW: 'sheaf_of_rice', ZN: 'bank', '6E': 'euro_banknote', '6J': 'yen_banknote'};
+// 종목 그림: 토스 3D 이모지 (features/futures/img/SOURCE.txt)
+const FIMG = {ES: 'chart_increasing', MES: 'chart_increasing', NQ: 'laptop', MNQ: 'laptop', YM: 'classical_building', RTY: 'bar_chart', CL: 'oil_drum', MCL: 'oil_drum', NG: 'fire', GC: '1st_place_medal', MGC: '1st_place_medal', SI: '2nd_place_medal', HG: '3rd_place_medal', ZC: 'ear_of_corn', ZS: 'beans', ZW: 'sheaf_of_rice', ZN: 'bank', '6E': 'credit_card', '6J': 'yen_banknote'};
 const fimg = (f, size = 28) => `<img src="features/futures/img/${FIMG[f.k]}.png" alt="" width="${size}" height="${size}">`;
 const MONTH = { F: '1월물', Z: '12월물' };
 const fcode = f => f.k + f.m;
