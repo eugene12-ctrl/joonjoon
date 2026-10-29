@@ -62,7 +62,7 @@
     const btn = [["event", e.sym, app === "fut" ? "나스닥 지난 결과는?" : "지난 결과는?"]];
     const who = app === "fut" ? e.short : `${e.sym} ${e.short}`;
     if (st === "wait") return { k: "event", score: 99, top: `${who} 대기`, big: `닮은 때 ${an.length}번`,
-      title: `${e.when} ${e.kind}. ${app === "fut" ? `${e.sym}이 ` : ""}지난 ${e.past.length}번 중 지금처럼 발표 전 5일 ${pct(e.now.pre5)}였던 때예요`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
+      title: `${e.when} ${e.kind}. 지난 ${e.past.length}번 중 지금처럼 발표 전 5일 ${app === "fut" ? `${e.sym}이 ` : ""}${pct(e.now.pre5)}였던 때예요`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
     if (st === "live" && r) return { k: "event", score: 99, top: `${who} 발표 뒤`, big: pct(r.val),
       title: `${nowP ? `${won(nowP)}, ` : ""}${m ? m.qty : ""}. 닮은 때 ${two}와 같은 방향이에요`, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     if (st === "done" && r) return { k: "event", score: 92, top: `${who} 뒤 ${r.label}`, big: pct(r.val),

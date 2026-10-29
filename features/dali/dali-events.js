@@ -26,7 +26,7 @@ const DALI_EVENTS = {
   },
   "나스닥 100": {
     app: "fut", kind: "미국 금리 결정 (FOMC)", when: "내일 새벽 3시", short: "FOMC",
-    axes: [["pre5", "발표 전 5일"], ["kospi", "S&P 500 흐름"], ["sector", "기술주 흐름"], ["volume", "거래량"], ["vol", "변동성"]],
+    axes: [["pre5", "발표 전 5일"], ["kospi", "S&P 흐름"], ["sector", "기술주 흐름"], ["volume", "거래량"], ["vol", "변동성"]],
     implied: 1.8,
     now: { pre5: 2.5, kospi: "up", sector: "up", volume: "normal", vol: "calm", tag: "동결 예상", news: "금리 동결 예상 속 기술주 닷새째 상승" },
     past: [
