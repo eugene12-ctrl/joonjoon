@@ -49,7 +49,7 @@
 
 시연에서 뺐지만 코드는 남아 있다. 조약돌, 옷장, 달이 키우기, 주간 돌아보기, 한 달 습관 리포트, 팔레트 실험실, 달이와 3개월 뒤.
 
-- **2.0 첫 화면** (히어로, 내 돈, 관심 목록, 달이 키우기 버튼): `dali-pro.js`의 `pro.legacy`를 `true`로 바꾸면 돌아온다.
+- **2.0 첫 화면** (히어로, 내 자산, 관심 목록, 달이 키우기 버튼): `dali-pro.js`의 `pro.legacy`를 `true`로 바꾸면 돌아온다.
 - **달이와 3개월 뒤**: `index.html`과 `features/mts/index.html`에서 `dali-after.js`를 불러오는 `<script>` 줄을 다시 넣으면 발표자 상자 버튼과 화면이 돌아온다. `dali-after.css`는 그대로 연결돼 있다.
 - **조약돌 숫자와 "조약돌 3개 주기" 버튼**: `dali-snap.css` 끝의 숨김 두 줄(`.dali-pebbles`, `[data-demo="pebble"]`의 `display: none`)을 지우면 돌아온다.
 - **팔레트 실험실**: `features/palette-lab/index.html`은 그대로 있고 어디서도 링크하지 않는다. 파일을 직접 열면 된다.

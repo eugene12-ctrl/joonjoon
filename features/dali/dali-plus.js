@@ -218,7 +218,20 @@
   peek.className = "dali-peek";
   peek.setAttribute("role", "status");
   phone.appendChild(peek);
+  // 조약돌 숫자는 3.0에서 화면에서 뺐으므로 요약에도 넣지 않음 (숫자 하나, 문장 하나, 버튼 하나)
+  const foot = () => "";
   function peekHTML() {
+    // 오늘 탭이 있는 앱(증권)은 히어로와 같은 한 장을 보여 줌: 장면이 바뀌면 요약도 같이 바뀜
+    let card = null;
+    try { if (typeof DaliRules !== "undefined" && DaliRules.state && window.daliPro?.sc) card = DaliRules.state(daliPro.sc).cards[0]; } catch (e) { card = null; }
+    if (card) {
+      const up = /^\+/.test(card.big), down = /^-/.test(card.big);
+      return `
+        <p class="dali-peek-top"><b>3초 요약</b><span>${DALI_APPS[app].name}</span></p>
+        <p class="dali-peek-line">${card.top}</p>
+        <button type="button" class="dali-peek-news" data-peek="today"><span><i class="${up ? "up" : down ? "down" : "flat"}">${card.big}</i></span><small>${card.title}</small></button>
+        ${foot()}`;
+    }
     const syms = Object.keys(DALI_SYMS).filter(s => DALI_SYMS[s].app === app);
     const list = (alerted && DALI_ALERT_NEWS[app] ? [DALI_ALERT_NEWS[app]] : []).concat(DALI_NEWS.filter(n => DALI_SYMS[n.sym]?.app === app));
     const top = list.find(n => DALI_FLAG_TYPES.includes(n.type)) || list[0];
@@ -227,8 +240,8 @@
     return `
       <p class="dali-peek-top"><b>3초 요약</b><span>${DALI_APPS[app].name}</span></p>
       <p class="dali-peek-line">따라가는 종목 ${syms.length}개, 확인할 소식 ${flags}개</p>
-      ${top ? `<button type="button" class="dali-peek-news" data-peek="open"><span><b>${top.sym}</b> <i class="${chg > 0 ? "up" : chg < 0 ? "down" : "flat"}">${chg > 0 ? "+" : ""}${chg.toFixed(1)}%</i></span><small>${top.why}</small></button>` : ""}
-      <p class="dali-peek-foot">${counter.textContent || ""}</p>`;
+      ${top ? `<button type="button" class="dali-peek-news" data-peek="open"><span><b>${top.sym}</b> <i class="${chg > 0 ? "up" : chg < 0 ? "down" : "flat"}">${chg > 0 ? "+" : ""}${(chg || 0).toFixed(1)}%</i></span><small>${top.why}</small></button>` : ""}
+      ${foot()}`;
   }
   let holdTimer = null, held = false, hideTimer = null;
   const hidePeek = () => peek.classList.remove("show");
@@ -241,10 +254,16 @@
     clearTimeout(hideTimer);
     hideTimer = setTimeout(hidePeek, 3200);
   }
-  fab.addEventListener("pointerdown", () => {
+  let hold0 = null;
+  fab.addEventListener("pointerdown", e => {
     held = false;
+    hold0 = { x: e.clientX, y: e.clientY };
     clearTimeout(holdTimer);
     holdTimer = setTimeout(() => { held = true; showPeek(); }, 450);
+  });
+  // 손가락이 6px 넘게 움직이면 끌기(dali-move)이지 꾹 누르기가 아님: 요약을 띄우지 않음
+  window.addEventListener("pointermove", e => {
+    if (hold0 && Math.hypot(e.clientX - hold0.x, e.clientY - hold0.y) >= 6) { clearTimeout(holdTimer); hold0 = null; }
   });
   // 발표자용 버튼: 꾹 누르기를 화면 밖에서도 보여 줌
   const demoAlert = document.querySelector(".dali-demo [data-demo=alert]");
@@ -255,11 +274,12 @@
     b.addEventListener("click", showPeek);
     demoAlert.after(b);
   }
-  ["pointerup", "pointerleave", "pointercancel"].forEach(t => fab.addEventListener(t, () => clearTimeout(holdTimer)));
+  ["pointerup", "pointerleave", "pointercancel"].forEach(t => fab.addEventListener(t, () => { clearTimeout(holdTimer); hold0 = null; }));
   fab.addEventListener("click", e => { if (held) { held = false; e.stopImmediatePropagation(); } }, true);
   fab.addEventListener("contextmenu", e => e.preventDefault());
   peek.addEventListener("click", e => {
     if (e.target.closest("[data-peek=open]")) { hidePeek(); window.dali.open("news"); }
+    else if (e.target.closest("[data-peek=today]")) { hidePeek(); window.dali.open("today"); }
   });
   sheet.addEventListener("transitionstart", () => { if (sheet.classList.contains("open")) hidePeek(); });
 })();

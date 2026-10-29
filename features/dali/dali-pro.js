@@ -18,7 +18,7 @@
   const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
   const tone = n => (n > 0 ? "up" : n < 0 ? "down" : "flat");
 
-  // legacy: 달이 2.0 첫 화면(히어로, 내 돈, 관심 목록). false로 바꾸면 3.0 첫 화면(샀을 때랑 같아요)
+  // legacy: 달이 2.0 첫 화면(히어로, 내 자산, 관심 목록). false로 바꾸면 3.0 첫 화면(샀을 때랑 같아요)
   const pro = { on: false, sc: "morning", under: null, open: {}, legacy: true, why: false, rep: null };
   const SCENES = [["morning", "07:00 아침"], ["intraday", "장중 급변"], ["close", "15:40 마감"], ["month", "월말"]];
 
@@ -63,15 +63,15 @@
   function action() {
     const sc = pro.sc, m = R.money(sc), h = R.habits(), ss = m.pos.find(p => p.sym === "삼성전자"), pend = C.pending, did = memo();
     if (sc === "morning") {
-      // 아침: 숫자 하나, 문장 하나, 버튼 하나. 밤사이 미국 반도체가 내 돈 몇 %에 걸리는지만
+      // 아침: 숫자 하나, 문장 하나, 버튼 하나. 밤사이 미국 반도체가 내 자산 몇 %에 걸리는지만
       const us = R.timeline("morning").end, ss = m.pos.find(p => p.sym === "삼성전자");
-      return { top: "밤사이 미국 반도체 지수", big: pct(us), title: `내 돈의 ${Math.round(ss.value / m.total * 100)}%, 삼성전자가 같은 업종이에요`,
+      return { top: "밤사이 미국 반도체 지수", big: pct(us), title: `내 자산의 ${Math.round(ss.value / m.total * 100)}%, 삼성전자가 같은 업종이에요`,
         btns: [["news", "삼성전자", "삼성전자 보기"]] };
     }
     if (sc === "intraday") {
       const now = ss.now, avg = ss.avg, pc = prevClose("삼성전자");
       const gauge = { lo: Math.min(now, avg, pc) * 0.995, hi: Math.max(now, avg, pc) * 1.005, marks: [["지금", now, "now"], ["내 평단", avg, "mine"]] };
-      const facts = [[pct((now / avg - 1) * 100), "평단 대비"], [`내 돈의 ${Math.round(ss.value / m.total * 100)}%`, `${ss.qty}주`]];
+      const facts = [[pct((now / avg - 1) * 100), "평단 대비"], [`내 자산의 ${Math.round(ss.value / m.total * 100)}%`, `${ss.qty}주`]];
       const alertAt = Math.round(avg / 1000) * 1000;
       return did.wait
         ? { top: "결정 직전", big: pct(ss.pct), title: `삼성전자, ${won(alertAt)}이 되면 알려 드릴게요`, sub: "마감 때 결과도 같이 보여 드릴게요", gauge, facts, btns: [["order", "삼성전자", "삼성전자 주문"]] }
@@ -85,7 +85,7 @@
       const back = did.sold ? "" : `장중에 안 판 삼성전자는 마감 ${pct(rc.toPct)}, 그때보다 ${signed(rc.won)}`;
       // 체결로 바뀐 것: 평단과 비중 (보유 ${hd.qty}주에 ${pend.qty}주가 더해짐)
       const q2 = hd.qty + pend.qty, avg2 = Math.round((hd.avg * hd.qty + pend.price * pend.qty) / q2), w2 = Math.round(q2 * hd.now / m.total * 100);
-      const facts = [[`${hd.avg.toLocaleString("ko-KR")} → ${won(avg2)}`, "현대차 평단"], [`${Math.round(hd.value / m.total * 100)}% → ${w2}%`, "내 돈 중 현대차"]];
+      const facts = [[`${hd.avg.toLocaleString("ko-KR")} → ${won(avg2)}`, "현대차 평단"], [`${Math.round(hd.value / m.total * 100)}% → ${w2}%`, "내 자산 중 현대차"]];
       return { top: "결과", big: won(pend.price), title: `어제 걸어 둔 ${pend.sym} ${pend.qty}주, 체결됐어요`, sub: back, facts, btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
     }
     const q = R.flow("month").quickSell, c = R.costs();
@@ -105,11 +105,11 @@
     return `<li><button type="button" ${nw ? `data-pro-news="${nw.id}"` : ""}><span class="tm">${n.time}</span>
       <span class="tx"><b>${n.t}</b><small>${n.mine.length ? `내 ${n.mine.join(", ")}` : `관심 ${n.syms.join(", ")}`}</small></span>
       <span class="lg">${n.syms.map(sy => `<i class="dali-pro-logo">${sy[0]}${logo(sy)}</i>`).join("")}</span></button></li>`; }).join("")}</ul>`;
-  // 밤사이 미국 지수 세 개와 내 돈 업종 막대(같은 업종 강조)
+  // 밤사이 미국 지수 세 개와 내 자산 업종 막대(같은 업종 강조)
   const usBlock = a => `<div class="dali-pro-us"><div class="idx">${a.idx.map(([k, v]) => `<p><small>${k}</small><b>${pct(v)}</b></p>`).join("")}</div>
-    <p class="mixl">내 돈</p><div class="mix">${a.mix.map(([k, sym, v, hot]) => `<span class="${hot ? "hot" : ""}" style="flex:${v}"><b>${k} ${v}%</b><small>${sym}</small></span>`).join("")}</div></div>`;
+    <p class="mixl">내 자산</p><div class="mix">${a.mix.map(([k, sym, v, hot]) => `<span class="${hot ? "hot" : ""}" style="flex:${v}"><b>${k} ${v}%</b><small>${sym}</small></span>`).join("")}</div></div>`;
   /* 맨 위 한 장: 계좌 상태를 읽고 달이가 고른 것 하나 (DaliRules.state). 라벨, 큰 숫자, 한 줄, 버튼 하나뿐.
-     크게 움직인 종목이면 특징뉴스 한 줄을 더한다. 히어로 아래 내 돈, 보유, 현금, 관심 목록은 그대로 둔다 */
+     크게 움직인 종목이면 특징뉴스 한 줄을 더한다. 히어로 아래 내 자산, 보유, 현금, 관심 목록은 그대로 둔다 */
   function hero() {
     const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = R.state(pro.sc).cards[0], [go] = a.btns;
     const held = m.pos.map(p => row(p.sym, `${p.qty}주`, p.value, p.pct, true));
@@ -124,7 +124,7 @@
         <div class="dali-pro-act-btns"><button type="button" data-go="${go[0]}" data-sym="${go[1]}">${go[2]}</button></div>
       </section>
       <section class="dali-pro-head">
-        <p>내 돈</p>
+        <p>내 자산</p>
         <b>${won(m.total)}</b>
         <small class="${tone(m.today)}">${day} ${signed(m.today)} (${pct(m.today / (m.total - m.today) * 100)})</small>
       </section>
