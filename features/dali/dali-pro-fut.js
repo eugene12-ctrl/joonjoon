@@ -49,7 +49,7 @@
   }
 
   const pro = { on: false, sc: "morning", under: null, play: false };
-  const SCENES = [["morning", "07:00 아침"], ["intraday", "23:40 밤 급변"], ["close", "다음 날 아침"], ["month", "월말"]];
+  const SCENES = [["morning", "07:00 아침"], ["intraday", "23:40 급변"], ["close", "익일 아침"], ["month", "월말"]];
 
   /* --- 탭 하나 더하기: 맨 앞 "오늘" --- */
   const tabBtn = document.createElement("button");
@@ -114,7 +114,7 @@
   }
   function hero() {
     const sc = pro.sc, m = money(sc), a = action(), day = sc === "morning" || sc === "close" ? "밤사이" : "오늘";
-    const held = m.pos.map(p => row(p.sym, `${C.code[p.sym]} ${p.qty}계약 · 진입 ${fmtP(p.sym, p.avg)}`, usd(p.pnl), p.pct));
+    const held = m.pos.map(p => row(p.sym, `${C.code[p.sym]} ${p.qty}계약 · 진입 ${fmtP(p.sym, p.avg)}`, usd(p.pnl), p.pnlPct));
     const watch = C.watch.map(s => row(s, sc === "close" && s === C.pending.sym ? `${C.code[s]} ${C.pending.qty}계약 · 진입 ${fmtP(s, C.pending.price)}` : "관심", fmtP(s, nowPrice(s, sc)), todayPct(s, sc)));
     return `
       <section class="dali-pro-act sc-${sc}${a.k ? ` st-${a.k}` : ""}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>

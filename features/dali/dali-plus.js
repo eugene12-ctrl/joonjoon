@@ -199,12 +199,13 @@
     if (gained <= 0 || calm || !sheet.classList.contains("open")) return;
     setTimeout(() => {
       const from = body.querySelector(".dali-float") || body.querySelector(".dali-sea") || body;
-      const f = rectIn(from), c = rectIn(counter);
+      const to = body.querySelector(".dali-sea-pebbles") || counter;
+      const f = rectIn(from), c = rectIn(to);
       const a = { x: f.x + f.w / 2 - 14, y: f.y + f.h / 2 - 14, w: 28, h: 28 };
       const b = { x: c.x + 2, y: c.y + c.h / 2 - 9, w: 18, h: 18 };
       for (let i = 0; i < Math.min(gained, 4); i++) {
         setTimeout(() => arc(`${BASE}img/rock.png`, a, b, 700, 70 + i * 14).finished.then(() => {
-          counter.animate([{ transform: "scale(1)" }, { transform: "scale(1.22)" }, { transform: "scale(1)" }], { duration: 300, easing: EASE_OUT });
+          to.animate([{ transform: "scale(1)" }, { transform: "scale(1.22)" }, { transform: "scale(1)" }], { duration: 300, easing: EASE_OUT });
         }), i * 110);
       }
     }, 650);
