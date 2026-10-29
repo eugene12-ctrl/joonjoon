@@ -7,23 +7,31 @@ const DaliRules = (function () {
   const prevClose = sym => Math.round(price(sym) / (1 + DALI_SYMS[sym].chg / 100));
   // 시연 시각의 현재가. 아침은 어제 종가, 장중은 가상 등락, 마감은 어제 종가 그대로(10월 28일 종가를 오늘로 씀)
   // 월말(10월 31일)은 10월 28일 종가에서 그날 등락만큼 움직인 값. 그래야 합계와 "오늘" 변화가 맞음
-  const nowPrice = (sym, sc) => sc === "morning" ? price(sym)
-    : sc === "month" ? Math.round(price(sym) * (1 + M.month.pct[sym] / 100))
-    : Math.round(prevClose(sym) * (1 + M[sc].pct[sym] / 100));
+  // 호가 단위로 맞춘 값 (20만 원 이상 500원, 50만 원 이상 1,000원)
+  const tick = p => { const u = p >= 500000 ? 1000 : p >= 200000 ? 500 : p >= 50000 ? 100 : 50; return Math.round(p / u) * u; };
+  const nowPrice = (sym, sc) => sc === "morning" ? price(sym) : tick(price(sym) * (1 + M[sc].pct[sym] / 100));
   const todayPct = (sym, sc) => sc === "morning" ? DALI_SYMS[sym].chg : M[sc].pct[sym];
 
   const fmtWon = n => `${n < 0 ? "-" : "+"}${Math.abs(Math.round(n)).toLocaleString("ko-KR")}원`;
 
   /* --- 내 돈 한눈에 --- */
+  // 걸어 둔 주문이 체결된 뒤면 보유와 현금에 반영 (평단은 수량 가중)
+  function holdings(sc) {
+    const pd = C.pending, filled = !!(M[sc] && M[sc].filled);
+    const positions = C.positions.map(p => !filled || p.sym !== pd.sym ? p
+      : { ...p, qty: p.qty + pd.qty, avg: Math.round((p.avg * p.qty + pd.price * pd.qty) / (p.qty + pd.qty)) });
+    return { positions, cash: C.cash - (filled ? pd.price * pd.qty : 0), filled };
+  }
   function money(sc) {
-    const pos = C.positions.map(p => {
+    const hd = holdings(sc);
+    const pos = hd.positions.map(p => {
       const now = nowPrice(p.sym, sc), pct = todayPct(p.sym, sc);
       return { ...p, now, value: p.qty * now, pnl: p.qty * (now - p.avg), pnlPct: (now / p.avg - 1) * 100, pct, today: p.qty * now * pct / (100 + pct) };
     }).sort((a, b) => b.value - a.value);
     const stockVal = pos.reduce((a, p) => a + p.value, 0);
-    const total = stockVal + C.cash;
+    const total = stockVal + hd.cash;
     const top = pos[0];
-    return { pos, stockVal, total, top, topShare: top.value / total * 100, cashShare: C.cash / total * 100,
+    return { pos, stockVal, total, cash: hd.cash, filled: hd.filled, top, topShare: top.value / total * 100, cashShare: hd.cash / total * 100,
       today: pos.reduce((a, p) => a + p.today, 0), pnl: pos.reduce((a, p) => a + p.pnl, 0) };
   }
 
@@ -275,5 +283,42 @@ const DaliRules = (function () {
     return { buy: pick.map(k => `${AX_LABEL[k]} ${AX_WORD[k][String(t.buySnap[k])]}`), held: !t.sell, same: !d.length, diff: d };
   }
 
-  return { same, alive, word, why, report, brief, axes, AX_LABEL, money, habits, costs, diff, action, flow, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
+  /* --- 오늘 탭 맨 위: 계좌 상태를 읽고 지금 먼저 볼 것 하나를 고름 ---
+     걸어 둔 주문(대기 또는 체결), 크게 움직인 내 종목, 월말 정리, 내 종목 한눈에. 점수 높은 순서.
+     실서비스에선 이 순서와 문장을 AI가 고객 계좌마다 고르고, 시연은 같은 규칙으로 매번 같은 답 */
+  const feat = (sym, sc) => (M[sc].feat || {})[sym] || "";
+  function state(sc) {
+    const m = money(sc), pd = C.pending, cards = [];
+    const pos = sym => m.pos.find(p => p.sym === sym);
+    if (sc === "month") {
+      const closed = C.trades.filter(t => t.sell && t.sell.startsWith("10/")), wins = closed.filter(t => t.pct > 0).length;
+      cards.push({ k: "month", score: 100, top: "10월 마감", big: fmtWon(C.month.realized), title: `10월에 판 ${closed.length}번, ${wins}번 수익이에요`,
+        sub: `보유 ${m.pos.length}종목 평가 ${fmtWon(m.pnl)}`, btns: [["journal", "", "매매일지"]], line: `10월 실현 ${fmtWon(C.month.realized)}` });
+    }
+    if (m.filled && sc !== "month") {
+      const p = pos(pd.sym), before = C.positions.find(x => x.sym === pd.sym);
+      cards.push({ k: "fill", score: 90, top: `체결 ${M[sc].fillAt || ""}`.trim(), big: won(pd.price), title: `어제 걸어 둔 ${pd.sym} ${pd.qty}주, 체결됐어요`,
+        sub: `이제 ${p.qty}주, 평단 ${before.avg.toLocaleString("ko-KR")} → ${won(p.avg)}`, sym: pd.sym,
+        btns: [["journal", "", "매매일지"], ["news", pd.sym, `${pd.sym} 보기`]], line: `${pd.sym} ${pd.qty}주 ${won(pd.price)} 체결` });
+    }
+    m.pos.filter(p => Math.abs(p.pct) >= 3).forEach(p => cards.push({ k: "move", score: 80 + Math.abs(p.pct), top: sc === "morning" ? "어제 크게 움직인 내 종목" : "크게 움직인 내 종목",
+      big: `${p.pct > 0 ? "+" : ""}${p.pct.toFixed(1)}%`, title: `${p.sym} ${won(p.now)}, 내 ${p.qty}주`, feat: feat(p.sym, sc), sym: p.sym,
+      btns: [["news", p.sym, "특징뉴스 보기"], ["order", p.sym, `${p.sym} 주문`]], line: `${p.sym} ${p.pct > 0 ? "+" : ""}${p.pct.toFixed(1)}%, ${won(p.now)}` }));
+    if (!m.filled) {
+      const now = nowPrice(pd.sym, sc), gap = (now / pd.price - 1) * 100;
+      // 장 시작 전 아침엔 걸어 둔 주문이 맨 위, 장중엔 크게 움직인 종목 다음
+      cards.push({ k: "wait", score: sc === "morning" ? 95 : 70, top: "걸어 둔 주문", big: won(pd.price), title: `${pd.sym} ${pd.qty}주 매수 주문이 기다리고 있어요`,
+        sub: `${sc === "morning" ? "어제 종가" : "지금"} ${won(now)}, 주문가보다 ${gap.toFixed(1)}% 위`, sym: pd.sym,
+        btns: [["order", pd.sym, "주문 보기"], ["news", pd.sym, `${pd.sym} 보기`]], line: `${pd.sym} ${pd.qty}주 ${won(pd.price)} 매수 대기` });
+    }
+    const top = m.pos[0];
+    cards.push({ k: "hold", score: 10, top: "내 종목", big: `${top.pct > 0 ? "+" : ""}${top.pct.toFixed(1)}%`, title: `${top.sym} ${won(top.now)}`, feat: feat(top.sym, sc), sym: top.sym,
+      btns: [["news", top.sym, "특징뉴스 보기"]], line: m.pos.map(p => `${p.sym} ${p.pct > 0 ? "+" : ""}${p.pct.toFixed(1)}%`).join(", ") });
+    cards.sort((a, b) => b.score - a.score);
+    const moved = m.pos.filter(p => Math.abs(p.pct) >= 3).length;
+    const read = [`보유 ${m.pos.length}종목`, m.filled ? "체결 1건" : "걸어 둔 주문 1건", moved ? `3% 넘게 움직인 종목 ${moved}개` : "크게 움직인 종목 없음"];
+    return { seen: C.lastSeen[sc], read, cards };
+  }
+
+  return { state, feat, holdings, same, alive, word, why, report, brief, axes, AX_LABEL, money, habits, costs, diff, action, flow, forMe, dayLabel, timeline, priority, fmtWon, nowPrice, todayPct };
 })();

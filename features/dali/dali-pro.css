@@ -377,3 +377,19 @@
 .dali-pro-us .mix small { font-size: 11.5px; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dali-pro-us .mix span { min-width: 74px; }
 .dali-pro-us .mix b { font-size: 12.5px; }
+
+/* ===== 오늘 탭 맨 위: 계좌 상태를 읽고 고른 한 장 (DaliRules.state) ===== */
+.dali-pro-act-top .dali-pro-seen { margin-left: auto; font-weight: 500; color: rgba(255, 255, 255, .6); }
+/* 큰 숫자는 띠 색이 방향을 말하므로 흰 글씨 그대로 */
+.dali-pro-act-big b { color: inherit; font-weight: inherit; }
+.dali-pro-act-feat { display: flex; gap: 8px; align-items: baseline; margin: 10px 0 0; font-size: 14px; line-height: 1.45; color: rgba(255, 255, 255, .9); word-break: keep-all; }
+.dali-pro-act-feat span { flex: none; padding: 2px 7px; border-radius: 6px; background: rgba(255, 255, 255, .16); font-size: 11.5px; font-weight: 700; color: #fff; }
+/* 그다음 볼 것: 달이가 고른 순서 */
+.dali-pro-next { margin: 16px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(255, 255, 255, .16); }
+.dali-pro-next li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0 0; font-size: 13.5px; }
+.dali-pro-next li span { flex: none; color: rgba(255, 255, 255, .6); }
+.dali-pro-next li b { font-weight: 600; color: #fff; text-align: right; word-break: keep-all; }
+.dali-pro-read { margin: 14px 0 0; font-size: 12px; line-height: 1.45; color: rgba(255, 255, 255, .55); word-break: keep-all; }
+/* 내 종목 줄 아래 특징뉴스 한 줄 */
+.dali-pro-name .dali-pro-feat { display: block; margin-top: 2px; font-style: normal; font-size: 12px; color: #8B95A1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dali-pro-row .dali-pro-name { min-width: 0; }
