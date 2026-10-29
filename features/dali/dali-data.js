@@ -16,10 +16,10 @@ const DALI_SYMS = {
   "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8, code: "035420" },
   // 유진투자선물 앱(futures.html): CME 해외선물. 주식은 증권 앱에서 따라가므로 여기선 선물만.
   // 이름은 futures.html FUTS의 ko와 같게 (종목을 누르면 그 선물 화면으로 감). 마이크로 계약은 원 계약 이름으로 묶음
-  "크루드 오일": { app: "fut", kind: "hold", price: 61.84, chg: -1.12, dec: 2, icon: "oil_drum" },
-  "금": { app: "fut", kind: "hold", price: 4128.4, chg: 0.46, dec: 1, icon: "1st_place_medal" },
-  "S&P 500": { app: "fut", kind: "watch", price: 7768.25, chg: 0.31, dec: 2, icon: "chart_increasing" },
-  "나스닥 100": { app: "fut", kind: "watch", price: 29512.5, chg: 0.62, dec: 2, icon: "laptop" },
+  "크루드 오일": { app: "fut", kind: "hold", price: 61.84, chg: -1.12, dec: 2, icon: "oil" },
+  "금": { app: "fut", kind: "hold", price: 4128.4, chg: 0.46, dec: 1, icon: "gold" },
+  "S&P 500": { app: "fut", kind: "watch", price: 7768.25, chg: 0.31, dec: 2, icon: "sp500" },
+  "나스닥 100": { app: "fut", kind: "watch", price: 29512.5, chg: 0.62, dec: 2, icon: "nasdaq100" },
 };
 
 // 느낌표는 AI의 감이 아니라 객관 기준(공시, 실적, 큰 변동)일 때만
