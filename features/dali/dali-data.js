@@ -70,7 +70,7 @@ const DALI_TRADES = [
   // buys: 나눠 산 기록. 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기 (화면은 사실만 적음)
   // 보유 종목은 dali-customer.js 보유(삼성전자 80주 평단 221,000원, 현대차 20주 291,000원)와 같은 숫자
   { id: "t8", app: "stock", sym: "삼성전자", qty: "80주",
-    buy: { date: "09/22", news: "반도체 업황 회복 기대 기사", mood: "차분한 날" },
+    buy: { date: "09/22", news: "반도체 업황 회복 기대가 나온 날", mood: "차분한 날" },
     buys: [{ date: "09/22", qty: 30, price: 232000 }, { date: "09/30", qty: 50, price: 214400 }],
     sell: null, pnl: 1680000, pct: 9.5, memo: "" },
   { id: "t1", app: "stock", sym: "삼성전자", qty: "15주",
@@ -82,7 +82,7 @@ const DALI_TRADES = [
     sell: { date: "10/08", news: "미국 기술주 급락 속보", mood: "급락 1시간 안" },
     pnl: -266500, pct: -4.1, memo: "" },
   { id: "t3", app: "stock", sym: "현대차", qty: "20주",
-    buy: { date: "10/08", news: "환율 상승 기사", mood: "차분한 날" },
+    buy: { date: "10/08", news: "환율이 올라 수출주가 주목받은 날", mood: "차분한 날" },
     buys: [{ date: "10/08", qty: 10, price: 287000 }, { date: "10/21", qty: 10, price: 295000 }],
     sell: null, pnl: 120000, pct: 2.1, memo: "" },
   // 선물 앱은 달러 손익, pct는 가격 등락률. qty에 계약 코드를 함께 적음 (futures.html 보유와 같은 숫자)
@@ -98,7 +98,7 @@ const DALI_TRADES = [
     buy: { date: "10/27", news: "원유 재고 발표 앞둔 날", mood: "차분한 날" },
     sell: null, pnl: -310, pct: -0.5, memo: "" },
   { id: "t7", app: "fut", sym: "금", qty: "MGC 2계약 매수",
-    buy: { date: "10/23", news: "달러 약세 기사", mood: "차분한 날" },
+    buy: { date: "10/23", news: "달러가 약했던 날", mood: "차분한 날" },
     sell: null, pnl: 540, pct: 0.7, memo: "" },
 ];
 

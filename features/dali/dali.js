@@ -210,39 +210,14 @@
 
   /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
-  // 살 때와 팔 때: 그때 가격과 주수, 그리고 그날 특징뉴스 한 줄. 시황 숫자는 늘어놓지 않는다
-  // 특징뉴스는 그날 그 종목 실제 뉴스가 있으면(최근 2주) 그 제목을, 없으면 그날의 가상 뉴스 한 줄
-  const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
-  const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
+  // 매매 돌아보기: 차트 아래 두 칸. 왼쪽 살 때, 오른쪽 팔 때(들고 있으면 지금). 칸마다 날짜와 그때 시황 한 구절
+  // 시황 한 구절은 그날 시장 흐름 수준의 가상 요약(buy.news, sell.news). 지금 칸은 그 종목 최신 소식 한 줄
   const dayKo = d => { const [m, dd] = (d === "오늘" ? "10/29" : d).split("/").map(Number); return `${m}월 ${dd}일`; };
-  const krw = n => `${Math.round(n).toLocaleString("ko-KR")}원`;
-  function realNews(sym, label) {
-    const code = DALI_SYMS[sym] && DALI_SYMS[sym].code;
-    if (!code || typeof DaliFeed === "undefined") return null;
-    const c = DaliFeed.getNews(code, () => { if (state.open && state.tab === "journal" && !state.page) render(); });
-    return (c.list || []).find(a => a.time.startsWith(label)) || null;
-  }
-  function hot(kind, sym, date) {
-    const real = realNews(sym, dayKo(date));
-    if (real) return `<button type="button" class="dali-mn-hot" data-article="${real.id}" data-sym="${sym}"><i>특징뉴스</i><b>${real.title}</b></button>`;
-    const t = typeof DALI_MOMENT_NEWS !== "undefined" && DALI_MOMENT_NEWS[kind][`${sym} ${date === "오늘" ? "10/29" : date}`];
-    return t ? `<p class="dali-mn-hot"><i>특징뉴스</i><b>${t}</b></p>` : "";
-  }
-  // 한 번의 매매: 날짜, 가격에 주수, 특징뉴스
-  const deal = (kind, sym, date, price, qty) => `<div class="dali-mn-deal"><small>${dayKo(date)}</small><p class="dali-mn-px"><b>${krw(price)}</b>에 ${qty}주</p>${hot(kind, sym, date)}</div>`;
-  function market(t) {
-    const ct = tradeOf(t);
-    if (!ct || !ct.buySnap) return "";
-    // 나눠 산 보유 종목은 회차마다, 끝에 평단 변화
-    const buys = t.buys && t.buys.length > 1 ? t.buys : [{ date: t.buy.date, qty: ct.qty, price: ct.price || ct.buySnap.price }];
-    let q = 0, cost = 0;
-    const avgs = buys.map(b => { q += b.qty; cost += b.qty * b.price; return cost / q; });
-    const avgLine = buys.length > 1 ? `<p class="dali-mn-avg">평단 ${krw(buys[0].price)} → <b>${krw(avgs[avgs.length - 1])}</b></p>` : "";
-    const buy = `<div class="dali-mn"><p class="dali-mn-head">살 때</p>${buys.map(b => deal("buy", t.sym, b.date, b.price, b.qty)).join("")}${avgLine}</div>`;
-    const sell = t.sell && ct.sellSnap
-      ? `<div class="dali-mn"><p class="dali-mn-head">팔 때</p>${deal("sell", t.sym, t.sell.date, ct.sellSnap.price, ct.qty)}</div>`
-      : `<div class="dali-mn"><p class="dali-mn-head">팔 때</p><p class="dali-mn-hold">아직 들고 있어요</p></div>`;
-    return `<div class="dali-mns">${buy}${sell}</div>`;
+  function sides(t) {
+    const side = (label, when, line) => `<div class="dali-jside-col"><small>${label}<em>${when}</em></small><b>${line}</b></div>`;
+    const now = state.news.find(x => x.sym === t.sym);
+    const right = t.sell ? side("팔 때", dayKo(t.sell.date), t.sell.news) : now ? side("지금", now.time, now.why) : "";
+    return `<div class="dali-jside">${side("살 때", dayKo(t.buy.date), t.buy.news)}${right}</div>`;
   }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
@@ -274,11 +249,7 @@
           <span class="dali-jname"><b>${DALI_NAME(t.sym)}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
-        ${open ? (() => { const mk = market(t);
-          return mk ? `<div class="dali-jmore">${DaliChart.trade(t)}${mk}</div>`
-            : `<div class="dali-jmore">${DaliChart.trade(t)}
-          <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
-          <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>`; })() : ""}
+        ${open ? `<div class="dali-jmore">${DaliChart.trade(t)}${sides(t)}</div>` : ""}
       </li>`;
   }
   // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
@@ -305,8 +276,8 @@
     const byDay = byDayOf(closed);
     return `<div class="dali-jcal"><div class="dali-jgrid w5">${J_WEEK.map((d, i) => jcell(d, byDay[d], `${"월화수목금"[i]} ${d}`)).join("")}</div></div>`;
   }
-  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 자산과 같은 계산)
-  const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return v * (q.chg || 0) / (100 + (q.chg || 0)); };
+  // 보유 종목의 오늘 평가 변동: 수량 × 지금가 × 등락 (오늘 탭 내 자산과 같은 계산). 원, 달러 모두 정수로
+  const heldToday = t => { const q = DALI_SYMS[t.sym] || {}, n = parseFloat(t.qty) || 0, v = q.app === "stock" ? n * q.price : (t.pnl / ((t.pct || 1) / 100)) + t.pnl; return Math.round(v * (q.chg || 0) / (100 + (q.chg || 0))); };
   // 일간: 그날 내 종목(보유와 그날 판 것) 실제 뉴스. 종목마다 최근 2건, 누르면 달이 안에서 기사가 열림
   function jnewsHTML(syms, dayLabel) {
     const rows = [];
@@ -318,8 +289,8 @@
       if (!c.list) { loading = loading || c.loading; return; }
       c.list.filter(a => a.time.startsWith(dayLabel)).slice(0, 2).forEach(a => rows.push({ sym, a }));
     });
-    if (!rows.length) return `<p class="dali-jsec">그날 내 종목 뉴스</p><p class="dali-jnews-empty">${loading ? "뉴스를 불러오는 중이에요" : "그날 올라온 뉴스가 없어요"}</p>`;
-    return `<p class="dali-jsec">그날 내 종목 뉴스</p><ul class="dali-jnews">${rows.map(({ sym, a }) => `
+    if (!rows.length) return `<p class="dali-pro-sec dali-jsec">그날 내 종목 뉴스</p><p class="dali-jnews-empty">${loading ? "뉴스를 불러오는 중이에요" : "그날 올라온 뉴스가 없어요"}</p>`;
+    return `<p class="dali-pro-sec dali-jsec">그날 내 종목 뉴스</p><ul class="dali-jnews">${rows.map(({ sym, a }) => `
       <li><button type="button" data-article="${a.id}" data-sym="${sym}">
         <i class="dali-jlogo">${sym[0]}${symImg(sym)}</i>
         <span><b>${a.title}</b><small>${sym}, ${a.time.replace(dayLabel + " ", "")}</small></span></button></li>`).join("")}</ul>`;
@@ -330,29 +301,37 @@
     const key = t => (t.sell.date === "오늘" ? "99/99" : t.sell.date), closed = list.filter(t => t.sell).sort((a, b) => key(b).localeCompare(key(a)));
     const view = state.jview || "month";
     const inView = view === "day" ? closed.filter(t => jday(t) === J_TODAY) : view === "week" ? closed.filter(t => J_WEEK.includes(jday(t))) : closed;
-    const total = inView.reduce((a, t) => a + t.pnl, 0), wins = inView.filter(t => t.pnl > 0).length;
-    const group = (title, l, mode) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(t => tradeRow(t, mode)).join("")}</ul>` : "";
+    const total = inView.reduce((a, t) => a + t.pnl, 0);
+    // 띠 한 줄: 그 기간에 판 것 중 손익이 가장 큰 한 건 (이익, 손실 상관없이 금액 크기로)
+    const big1 = inView.slice().sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))[0];
+    const biggest = big1 ? `가장 큰 손익은 ${DALI_NAME(big1.sym)} ${won(big1.pnl)}` : "";
+    const group = (title, l, mode) => l.length ? `<p class="dali-pro-sec dali-jsec">${title}</p><ul class="dali-jlist">${l.map(t => tradeRow(t, mode)).join("")}</ul>` : "";
     const tabs = [["day", "일간"], ["week", "주간"], ["month", "월간"]]
       .map(([k, l]) => `<button type="button" class="${view === k ? "on" : ""}" data-act="jview" data-v="${k}">${l}</button>`).join("");
-    let head, body, closedTitle, newsBlock = "";
+    let head, body, newsBlock = "";
     if (view === "day") {
       const today = held.reduce((a, t) => a + heldToday(t), 0);
       // 시세는 10월 28일 마감 기준이라, 하루 변동은 "어제"로 적음 (오늘 탭 아침과 같은 말)
-      head = `<span>어제 10월 28일, 보유 종목</span><b class="${tone(today)}">${won(today)}</b><small>${inView.length ? `오늘 판 ${inView.length}건 ${won(total)}` : "오늘은 아직 판 게 없어요"}</small>`;
-      body = ""; closedTitle = "오늘 판 것";
+      const top = held.slice().sort((a, b) => Math.abs(heldToday(b)) - Math.abs(heldToday(a)))[0];
+      head = ["어제 보유 종목 변동", won(today), top ? `가장 큰 변동은 ${DALI_NAME(top.sym)} ${won(heldToday(top))}` : ""];
+      body = "";
       newsBlock = jnewsHTML([...new Set([...held, ...inView].map(t => t.sym))], "10월 28일");
     } else if (view === "week") {
-      head = `<span>이번 주 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>${inView.length ? `판 ${inView.length}번 중 ${wins}번 수익` : "이번 주엔 판 게 없어요"}</small>`;
-      body = jweekHTML(closed); closedTitle = "이번 주에 판 것";
+      head = ["이번 주 실현 손익", won(total), biggest];
+      body = jweekHTML(closed);
     } else {
-      head = `<span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${inView.length}번 중 ${wins}번 수익</small>`;
-      body = jcalHTML(closed); closedTitle = "10월에 판 것";
+      head = ["10월 실현 손익", won(total), biggest];
+      body = jcalHTML(closed);
     }
     return `
-      <div class="dali-jseg">${tabs}</div>
-      <div class="dali-jsum">${head}</div>
+      <section class="dali-pro-act dali-jhero">
+        <p class="dali-pro-act-top"><img src="${FACE}" alt="달이">${head[0]}</p>
+        <p class="dali-pro-act-big">${head[1]}</p>
+        ${head[2] ? `<h2>${head[2]}</h2>` : ""}
+        <div class="dali-pro-act-btns dali-jseg">${tabs}</div>
+      </section>
       ${body}
-      ${group("보유 중", held, view)}${group(closedTitle, inView)}${newsBlock}`;
+      ${group("보유 중", held, view)}${group("매매 돌아보기", inView)}${newsBlock}`;
   }
 
   /* --- 관리 탭 --- */
@@ -591,15 +570,19 @@
   function readBand(sym, time, why) {
     const s = DALI_SYMS[sym], R = typeof DaliRules !== "undefined" ? DaliRules : null, sc = window.daliPro ? window.daliPro.sc : "morning";
     const stock = s.app === "stock" && R, now = stock ? R.nowPrice(sym, sc) : s.price, chg = stock ? R.todayPct(sym, sc) : s.chg;
-    let top = `${DALI_NAME(sym)} 관심`, big = pct(chg);
+    // 큰 숫자는 뉴스 탭 띠와 같이 지금가와 등락. 보유면 내 수량과 금액은 아래 한 줄로
+    const price = s.app === "fut" ? now.toLocaleString("en-US", { minimumFractionDigits: s.dec || 2, maximumFractionDigits: s.dec || 2 }) : `${Math.round(now).toLocaleString("ko-KR")}원`;
+    const chgTxt = `${chg > 0 ? "+" : ""}${chg.toFixed(Math.abs(chg) < 1 ? 2 : 1)}%`;
+    let top = `${DALI_NAME(sym)} 관심`, mine = "";
     const p = s.app === "stock" && typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.positions.find(x => x.sym === sym) : null;
     const t = s.app === "fut" && typeof DALI_TRADES !== "undefined" ? DALI_TRADES.find(x => x.sym === sym && !x.sell) : null;
-    if (p) { top = `${sym} ${p.qty}주`; big = won(p.qty * now * chg / (100 + chg), "stock"); }
-    else if (t) { top = `${DALI_NAME(sym)} ${t.qty.replace(/^\S+\s/, "")}`; big = won(t.pnl, "fut"); }
+    if (p) { top = `${sym} 보유`; mine = `내 ${p.qty}주, 오늘 ${won(p.qty * now * chg / (100 + chg), "stock")}`; }
+    else if (t) { top = `${DALI_NAME(sym)} 보유`; mine = `내 ${t.qty.replace(/^\S+\s/, "").replace(/ 매수$/, "")}, 평가 ${won(t.pnl, "fut")}`; }
     return `<div class="dali-pro dali-read"><section class="dali-pro-act dali-read-act">
         <p class="dali-pro-act-top"><i class="dali-pro-logo">${sym[0]}${symImg(sym)}</i>${top}<span>${time}</span></p>
-        <p class="dali-pro-act-big">${big}</p>
+        <p class="dali-pro-act-big">${price}<small class="${tone(chg)}">${chgTxt}</small></p>
         ${why ? `<h2>${why}</h2>` : ""}
+        ${mine ? `<p class="dali-pro-act-sub">${mine}</p>` : ""}
       </section></div>`;
   }
   const readHead = sym => `<header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
