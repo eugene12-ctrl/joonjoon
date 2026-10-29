@@ -117,7 +117,8 @@
     const held = m.pos.map(p => row(p.sym, `${C.code[p.sym]} ${p.qty}계약 · 진입 ${fmtP(p.sym, p.avg)}`, usd(p.pnl), p.pct));
     const watch = C.watch.map(s => row(s, sc === "close" && s === C.pending.sym ? `${C.code[s]} ${C.pending.qty}계약 · 진입 ${fmtP(s, C.pending.price)}` : "관심", fmtP(s, nowPrice(s, sc)), todayPct(s, sc)));
     return `
-      <section class="dali-pro-act sc-${sc}">
+      <section class="dali-pro-act sc-${sc}${a.k ? ` st-${a.k}` : ""}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>
+        ${a.art ? `<figure class="dali-pro-act-art ${a.art.cls}"><img src="${a.art.img}" alt="" onerror="${a.art.alt ? `this.onerror=null;this.src='${a.art.alt}'` : "this.parentNode.remove()"}"></figure>` : ""}
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
         <p class="dali-pro-act-big">${a.big}</p>
         <h2>${a.title}</h2>

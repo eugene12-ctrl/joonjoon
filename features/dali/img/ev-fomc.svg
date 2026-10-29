@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- 미국 금리 결정: 기둥 있는 건물과 달러. 시연용 선 그림. img/ev-fomc.png가 있으면 그 그림을 대신 쓴다 -->
+  <path d="M24 60 L80 30 L136 60 Z" fill="rgba(255,255,255,.12)"/>
+  <path d="M30 60 H130"/>
+  <path d="M36 72 V116 M58 72 V116 M80 72 V116 M102 72 V116 M124 72 V116"/>
+  <path d="M30 68 H130 M26 120 H134"/>
+  <path d="M20 132 H140" stroke-width="4"/>
+  <circle cx="80" cy="46" r="7" fill="rgba(255,255,255,.2)"/>
+  <path d="M80 41 V51 M77 43.5 H82 A2 2 0 0 1 82 47.5 H78 A2 2 0 0 0 78 51.5 H83" stroke-width="1.8"/>
+</svg>
