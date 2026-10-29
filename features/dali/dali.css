@@ -89,10 +89,122 @@
 .dali-btn.wide { width: 100%; padding: 13px; font-size: 15px; }
 .dali-btn.sell { background: #2F5BD3; }
 
-.dali-otter { position: relative; width: 110px; margin: 2px auto 4px; }
-.dali-otter img { width: 110px; height: 110px; display: block; }
-.dali-otter.scarf::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 13px; border-radius: 8px; background: #C8202C; }
 .dali-card.grow { text-align: center; }
+
+/* 달이네 바다 (관리 탭). 해달과 소품은 Fluent 3D 이미지, 물결과 움직임은 CSS */
+.dali-sea {
+  position: relative; height: 210px; margin: -3px -3px 10px; border-radius: 14px; overflow: hidden;
+  background: linear-gradient(#FFE7D4 0%, #FFF4EA 38%, #CDEDF7 60%);
+}
+.dali-sea.st3 { background: linear-gradient(#FFD9C7 0%, #FFEFE3 38%, #CDEDF7 60%); }
+.dali-wave {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  animation: dali-wave 7s linear infinite;
+}
+.dali-wave.far {
+  z-index: 1; top: 54%; animation-duration: 11s;
+  background: repeat-x 0 0 / 120px 300px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='300'%3E%3Cpath d='M0 14 Q30 0 60 14 T120 14 V300 H0Z' fill='%2396D7EC'/%3E%3C/svg%3E");
+}
+.dali-wave.near {
+  z-index: 3; top: 73%;
+  background: repeat-x 0 0 / 90px 300px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='300'%3E%3Cpath d='M0 12 Q22 0 45 12 T90 12 V300 H0Z' fill='%2363BCE0' fill-opacity='.9'/%3E%3C/svg%3E");
+}
+@keyframes dali-wave { to { background-position-x: 120px; } }
+.dali-wave.near { animation-name: dali-wave-f; }
+@keyframes dali-wave-f { to { background-position-x: -90px; } }
+
+.dali-float {
+  position: absolute; z-index: 2; left: 50%; top: 16%; width: 150px; height: 150px; margin-left: -75px;
+  scale: var(--s); transition: scale .6s cubic-bezier(.3, 1.6, .5, 1);
+  animation: dali-float 3.2s ease-in-out infinite; -webkit-tap-highlight-color: transparent;
+}
+@keyframes dali-float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-7px) rotate(3deg); } }
+.dali-otterbox { position: absolute; inset: 0; display: block; }
+.dali-body3d { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 6px rgba(42, 20, 22, .18)); }
+.dali-ripple {
+  position: absolute; left: 14%; right: 6%; bottom: 14%; height: 18px; border-radius: 50%;
+  background: radial-gradient(rgba(255, 255, 255, .75), rgba(255, 255, 255, 0) 70%);
+  animation: dali-ripple 3.2s ease-in-out infinite;
+}
+@keyframes dali-ripple { 50% { transform: scaleX(1.12); opacity: .6; } }
+.dali-otterbox.squish { animation: dali-squish .5s ease; }
+@keyframes dali-squish { 30% { transform: scale(1.12, .88); } 60% { transform: scale(.94, 1.06); } }
+.dali-otterbox.grow-pop { animation: dali-grow 1s ease; }
+@keyframes dali-grow { 0% { transform: scale(.8); } 40% { transform: scale(1.25) rotate(-6deg); } 70% { transform: scale(.95) rotate(3deg); } }
+
+/* 옷장 아이템 위치 (해달 이미지 150px 기준) */
+.dali-wear { position: absolute; pointer-events: none; filter: drop-shadow(0 2px 2px rgba(42, 20, 22, .2)); }
+.dali-wear.ribbon { left: 1%; top: 19%; width: 24%; rotate: -24deg; }
+.dali-wear.hibiscus { left: -2%; top: 18%; width: 24%; rotate: -20deg; }
+.dali-wear.glasses { left: 6%; top: 31%; width: 31%; rotate: -3deg; }
+.dali-wear.graduation_cap { left: 3%; top: 12%; width: 34%; rotate: -12deg; }
+
+.dali-prop { position: absolute; pointer-events: none; }
+.dali-prop.sun { z-index: 0; top: 10px; right: 14px; width: 42px; animation: dali-spin 30s linear infinite; }
+@keyframes dali-spin { to { rotate: 360deg; } }
+.dali-prop.coral { z-index: 4; left: 6px; bottom: -6px; width: 58px; }
+.dali-prop.lotus { z-index: 4; right: 10px; bottom: 10px; width: 40px; animation: dali-float 4s ease-in-out infinite reverse; }
+.dali-prop.bottle { z-index: 2; left: 70%; top: 50%; width: 32px; animation: dali-float 2.6s ease-in-out infinite reverse; }
+.dali-clam { position: absolute; z-index: 4; left: 66%; top: 55%; width: 50px; animation: dali-float 3.6s ease-in-out infinite; }
+.dali-clam .oyster { position: static; width: 100%; display: block; }
+.dali-prop.glint { top: -12px; right: -12px; width: 24px; animation: dali-twinkle 1.6s ease-in-out infinite; }
+.dali-prop.star { z-index: 0; top: 14px; left: 18px; width: 34px; animation: dali-twinkle 2.4s ease-in-out infinite; }
+@keyframes dali-twinkle { 50% { transform: scale(.7); opacity: .55; } }
+.dali-prop.bub { z-index: 4; bottom: -30px; animation: dali-rise 5s ease-in infinite; }
+.dali-prop.b1 { left: 24%; width: 22px; }
+.dali-prop.b2 { left: 60%; width: 15px; animation-delay: 2.3s; }
+@keyframes dali-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: .9; } 100% { transform: translateY(-120px); opacity: 0; } }
+
+/* 연출: 조약돌 받기, 쓰다듬기, 자랐어요 */
+.dali-fx { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.dali-fly { position: absolute; left: 50%; top: 45%; width: 34px; margin-left: -17px; animation: dali-fly .8s cubic-bezier(.4, 0, .6, 1) forwards; }
+@keyframes dali-fly {
+  0% { transform: translate(110px, 110px) scale(1.3) rotate(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { transform: translate(0, 0) scale(.8) rotate(-200deg); opacity: 1; }
+  100% { transform: translate(0, 0) scale(.2); opacity: 0; }
+}
+.dali-plus {
+  position: absolute; left: 50%; top: 18%; translate: -50% 0; padding: 3px 10px; border-radius: 999px;
+  background: #C8202C; color: #fff; font-size: 14px; opacity: 0; animation: dali-plus 1.6s ease .6s forwards;
+}
+@keyframes dali-plus { 0% { transform: translateY(10px) scale(.6); opacity: 0; } 25% { transform: none; opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
+.dali-heart { position: absolute; top: 34%; width: 28px; animation: dali-heart 1.2s ease-out forwards; }
+@keyframes dali-heart { 0% { transform: scale(.3); opacity: 0; } 25% { transform: scale(1.1); opacity: 1; } 100% { transform: translateY(-70px) scale(.8); opacity: 0; } }
+.dali-grew {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 12px 18px; border-radius: 16px; background: rgba(255, 255, 255, .94); box-shadow: 0 10px 24px -12px rgba(42, 20, 22, .5);
+  animation: dali-grew 2.8s ease forwards;
+}
+.dali-grew img { width: 44px; }
+.dali-grew b { font-size: 16px; color: #C8202C; }
+.dali-grew span { font-size: 12.5px; color: #5A4A45; }
+@keyframes dali-grew { 0% { transform: scale(.5); opacity: 0; } 12% { transform: scale(1.06); opacity: 1; } 20% { transform: none; } 85% { opacity: 1; } 100% { opacity: 0; } }
+
+/* 성장 길 (듀오링고처럼 단계가 보이게) */
+.dali-path { position: relative; display: flex; justify-content: space-between; list-style: none; margin: 0 4px 10px; padding: 0; }
+.dali-path::before { content: ""; position: absolute; left: 24px; right: 24px; top: 21px; height: 4px; border-radius: 2px; background: #F3EAE2; }
+.dali-path li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 25%; }
+.dali-path span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 2.5px solid #F3EAE2; }
+.dali-path img { width: 28px; height: 28px; }
+.dali-path small { font-size: 11px; color: #8A7670; }
+.dali-path li.past span { background: #FFF1EE; border-color: #F3C9C6; }
+.dali-path li.now span { border-color: #C8202C; box-shadow: 0 0 0 4px #FFE1DC; animation: dali-pulse 1.6s ease-in-out infinite; }
+.dali-path li.now small { color: #C8202C; font-weight: 800; }
+.dali-path li.lock img { filter: grayscale(1); opacity: .4; }
+
+/* 옷장 */
+.dali-closet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.dali-closet button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 6px; border-radius: 12px; background: #FBF7F3; border: 2px solid transparent; }
+.dali-closet button.on { border-color: #C8202C; background: #FFF1EE; }
+.dali-closet img { width: 32px; height: 32px; }
+.dali-closet small { font-size: 10.5px; line-height: 1.3; color: #5A4A45; }
+.dali-closet button:disabled img { filter: grayscale(1); opacity: .35; }
+.dali-closet button:disabled small { color: #B5A69E; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dali-sea *, .dali-path li.now span { animation: none !important; }
+}
 .dali-bar { height: 10px; border-radius: 999px; background: #F3EAE2; overflow: hidden; margin: 6px 0; }
 .dali-bar span { display: block; height: 100%; background: #C8202C; border-radius: 999px; transition: width .4s ease; }
 .dali-bar.green span { background: #3E8E5A; }
@@ -260,3 +372,40 @@
 /* 주문 화면에선 달이를 숨겨 빠르게 주문하게 함 */
 .phone.dali-ordering .dali-fab, .phone.dali-ordering .dali-bubble { display: none; }
 .dali-mts-body { align-items: start; }
+
+/* ===== 차트 ===== */
+.dali-news { flex-direction: row; align-items: center; gap: 10px; }
+.dali-news-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.dali-spark { flex: 0 0 auto; width: 76px; height: 38px; }
+.dali-axis { font-size: 10.5px; fill: #8A7670; font-family: inherit; }
+.dali-tip { font-size: 12px; font-weight: 700; font-family: inherit; font-variant-numeric: tabular-nums; }
+.dali-chartbox { background: #fff; border-radius: 14px; padding: 8px 6px 6px; }
+.dali-chart { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: crosshair; }
+.dali-axisrow { display: flex; justify-content: space-between; padding: 0 10px; font-size: 11px; color: #8A7670; }
+.dali-tchart { display: block; width: 100%; height: auto; margin: -2px 0 8px; }
+
+/* 손익 막대 */
+.dali-bars { width: 100%; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #F3EAE2; }
+.dali-barrow { display: grid; grid-template-columns: 92px 1fr 86px; align-items: center; gap: 8px; font-size: 12px; }
+.dali-barrow .lbl { color: #5A4A45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dali-barrow .track { position: relative; height: 14px; }
+.dali-barrow .zero { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: #D9CEC4; }
+.dali-barrow .bar { position: absolute; top: 2px; height: 10px; border-radius: 4px; }
+.dali-barrow .bar.up { background: #C8202C; }
+.dali-barrow .bar.down { background: #2F5BD3; }
+.dali-barrow .bar.flat { background: #8A7670; }
+.dali-barrow .val { text-align: right; font-weight: 700; color: #2A1416; font-variant-numeric: tabular-nums; }
+
+/* 해달 성장 단계 */
+.dali-steps { list-style: none; display: flex; justify-content: space-between; margin: 10px 4px 4px; padding: 0; position: relative; }
+.dali-steps::before { content: ""; position: absolute; left: 16%; right: 16%; top: 7px; height: 2px; background: #EDE3DA; }
+.dali-steps li { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; color: #8A7670; }
+.dali-steps li span { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #D9CEC4; }
+.dali-steps li.on span { background: #C8202C; border-color: #C8202C; }
+.dali-steps li.now { color: #2A1416; font-weight: 700; }
+.dali-steps li.now span { box-shadow: 0 0 0 4px #FFE1DE; }
+
+/* 유진의 숲 나무 */
+.dali-trees { display: flex; justify-content: space-between; font-size: 22px; margin: 4px 0 6px; }
+.dali-trees span { filter: grayscale(1); opacity: .3; }
+.dali-trees span.on { filter: none; opacity: 1; }

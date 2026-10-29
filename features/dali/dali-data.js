@@ -84,10 +84,21 @@ const DALI_MISSIONS = [
     after: "맞아요, 러브! 서울오픈 기간엔 매일 한 문제씩 나와요. 맞히면 관람권 추첨에도 들어가요 (가상)." } },
 ];
 
+// 성장 단계. 시연에서 미션만으로 끝까지 볼 수 있게 시작 7개, 미션 합계 8개에 맞춤
+// icon은 features/dali/img/ 안의 Fluent 3D 이미지
 const DALI_STAGES = [
-  { min: 0, name: "아기 달이", note: "물에 둥둥 떠서 세상 구경 중이에요" },
-  { min: 8, name: "헤엄치는 달이", note: "조약돌 고르는 법을 배우는 중이에요" },
-  { min: 16, name: "조개 여는 달이", note: "모은 조약돌로 조개를 열 수 있어요" },
+  { min: 0, name: "아기 달이", note: "물에 둥둥 떠서 세상 구경 중이에요", icon: "baby_bottle", scale: .74 },
+  { min: 8, name: "헤엄치는 달이", note: "조약돌 고르는 법을 배우는 중이에요", icon: "bubbles", scale: .86 },
+  { min: 11, name: "조개 여는 달이", note: "모은 조약돌로 조개를 열 수 있어요", icon: "oyster", scale: .96 },
+  { min: 14, name: "꾸준한 달이", note: "매일 조금씩, 바다 친구들이 따라 배워요", icon: "glowing_star", scale: 1.04 },
+];
+
+// 옷장. stage 단계가 되면 열림. 한 번에 하나만 입음
+const DALI_WEARS = [
+  { id: "ribbon", name: "빨간 리본", stage: 0 },
+  { id: "hibiscus", name: "바다 꽃", stage: 1 },
+  { id: "glasses", name: "뉴스 안경", stage: 2 },
+  { id: "graduation_cap", name: "학사모", stage: 3 },
 ];
 
 // 뉴스 읽기 화면에 나오는 제목과 본문 (가상)

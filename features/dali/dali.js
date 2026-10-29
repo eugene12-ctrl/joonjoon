@@ -7,6 +7,7 @@
   if (!phone) return;
 
   const FACE = "features/dali/dali-otter.png";
+  const IMG = n => `features/dali/img/${n}.png`;
   const state = {
     app: "stock",
     pebbles: 7,
@@ -19,7 +20,8 @@
     done: {},
     quiz: {},
     forest: 72,
-    scarf: false,
+    wear: "ribbon",
+    fx: null, // 관리 탭을 다시 그린 뒤 보여 줄 연출 { gain, grew }
     editing: null,
     order: null, // { sym, side, qty } MTS 주문 화면
   };
@@ -39,7 +41,8 @@
     return s.app === "fut" ? s.price.toLocaleString("en-US") : `${s.price.toLocaleString("ko-KR")}원`;
   };
   const quote = sym => `<span class="dali-quote ${tone(DALI_SYMS[sym].chg)}">${priceText(sym)} <b>${pct(DALI_SYMS[sym].chg)}</b></span>`;
-  const stage = () => [...DALI_STAGES].reverse().find(s => state.pebbles >= s.min);
+  const stageAt = p => DALI_STAGES.findLastIndex(s => p >= s.min);
+  const stage = () => DALI_STAGES[stageAt(state.pebbles)];
   const nextStage = () => DALI_STAGES.find(s => s.min > state.pebbles);
   const kindLabel = sym => (DALI_SYMS[sym].kind === "hold" ? "보유" : "관심");
 
@@ -103,11 +106,16 @@
   function sayOnce(text) { if (!state.spoke) { state.spoke = true; say(text); } }
   const unseenFlags = () => mine(state.news).filter(n => isFlag(n) && !n.seen).length;
   const paintAlert = () => fab.classList.toggle("has-alert", unseenFlags() > 0);
+  function gain(n) {
+    const before = stageAt(state.pebbles);
+    state.pebbles += n;
+    state.fx = { gain: n, grew: stageAt(state.pebbles) > before };
+  }
   function complete(id) {
     if (state.done[id]) return;
     const m = DALI_MISSIONS.find(x => x.id === id);
     state.done[id] = true;
-    state.pebbles += m.reward;
+    gain(m.reward);
     state.forest = Math.min(100, state.forest + m.reward * 2);
     say(`조약돌 ${m.reward}개! ${m.title.replace(" (안 해도 괜찮아요)", "")}`);
   }
@@ -134,9 +142,9 @@
   function newsRow(n) {
     const flag = isFlag(n);
     return `
-      <button type="button" class="dali-news${flag && !n.seen ? " unseen" : ""}" data-news="${n.id}">
+      <button type="button" class="dali-news${flag && !n.seen ? " unseen" : ""}" data-news="${n.id}"><span class="dali-news-main">
         <span class="dali-news-top">${flag ? `<span class="dali-bang">!</span>` : ""}<b>${n.sym}</b>${quote(n.sym)}<span class="dali-time">${n.time}</span></span>
-        <span class="dali-why"><em>왜?</em> ${n.why}</span>
+        <span class="dali-why"><em>왜?</em> ${n.why}</span></span>${DaliChart.spark(n.sym)}
       </button>`;
   }
   function newsHTML() {
@@ -166,6 +174,7 @@
       <article class="dali-trade${t.live ? " new" : ""}">
         <header><b>${t.sym}</b><span>${t.qty}</span><span class="dali-state ${closed ? "done" : "hold"}">${closed ? "매매 완료" : "보유 중"}</span></header>
         <p class="dali-pnl ${tone(t.pnl)}">${closed ? "" : "<small>지금 평가</small> "}${won(t.pnl)} <span>${pct(t.pct)}</span></p>
+        ${DaliChart.trade(t)}
         <div class="dali-sides">${side("살 때", t.buy)}${side("팔 때", t.sell)}</div>
         ${memo}
         <button type="button" class="dali-link pb" data-act="pb" data-id="${t.id}">${t.pb ? "담당 PB와 공유 중" : "담당 PB에게 보여 주기 (동의 시)"}</button>
@@ -176,7 +185,7 @@
     const closed = list.filter(t => t.sell);
     const total = closed.reduce((a, t) => a + t.pnl, 0);
     return `
-      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small></div>
+      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건. 손익은 시연용 가상 숫자예요.</small>${DaliChart.pnlBars(list)}</div>
       <p class="dali-hint">살 때와 팔 때의 뉴스, 분위기는 달이가 알아서 적어요. 메모는 쓰고 싶을 때만.</p>` +
       list.map(tradeCard).join("");
   }
@@ -197,22 +206,79 @@
         ${action}
       </div>`;
   }
+  // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
+  function seaHTML() {
+    const si = stageAt(state.pebbles), s = DALI_STAGES[si];
+    const prop = (n, cls) => `<img class="dali-prop ${cls}" src="${IMG(n)}" alt="">`;
+    return `
+      <div class="dali-sea st${si}">
+        ${prop("sun", "sun")}
+        ${si >= 1 ? prop("coral", "coral") : ""}
+        ${si >= 3 ? prop("lotus", "lotus") : ""}
+        <div class="dali-wave far"></div>
+        <button type="button" class="dali-float" data-act="pet" aria-label="달이 쓰다듬기" style="--s:${s.scale}">
+          <span class="dali-ripple"></span>
+          <span class="dali-otterbox">
+            <img class="dali-body3d" src="${FACE}" alt="">
+            ${state.wear ? `<img class="dali-wear ${state.wear}" src="${IMG(state.wear)}" alt="">` : ""}
+          </span>
+        </button>
+        ${si === 0 ? prop("baby_bottle", "bottle") : ""}
+        ${si >= 2 ? `<span class="dali-clam">${prop("oyster", "oyster")}${prop("sparkles", "glint")}</span>` : ""}
+        ${si >= 3 ? prop("glowing_star", "star") : ""}
+        <div class="dali-wave near"></div>
+        ${si >= 1 ? `${prop("bubbles", "bub b1")}${prop("bubbles", "bub b2")}` : ""}
+        <span class="dali-fx" aria-live="polite"></span>
+      </div>`;
+  }
+  // 다시 그린 뒤 연출: 조약돌이 날아와 안기고, 단계가 오르면 축하
+  function playFx() {
+    const fx = state.fx, layer = body.querySelector(".dali-fx");
+    state.fx = null;
+    if (!fx || !layer) return;
+    layer.innerHTML = `<img class="dali-fly" src="${IMG("rock")}" alt=""><b class="dali-plus">+${fx.gain}</b>`;
+    if (fx.grew) {
+      setTimeout(() => {
+        layer.insertAdjacentHTML("beforeend", `
+          <div class="dali-grew"><img src="${IMG("party_popper")}" alt=""><b>달이가 자랐어요!</b><span>${stage().name}</span></div>`);
+        body.querySelector(".dali-otterbox")?.classList.add("grow-pop");
+      }, 700);
+    }
+  }
+  function pet(btn) {
+    const box = btn.querySelector(".dali-otterbox");
+    box.classList.remove("squish", "grow-pop"); void box.offsetWidth; box.classList.add("squish");
+    const layer = body.querySelector(".dali-fx");
+    const h = document.createElement("img");
+    h.className = "dali-heart"; h.src = IMG("red_heart"); h.alt = "";
+    h.style.left = `${42 + Math.random() * 16}%`;
+    layer.appendChild(h);
+    setTimeout(() => h.remove(), 1200);
+  }
   function manageHTML() {
-    const s = stage(), n = nextStage();
+    const s = stage(), n = nextStage(), si = stageAt(state.pebbles);
     const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
     const groups = [...new Set(DALI_MISSIONS.map(m => m.group))];
     return `
       <article class="dali-card grow">
-        <div class="dali-otter${state.scarf ? " scarf" : ""}"><img src="${FACE}" alt="달이"></div>
+        ${seaHTML()}
+        <ol class="dali-path">${DALI_STAGES.map((x, i) => `
+          <li class="${i < si ? "past" : i === si ? "now" : "lock"}"><span><img src="${IMG(x.icon)}" alt=""></span><small>${x.name.replace(" 달이", "")}</small></li>`).join("")}
+        </ol>
         <h3>${s.name}</h3><p>${s.note}</p>
+        <ol class="dali-steps">${DALI_STAGES.map(x => `<li class="${state.pebbles >= x.min ? "on" : ""}${x === s ? " now" : ""}"><span></span>${x.name}</li>`).join("")}</ol>
         <div class="dali-bar"><span style="width:${p}%"></span></div>
-        <p class="dali-hint">${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요"}</p>
-        <button type="button" class="dali-btn small ghost" data-act="scarf">${state.scarf ? "목도리 벗기" : "빨간 목도리 입히기"}</button>
+        <p class="dali-hint">${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요. 이제 매일 꾸준히만 하면 돼요"}</p>
+        <div class="dali-closet">${DALI_WEARS.map(w => {
+          const open = si >= w.stage;
+          return `<button type="button" class="${state.wear === w.id ? "on" : ""}" data-act="wear" data-id="${w.id}" ${open ? "" : "disabled"}>
+            <img src="${IMG(w.id)}" alt=""><small>${open ? w.name : DALI_STAGES[w.stage].name.replace(" 달이", "") + "에 열려요"}</small></button>`;
+        }).join("")}</div>
       </article>
       <article class="dali-card forest">
         <h3>유진의 숲</h3>
         <p>모두의 조약돌이 다 차면 노을공원에 진짜 나무 한 그루를 심어요.</p>
-        <div class="dali-bar green"><span style="width:${state.forest}%"></span></div>
+        <div class="dali-trees" aria-label="유진의 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}">🌳</span>`).join("")}</div>
         <p class="dali-hint">이번 달 ${state.forest}% 찼어요</p>
       </article>
       ${groups.map(g => `<article class="dali-card"><h3>${g}</h3>${DALI_MISSIONS.filter(m => m.group === g).map(missionRow).join("")}</article>`).join("")}
@@ -226,6 +292,7 @@
       <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
         <button type="button" class="dali-symlink" data-act="order" data-sym="${n.sym}">${n.sym} ${quote(n.sym)}<span class="dali-go">주문 ›</span></button></header>
       <div class="dali-page-body">
+        ${DaliChart.day(n.sym, fmt)}
         <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
         <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">시연용 가상 뉴스, ${n.time}</p><p>${txt.body}</p></article>
       </div>`;
@@ -328,6 +395,8 @@
     });
     const views = { news: newsHTML, journal: journalHTML, manage: manageHTML };
     body.innerHTML = views[state.tab]();
+    if (state.tab === "manage") playFx();
+    else if (state.fx && !state.fx.grew) state.fx = null;
     if (state.page) {
       pageEl.innerHTML = newsPage(state.page.id);
       pageEl.hidden = false;
@@ -365,7 +434,8 @@
       render();
     }
     else if (act === "pb") { t.pb = !t.pb; say(t.pb ? "담당 PB가 이 매매를 볼 수 있어요. 언제든 끌 수 있어요." : "공유를 껐어요."); render(); }
-    else if (act === "scarf") { state.scarf = !state.scarf; render(); }
+    else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
+    else if (act === "pet") pet(b);
     else if (act === "mission") { complete(id); render(); }
     else if (act === "quiz") {
       const m = DALI_MISSIONS.find(x => x.id === id);
@@ -374,6 +444,8 @@
       render();
     }
   });
+  sheet.addEventListener("pointermove", DaliChart.hover);
+  sheet.addEventListener("pointerleave", () => DaliChart.unhover(sheet));
   fut.addEventListener("click", e => {
     const b = e.target.closest("[data-sym]");
     if (b) openOrder(b.dataset.sym);
@@ -386,6 +458,7 @@
     <p class="dali-demo-title">발표자용 시연 버튼</p>
     <div class="dali-demo-apps"><button type="button" data-app="stock" class="on">유진투자증권</button><button type="button" data-app="fut">유진투자선물</button></div>
     <button type="button" data-demo="alert">의미 있는 뉴스 도착</button>
+    <button type="button" data-demo="pebble">조약돌 3개 주기</button>
     <button type="button" data-demo="reset" class="ghost">처음으로</button>`;
   document.body.appendChild(demo);
 
@@ -413,6 +486,7 @@
     if (!b) return;
     if (b.dataset.app) setApp(b.dataset.app);
     else if (b.dataset.demo === "alert") alertNews();
+    else if (b.dataset.demo === "pebble") { gain(3); open("manage"); }
     else if (b.dataset.demo === "reset") location.reload();
   });
 
