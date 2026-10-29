@@ -40,7 +40,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 /* asset */
 .asset .lbl{font-size:12px;color:var(--sub)}
 .asset .amt{font-size:24px;font-weight:700;margin:2px 0 12px}
-.asset .row{display:flex;gap:16px;font-size:12px;color:var(--sub)}
+.asset .row{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:12px;color:var(--sub)}
 .asset .row b{display:block;font-size:13px;font-weight:500;color:var(--text);margin-top:2px}
 .asset .row b.r{color:var(--red)}
 .btn2{display:flex;gap:10px;margin-bottom:12px}
@@ -91,9 +91,9 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .nav svg{width:24px;height:24px}
 /* detail */
 .dhdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;flex:none}
-.dhdr .l{display:flex;align-items:center;gap:10px;font-size:15px}
-.dhdr .l b{font-weight:700}
-.dhdr .l span{color:var(--sub)}
+.dhdr .l{display:flex;align-items:center;gap:10px;font-size:15px;min-width:0;flex:1;margin-right:12px}
+.dhdr .l b{font-weight:700;flex:none}
+.dhdr .l span{color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}   /* 긴 이름은 줄바꿈 대신 … */
 .dtabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--line);flex:none}
 .dtabs button{padding:10px 6px;font-size:15px;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px}
 .dtabs button.on{color:#111;font-weight:700;border-color:#111}
@@ -101,6 +101,8 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .dirs button{width:62px;height:62px;border-radius:14px;border:1.5px solid #dcdfe4;background:#fff;display:flex;align-items:center;justify-content:center}
 .dirs button.on{border-color:#7fb3ec;background:var(--blue-tint)}
 .dirs button.on.u{border-color:#f0a3a3;background:var(--red-tint)}
+.dirs button.on.v{border-color:#eba3dc;background:#fdeaf8}
+.dirs button.on.s{border-color:#c6aef3;background:#f1eafd}
 .dirs svg{width:34px;height:34px}
 .dtitle{text-align:center;font-size:16px;font-weight:500}
 .dprice{text-align:center;font-size:13px;margin:4px 0 16px}
@@ -118,7 +120,8 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .tf .g{display:flex;gap:8px}
 .tf button{padding:6px 10px;border-radius:8px;background:#fff;font-size:13px}
 .tf button.on{background:#333;color:#fff}
-.ybtn{width:100%;height:52px;border-radius:26px;background:var(--yellow);font-size:15px;font-weight:700;margin-top:14px}
+/* 주문하기 등 큰 버튼: 환전 키패드의 환전하기와 같은 파랑 */
+.ybtn{width:100%;height:52px;border-radius:12px;background:#1b8cf5;color:#fff;font-size:15px;font-weight:700;margin-top:14px}
 /* spread */
 .sp-h{padding:4px 16px 0;flex:none;background:#fff}
 .sp-title{display:flex;justify-content:space-between;align-items:center}
@@ -147,6 +150,145 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .zone.l{color:var(--blue);background:var(--blue-tint)}.zone.g{color:var(--red);background:var(--red-tint)}
 .cur{position:sticky;top:6px;z-index:5;display:flex;justify-content:center;height:0}
 .cur span{background:#fff;border-radius:18px;padding:6px 14px;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.12);white-space:nowrap;height:fit-content}
+/* 싱글레그(롱콜·롱풋) 리스트: 색 띠 없이 흰 줄, 현재가는 점선 사이 (ref/image/선물_XSP_롱콜 누르면.png) */
+.sp-note{font-size:16px;color:#333;line-height:1.8;margin-top:8px}
+.sp-note .hl{background:#e3e5e9;border-radius:6px;padding:3px 8px}
+.sp-gear{position:relative;display:inline-flex}
+.sp-gear:after{content:'';position:absolute;top:-3px;right:-4px;width:8px;height:8px;border-radius:50%;background:#1b8cf5}
+.row.plain{background:#fff}
+.row.plain .k{font-size:17px;color:#444}
+.row .pm.b{background:#1b8cf5;font-size:17px;padding:8px 14px;border-radius:9px}
+.row.plain .be{border-bottom:1px solid var(--line);font-size:15px}
+.curline{display:flex;align-items:center;gap:8px;padding:8px 6px}
+.curline:before,.curline:after{content:'';flex:1;border-top:3px dotted #c9ccd2}
+.curline span{background:#fff;border-radius:22px;padding:9px 16px;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.14);white-space:nowrap;color:#555}
+.curline span b{color:#111;font-weight:500}
+/* 종목검색 (ref/image/선물_돋보기누르면.png) */
+.srch-hdr{display:flex;align-items:center;padding:8px 16px;flex:none;position:relative;height:50px}
+.srch-hdr h2{position:absolute;left:0;right:0;text-align:center;font-size:18px;font-weight:700;pointer-events:none}
+.srch-box{display:flex;align-items:center;gap:12px;background:#e9eaed;border-radius:14px;padding:0 16px;height:46px;margin:4px 12px 12px;flex:none}
+.srch-box svg{width:20px;height:20px;flex:none}
+.srch-box input{flex:1;border:none;background:none;font:inherit;font-size:16px;color:#111;outline:none;min-width:0}
+.srch-box input::placeholder{color:#9aa0a8}
+.wl .it>div:first-child{min-width:0;flex:1}
+.wl .tk{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bm.off{opacity:.22}
+/* 가상계좌조회: 금액 충전 누르면 */
+.vacct{padding:14px 20px}
+.vacct .it{display:flex;gap:16px;align-items:flex-start;padding:14px 0 26px}
+.flag{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.flag svg{width:100%;height:100%;display:block}
+.vacct h4{font-size:16px;font-weight:700;margin-bottom:6px}
+.vacct .no{font-size:13.5px;color:var(--sub);margin-bottom:10px}
+.copy{background:#e5e7ea;color:#444;font-size:12px;font-weight:500;padding:6px 12px;border-radius:14px}
+.copy:active{background:#d5d8dd}
+/* 환전하기: 환전 버튼 누르면. 환율·금액은 가상 */
+.fx{padding:8px 16px 16px}
+.fx-dir{display:flex;background:#e9eaed;border-radius:12px;padding:3px;margin-bottom:16px}
+.fx-dir button{flex:1;height:40px;border-radius:10px;font-size:14px;font-weight:500;color:var(--sub)}
+.fx-dir button.on{background:#fff;color:#111;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.fx-chips{display:flex;gap:8px;margin-bottom:12px}
+.fx-chips .chip{cursor:pointer}
+.fx-box{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:0 18px;height:58px;margin-bottom:8px}
+.fx-box input{flex:1;min-width:0;border:none;background:none;font:inherit;font-size:18px;font-weight:500;color:#111;outline:none}
+.fx-box input::placeholder{color:#b5b9c0}
+.fx-box span{font-size:14px;font-weight:700;flex:none;margin-left:10px}
+.fx-hint{font-size:12.5px;color:var(--sub);margin:0 2px 18px}
+.fx-note{background:#fff;border-radius:14px;padding:16px 18px;margin-top:8px}
+.fx-note h4{font-size:14px;font-weight:700;margin-bottom:10px}
+.fx-note li{font-size:12.5px;color:#444;line-height:1.6;margin-left:14px;margin-bottom:4px}
+.fx-note li ul{margin-top:2px}.fx-note li li{list-style:none;margin-left:0}
+/* 마이페이지 하위: 내 정보 / 입출금 내역 / 알림 설정 */
+.form{padding:4px 16px 20px}
+.open-chip{display:flex;justify-content:flex-end;margin-bottom:14px}
+.open-chip span{font-size:12px;color:var(--sub);background:#e9eaed;border-radius:8px 0 0 8px;padding:7px 10px}
+.open-chip b{font-size:12px;background:#111;color:#fff;border-radius:0 8px 8px 0;padding:7px 10px}
+.form label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+.form input{display:block;width:100%;height:46px;border:1px solid #e3e5e9;border-radius:10px;background:#fff;padding:0 14px;font:inherit;font-size:14px;color:#111;outline:none;margin-top:6px}
+.form input:focus{border-color:#1b8cf5}
+.form input[readonly]{background:#f1f2f4;color:#444}
+.form input::placeholder{color:#b5b9c0}
+.acct-box{background:#fff;border-radius:12px;padding:14px 16px;font-size:14px;font-weight:500;margin:4px 0 12px}
+.range{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 10px;font-size:13px;font-weight:700}
+.range svg{width:20px;height:20px;cursor:pointer}
+.range span b{margin-right:14px}
+.cashlog .it{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 4px}
+.cashlog .t{font-size:14px;font-weight:700}
+.cashlog .d{font-size:12px;color:var(--sub);margin-top:4px}
+.cashlog .amt{font-size:14px;font-weight:700;text-align:right}
+.cashlog .amt small{display:block;font-size:11px;font-weight:400;color:var(--sub);margin-top:4px}
+.filt-pill{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e3e5e9;border-radius:20px;padding:9px 18px;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.1);z-index:5}
+.filt-pill svg{width:16px;height:16px}
+.alarm .it{display:flex;justify-content:space-between;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line)}
+.alarm .it:last-child{border:none}
+.alarm h4{font-size:15px;font-weight:500}
+.alarm p{font-size:12px;color:var(--sub);margin-top:3px}
+.sw{display:flex;align-items:center;gap:8px;flex:none;font-size:12px;color:var(--sub)}
+.sw i{width:44px;height:26px;border-radius:13px;background:#d9dce1;position:relative;transition:.2s;display:inline-block}
+.sw i:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
+.sw.on i{background:#1b8cf5}.sw.on i:after{left:21px}
+.sw.on{color:#1b8cf5;font-weight:700}
+#s-cashlog{position:relative}
+/* 커뮤니티 토론방 (닉네임·글은 전부 가상) */
+#s-comm{position:relative;background:#fff}
+.cm-top{background:#cfd2ff;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex:none}
+.cm-top .oth{font-size:14px;color:#222}
+.cm-head{padding:0 16px 4px;position:relative}
+.cm-icon{width:64px;height:64px;border-radius:20px;background:#e3e5ff;margin-top:14px;position:relative;display:flex;align-items:center;justify-content:center}
+.cm-icon .fl{position:absolute;right:8px;top:8px;width:18px;height:18px;border-radius:50%;overflow:hidden}
+.cm-icon .fl svg{width:100%;height:100%;display:block}
+.cm-icon .bub{position:absolute;right:-8px;bottom:-6px;width:22px;height:22px;border-radius:50%;background:#6a6ff0;display:flex;align-items:center;justify-content:center}
+.cm-icon .bub:after{content:'';width:10px;height:2px;background:#fff;box-shadow:0 3px 0 #fff}
+.cm-trade{position:absolute;right:16px;top:14px;border:1px solid #cfd2d8;border-radius:22px;padding:9px 16px;font-size:14px;font-weight:500;background:#fff}
+.cm-title{font-size:22px;font-weight:700;margin-top:14px;display:flex;align-items:center;gap:8px}
+.cm-title .beta{font-size:11px;font-weight:500;color:#7b61ff;background:#ece8ff;border-radius:8px;padding:3px 7px}
+.cm-sub{font-size:14px;color:var(--sub);margin-top:6px}
+.cm-tabs{display:flex;gap:26px;padding:22px 16px 0;border-bottom:1px solid var(--line)}
+.cm-tabs button{padding:8px 0 10px;font-size:15px;color:#9aa0a8;border-bottom:2px solid transparent;margin-bottom:-1px}
+.cm-tabs button b{font-weight:500;margin-left:4px}
+.cm-tabs button.on{color:#111;font-weight:700;border-color:#111}.cm-tabs button.on b{color:#1b8cf5}
+.cm-notice{display:flex;align-items:center;gap:12px;background:#f1f2f4;padding:14px 16px;font-size:13.5px;font-weight:500;line-height:1.5;cursor:pointer}
+.cm-notice .em{font-size:20px;flex:none}.cm-notice .ch{color:#888;flex:none;margin-left:auto}
+.cm-sort{font-size:13px;color:#555;padding:14px 16px 4px}
+.post{padding:14px 16px 18px;border-bottom:1px solid var(--line)}
+.post .ph{display:flex;align-items:center;gap:12px}
+.ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex:none}
+.post .nm{font-size:15px;font-weight:700}
+.post .dt{font-size:12px;color:var(--sub);margin-top:2px}
+.post .fol{margin-left:auto;border:1px solid #cfd2d8;border-radius:18px;padding:7px 14px;font-size:13px;background:#fff}
+.post .fol.on{background:#111;color:#fff;border-color:#111}
+.post .bd{font-size:14.5px;line-height:1.6;color:#222;margin:12px 0 0 52px;white-space:pre-line}
+.post .meta{font-size:12px;color:var(--sub);margin:10px 0 0 52px;display:flex;gap:12px}
+.shot{margin:12px 0 0 52px;width:210px;background:#1b1d22;border-radius:14px;padding:12px;color:#e8e8e8;font-size:10px}
+.shot .r1{display:flex;justify-content:space-between;font-weight:700;font-size:11px;margin-bottom:8px}
+.shot .tabs{display:flex;gap:8px;color:#8a8f99;margin-bottom:8px}.shot .tabs b{color:#fff}
+.shot .box{background:#262930;border-radius:8px;padding:8px}
+.shot .kv{display:flex;justify-content:space-between;margin:3px 0}.shot .kv .r{color:#ff5a5a}
+.shot .sub{color:#8a8f99}
+.cm-write{position:absolute;right:16px;bottom:22px;background:#2b2d33;color:#fff;border-radius:28px;padding:14px 22px;font-size:16px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.2);z-index:5}
+/* 환전 숫자 키패드: 금액 칸을 누르면 아래에서 올라옴 */
+#s-fx{position:relative}
+.fxpad{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.12);padding:12px 12px 22px;transform:translateY(105%);transition:transform .2s;z-index:30}
+.fxpad.on{transform:none}
+.fxpad .keys{display:grid;grid-template-columns:repeat(3,1fr)}
+.fxpad .keys button{height:60px;font-size:23px;font-weight:500;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.fxpad .keys button:active{background:#f1f2f4}
+.fxpad .keys svg{width:24px;height:24px}
+.fxpad .act{display:flex;gap:10px;margin-top:10px}
+.fxpad .act button{height:52px;border-radius:12px;font-size:15px;font-weight:700}
+.fxpad .act .cancel{flex:0 0 112px;background:#f1f2f4;color:#111}
+.fxpad .act .ok{flex:1;background:#1b8cf5;color:#fff}
+.fxpad .act .ok:disabled{background:#cfe3fb;color:#fff;cursor:default}
+/* 환전 완료 */
+.fxdone{flex:1;display:flex;flex-direction:column;padding:0 16px 22px}
+.fxdone .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-bottom:40px}
+.fxdone .ck{width:44px;height:44px;border-radius:50%;background:#1b8cf5;display:flex;align-items:center;justify-content:center}
+.fxdone .ck svg{width:24px;height:24px}
+.fxdone h3{font-size:17px;font-weight:700}
+.fxdone .kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 2px}
+.fxdone .kv span{color:var(--sub)}
+.fxdone .kv b{font-weight:700}
+.fxdone .okbtn{width:100%;height:52px;border-radius:12px;background:#1b8cf5;color:#fff;font-size:15px;font-weight:700;margin-top:12px}
 /* sheet */
 .sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:40;display:none;align-items:flex-end}
 .sheet-bg.on{display:flex}
@@ -182,6 +324,36 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .stepper button{width:32px;height:32px;border-radius:50%;background:#f1f2f4;font-size:18px;font-weight:700}
 .warn{font-size:12.5px;color:var(--blue);background:var(--blue-tint);border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.5}
 .ybtn:disabled{background:#e5e7eb;color:#9aa0a8}
+/* 내 보유: 상단 4탭 + 탭별 화면 (ref/image/선물_*.png 기준) */
+.hold-tabs{display:flex;gap:18px;overflow-x:auto;padding:6px 0 12px;scrollbar-width:none;white-space:nowrap}
+.hold-tabs::-webkit-scrollbar{display:none}
+.hold-tabs .t{font-size:21px;font-weight:500;color:#8b8f96;letter-spacing:-.5px;flex:none}
+.hold-tabs .t.on{color:#111;font-weight:700}
+.acct{padding:6px 16px}
+.acct .kv{display:flex;justify-content:space-between;align-items:center;font-size:15px;padding:13px 0}
+.acct .kv span{color:#666}
+.acct .kv b{font-weight:500;font-size:16px;color:#111}
+.acct .kv b.r{color:var(--red)}
+.acct .kv b.b{color:var(--blue)}
+.hold-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 0 60px}
+.hold-empty svg{width:60px;height:60px;margin-bottom:28px}
+.hold-empty h3{font-size:18px;font-weight:700;color:#111;margin-bottom:22px}
+.hold-empty p{font-size:15px;color:#777;line-height:1.5;margin-bottom:18px}
+.pill{display:inline-block;background:#fff;border:1px solid #dfe2e6;border-radius:28px;padding:14px 28px;font-size:16px;color:#111}
+.pill.sm{padding:10px 20px;font-size:15px}
+.filters{display:flex;gap:14px;padding:4px 0 14px}
+.dd{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fff;border:1px solid #e6e8eb;border-radius:12px;padding:12px 18px;font-size:16px;color:#111;white-space:nowrap;cursor:pointer}
+.dd.w{min-width:150px}
+.dd:after{content:'';width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #222}
+.hist .it{display:flex;justify-content:space-between;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line)}
+.hist .it:last-child{border:none}
+.hist .tk{font-size:15px;font-weight:500}
+.hist .tk span{font-size:13px;color:var(--sub);font-weight:400;margin-left:6px;padding-left:6px;border-left:1px solid #ddd}
+.hist .cp{font-size:12px;color:var(--sub);margin-top:4px}
+.hist .cp b{font-weight:500}
+.hist .st{font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;background:#f1f2f4;color:#444;flex:none}
+.hist .st.b{background:var(--red-tint);color:var(--red)}.hist .st.s{background:var(--blue-tint);color:var(--blue)}
+.hold-scroll{display:flex;flex-direction:column}
 /* 달이: 이 앱의 하단 메뉴 위에 띄움 */
 .dali-fab{bottom:90px}
 .dali-bubble{bottom:106px}
@@ -195,6 +367,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 <link rel="stylesheet" href="features/dali/dali-move.css">
 <link rel="stylesheet" href="features/dali/dali-pro.css">
 <link rel="stylesheet" href="features/dali/dali-renew.css">
+<link rel="stylesheet" href="features/dali/dali-palette.css">
 <link rel="stylesheet" href="features/dali/dali-journal.css">
 <link rel="stylesheet" href="features/dali/dali-jcal.css">
 <link rel="stylesheet" href="features/dali/dali-news2.css">
@@ -211,13 +384,13 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
       <div class="hdr-top">
         <div class="brand">유진투자선물</div>
         <div class="icons">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" onclick="openSearch()" style="cursor:pointer"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
           <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M5 5l14 14M19 5L5 19"/></svg>
         </div>
       </div>
       <div class="hdr-tabs">
         <div><button class="t on" data-tab="home">홈</button><button class="t" data-tab="watch">관심</button></div>
-        <button class="comm" onclick="toast('커뮤니티 (목업)')"><i></i>커뮤니티</button>
+        <button class="comm" onclick="openComm()"><i></i>커뮤니티</button>
       </div>
     </div>
 
@@ -227,13 +400,14 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
         <div class="amt" id="aTotal"></div>
         <div class="row">
           <div>주문가능금액<b id="aCash"></b></div>
+          <div>원화 잔고<b id="aKrw"></b></div>
           <div>오늘 실현손익<b class="r" id="aReal"></b></div>
           <div>평가손익<b class="r" id="aEval"></b></div>
         </div>
       </div>
       <div class="btn2">
-        <button onclick="toast('금액 충전 (목업)')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#18a058" stroke-width="2.6"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></svg>금액 충전</button>
-        <button onclick="toast('환전 (목업)')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M4 9h13l-3-3M20 15H7l3 3"/></svg>환전</button>
+        <button onclick="go('s-vacct')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#18a058" stroke-width="2.6"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></svg>금액 충전</button>
+        <button onclick="openFx()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M4 9h13l-3-3M20 15H7l3 3"/></svg>환전</button>
       </div>
       <div class="card">
         <div class="poll">
@@ -262,11 +436,74 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
     <nav class="nav" data-nav></nav>
   </section>
 
+  <!-- 가상계좌조회: 금액 충전 누르면. 은행·계좌번호는 가상 -->
+  <section class="screen" id="s-vacct">
+    <div class="dhdr"><div class="l"><button onclick="go('s-main')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b>가상계좌조회</b></div></div>
+    <div class="scroll"><div class="vacct">
+      <div class="it">
+        <div class="flag"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#fff"/><circle cx="18" cy="18" r="9" fill="#cd2e3a"/><path d="M9 18a9 9 0 0 0 18 0a4.5 4.5 0 0 0-9 0a4.5 4.5 0 0 1-9 0z" fill="#0f64cd"/><g stroke="#111" stroke-width="1.6"><path d="M6.5 8.5l4-4M8 10l4-4M9.5 11.5l4-4M25.5 4.5l4 4M27 3l4 4M24 6l4 4M6.5 27.5l4 4M8 26l4 4M9.5 24.5l4 4M25.5 31.5l4-4M27 33l4-4M24 30l4-4"/></g></svg></div>
+        <div><h4>원화 가상계좌</h4><div class="no" id="vaKrw">가상은행 100-123-00045678</div><button class="copy" onclick="copyAcct('vaKrw')">계좌번호 복사하기</button></div>
+      </div>
+      <div class="it">
+        <div class="flag"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#fff"/><g fill="#b22234"><rect y="0" width="36" height="2.8"/><rect y="5.5" width="36" height="2.8"/><rect y="11" width="36" height="2.8"/><rect y="16.6" width="36" height="2.8"/><rect y="22.1" width="36" height="2.8"/><rect y="27.7" width="36" height="2.8"/><rect y="33.2" width="36" height="2.8"/></g><rect width="16" height="19.4" fill="#3c3b6e"/><g fill="#fff"><circle cx="3" cy="3" r="1"/><circle cx="8" cy="3" r="1"/><circle cx="13" cy="3" r="1"/><circle cx="5.5" cy="7" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="3" cy="11" r="1"/><circle cx="8" cy="11" r="1"/><circle cx="13" cy="11" r="1"/><circle cx="5.5" cy="15" r="1"/><circle cx="10.5" cy="15" r="1"/></g></svg></div>
+        <div><h4>달러 가상계좌</h4><div class="no" id="vaUsd">가상은행 100-801-00098765</div><button class="copy" onclick="copyAcct('vaUsd')">계좌번호 복사하기</button></div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 환전하기: 환전 누르면. 환율·금액은 가상 -->
+  <section class="screen" id="s-fx">
+    <div class="dhdr"><div class="l"><button onclick="go('s-main')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b>환전하기</b></div></div>
+    <div class="scroll"><div class="fx">
+      <div class="fx-dir"><button id="fxU2K" onclick="setFxDir('u2k')">달러 → 원</button><button id="fxK2U" class="on" onclick="setFxDir('k2u')">원 → 달러</button></div>
+      <div class="fx-chips"><button class="chip" onclick="fxClear()">지우기</button><button class="chip" onclick="fxAll()">전액</button></div>
+      <div class="fx-box" onclick="openPad()"><input id="fxFrom" type="text" readonly placeholder="0"><span id="fxFromU">원을</span></div>
+      <div class="fx-hint">환전가능 금액: <span id="fxAvail"></span></div>
+      <div class="fx-box"><input id="fxTo" type="text" readonly placeholder="0"><span id="fxToU">달러로</span></div>
+      <div class="fx-hint">적용환율: <span id="fxRate"></span></div>
+      <div class="fx-note">
+        <h4>유의사항</h4>
+        <ul>
+          <li>환전 후 취소처리는 불가하오니 유의하시기 바랍니다.</li>
+          <li>환전업무시간은 아래와 같습니다.<ul><li>(월~금) 달러매수 09:00 ~ 23:50, 00:10 ~ 06:00</li><li>(월~금) 달러매도 13:00 ~ 23:50, 00:10 ~ 06:00</li><li>(토) 06:00 ~ (월) 09:00 불가</li></ul></li>
+          <li>영업일 09:00~16:00 (한국시간) 환전하는 경우 환전수수료 95% 우대적용됩니다.</li>
+          <li>영업일 16:00 ~ 익일 06:00 (한국시간) 및 비영업일에는 우대환율이 적용되지 않습니다.</li>
+          <li>실제 환전시의 환율 및 환전 예정금액은 조회시점과 다를 수 있습니다.</li>
+        </ul>
+      </div>
+    </div></div>
+    <div class="fxpad" id="fxPad">
+      <div class="keys">
+        <button onclick="fxKey('1')">1</button><button onclick="fxKey('2')">2</button><button onclick="fxKey('3')">3</button>
+        <button onclick="fxKey('4')">4</button><button onclick="fxKey('5')">5</button><button onclick="fxKey('6')">6</button>
+        <button onclick="fxKey('7')">7</button><button onclick="fxKey('8')">8</button><button onclick="fxKey('9')">9</button>
+        <button onclick="fxKey('bs')" aria-label="지우기"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><button onclick="fxKey('0')">0</button><span></span>
+      </div>
+      <div class="act"><button class="cancel" onclick="closePad()">취소</button><button class="ok" id="fxPadBtn" onclick="fillFx()" disabled>환전하기</button></div>
+    </div>
+  </section>
+
+  <!-- 환전 완료 -->
+  <section class="screen" id="s-fxdone">
+    <div class="fxdone">
+      <div class="mid"><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>환전이 완료되었어요.</h3></div>
+      <div id="fxDoneRows"></div>
+      <button class="okbtn" onclick="go('s-main')">확인</button>
+    </div>
+  </section>
+
+  <!-- 종목검색: 돋보기 누르면 (ref/image/선물_돋보기누르면.png) -->
+  <section class="screen" id="s-search">
+    <div class="srch-hdr"><button onclick="go('s-main')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><h2>종목검색</h2></div>
+    <div class="srch-box"><svg viewBox="0 0 24 24" fill="none" stroke="#9aa0a8" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="srchIn" type="text" placeholder="원하는 종목을 검색해보세요" autocomplete="off"></div>
+    <div class="scroll"><div class="card wl" id="srchList" style="padding:4px 16px"></div></div>
+  </section>
+
   <!-- DETAIL -->
   <section class="screen" id="s-detail">
     <div class="dhdr">
       <div class="l"><button onclick="go('s-main')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b id="dTk">SPX</b><span id="dNm">S&amp;P 500 Index</span></div>
-      <div class="bm"></div>
+      <div class="bm" id="dBm" onclick="toggleOptWatch(sym.tk)" style="cursor:pointer"></div>
     </div>
     <div class="dtabs"><button class="on" data-d="strat">옵션 전략 선택</button><button data-d="info">정보</button></div>
     <div class="scroll" id="d-strat">
@@ -290,15 +527,16 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
   <section class="screen" id="s-spread">
     <div class="dhdr" style="background:#fff">
       <div class="l"><button onclick="go('s-detail')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b class="sTk">SPX</b><span class="sNm">S&amp;P 500 Index</span></div>
-      <div class="bm"></div>
+      <div class="bm" id="sBm" onclick="toggleOptWatch(sym.tk)" style="cursor:pointer"></div>
     </div>
     <div class="sp-h">
       <div class="sp-title"><h2 id="spName">숏 콜 스프레드 <span class="q">?</span></h2>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M6 4v16M12 4v16M18 4v16"/><circle cx="6" cy="14" r="2" fill="#fff"/><circle cx="12" cy="8" r="2" fill="#fff"/><circle cx="18" cy="15" r="2" fill="#fff"/></svg></div>
-      <div class="sp-sub">현재가가 만기까지 유지된다면</div>
-      <div class="legend"><span class="r">빨간 영역 <b class="up-c">수익</b></span>, <span class="b">파란 영역 <b class="dn-c">손실</b></span> 예상</div>
+        <span class="sp-gear"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M6 4v16M12 4v16M18 4v16"/><circle cx="6" cy="14" r="2" fill="#fff"/><circle cx="12" cy="8" r="2" fill="#fff"/><circle cx="18" cy="15" r="2" fill="#fff"/></svg></span></div>
+      <div id="spSubSpread"><div class="sp-sub">현재가가 만기까지 유지된다면</div>
+      <div class="legend"><span class="r">빨간 영역 <b class="up-c">수익</b></span>, <span class="b">파란 영역 <b class="dn-c">손실</b></span> 예상</div></div>
+      <div id="spSubSingle" class="sp-note" style="display:none">만기 때 주가에 따라 수익·손실이 달라져요.<br><span class="hl">손익분기점을 확인</span> 해 주세요.</div>
       <div class="exp" id="expTabs"></div>
-      <div class="filt"><span>가격폭 <b>$5</b> ▾</span><span>리스트 전체 ▾</span></div>
+      <div class="filt"><span id="filtW">가격폭 <b>$5</b> ▾</span><span>리스트 <b>전체</b> ▾</span></div>
       <div class="colh"><span id="colL">행사가 (숏 콜 / 롱 콜)</span><span id="colR">받을 프리미엄</span></div>
     </div>
     <div class="rows" id="rows"></div>
@@ -323,16 +561,97 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 
   <!-- HOLD / MY -->
   <section class="screen" id="s-hold">
-    <div class="hdr"><div class="hdr-top"><div class="brand">내 보유</div></div></div>
-    <div class="scroll"><div class="card wl" id="holdList" style="padding:4px 16px"></div><button class="ybtn" onclick="openDetail(0)">옵션 전략 선택하기</button></div>
+    <div class="hdr">
+      <div class="hdr-top">
+        <div class="brand">유진투자선물</div>
+        <div class="icons">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" onclick="openSearch()" style="cursor:pointer"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" onclick="go('s-main')" style="cursor:pointer"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </div>
+      </div>
+      <div class="hold-tabs" id="holdTabs">
+        <button class="t on" data-h="acct">내 계좌</button><button class="t" data-h="pos">보유종목</button><button class="t" data-h="ord">주문내역</button><button class="t" data-h="trd">매매내역</button>
+      </div>
+    </div>
+
+    <!-- 내 계좌 -->
+    <div class="scroll hold-scroll" id="hold-acct">
+      <div class="card acct" id="acctCard"></div>
+    </div>
+    <!-- 보유종목 -->
+    <div class="scroll hold-scroll" id="hold-pos" style="display:none"></div>
+    <!-- 주문내역 -->
+    <div class="scroll hold-scroll" id="hold-ord" style="display:none">
+      <div class="filters"><div class="dd w" onclick="toast('기간 선택 (목업)')">최근 1달</div><div class="dd" onclick="toast('구분 선택 (목업)')">전체</div></div>
+      <div id="ordBody" style="flex:1;display:flex;flex-direction:column"></div>
+    </div>
+    <!-- 매매내역 -->
+    <div class="scroll hold-scroll" id="hold-trd" style="display:none">
+      <div class="filters"><div class="dd" id="trdRange" onclick="toast('기간 선택 (목업)')"></div></div>
+      <div id="trdBody" style="flex:1;display:flex;flex-direction:column"></div>
+    </div>
     <nav class="nav" data-nav></nav>
   </section>
   <section class="screen" id="s-my">
     <div class="hdr"><div class="hdr-top"><div class="brand">마이페이지</div></div></div>
     <div class="scroll"><div class="card menu">
-      <div class="m">내 정보<span>›</span></div><div class="m">입출금 내역<span>›</span></div><div class="m">주문 내역<span>›</span></div><div class="m">알림 설정<span>›</span></div><div class="m">고객센터<span>›</span></div><div class="m">약관 및 정책<span>›</span></div>
+      <div class="m" onclick="go('s-myinfo')">내 정보<span>›</span></div><div class="m" onclick="openCashLog()">입출금 내역<span>›</span></div><div class="m" onclick="go('s-alarm')">알림 설정<span>›</span></div><div class="m" onclick="toast('고객센터 (목업)')">고객센터<span>›</span></div>
     </div></div>
     <nav class="nav" data-nav></nav>
+  </section>
+
+  <!-- 커뮤니티 토론방: 홈의 커뮤니티 버튼 누르면. 닉네임·글은 시연용 가상 -->
+  <section class="screen" id="s-comm">
+    <div class="cm-top"><button onclick="go('s-main')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><button class="oth" onclick="toast('다른 토론방 (목업)')">다른 토론방은?</button></div>
+    <div class="scroll" style="padding:0 0 90px">
+      <div class="cm-head">
+        <div class="cm-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h11l-3-3" stroke="#ef3b3b"/><path d="M20 15H9l3 3" stroke="#1b8cf5"/></svg>
+          <span class="fl"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#fff"/><g fill="#b22234"><rect y="0" width="36" height="2.8"/><rect y="5.5" width="36" height="2.8"/><rect y="11" width="36" height="2.8"/><rect y="16.6" width="36" height="2.8"/><rect y="22.1" width="36" height="2.8"/><rect y="27.7" width="36" height="2.8"/><rect y="33.2" width="36" height="2.8"/></g><rect width="16" height="19.4" fill="#3c3b6e"/></svg></span><span class="bub"></span></div>
+        <button class="cm-trade" onclick="openDetail(1)">옵션 거래하기</button>
+        <div class="cm-title">미국주식옵션 함께 배워가요 <span class="beta">Beta</span></div>
+        <div class="cm-sub">옵션이 낯설고 어렵게 느껴진다면?</div>
+      </div>
+      <div class="cm-tabs" id="cmTabs"><button class="on" data-c="all">전체<b>800</b></button><button data-c="img">이미지<b>490</b></button></div>
+      <div class="cm-notice" onclick="toast('초보 가이드 (목업)')"><span class="em">📈</span><span>옵션이 처음이라면? S&amp;P500 지수옵션 "숏 스프레드" 거래방법 알아봐요!</span><span class="ch">›</span></div>
+      <div class="cm-sort">최신순 ▾</div>
+      <div id="postList"></div>
+    </div>
+    <button class="cm-write" onclick="toast('글쓰기 (목업)')">＋ 글쓰기</button>
+  </section>
+
+  <!-- 마이페이지 > 내 정보 (개인정보 변경). 이름·연락처는 시연용 가상 -->
+  <section class="screen" id="s-myinfo">
+    <div class="dhdr"><div class="l"><button onclick="go('s-my')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b>개인정보 변경</b></div></div>
+    <div class="scroll"><div class="form">
+      <div class="open-chip"><span>계좌개설일</span><b>2026-09-28</b></div>
+      <label>거래계좌<input type="text" value="해외 파생상품 500-0001234" readonly></label>
+      <label>이름<input type="text" value="홍길동"></label>
+      <label>영문 이름<input type="text" value="HONG GILDONG"></label>
+      <label>휴대폰<input type="text" value="010-1234-5678"></label>
+      <label>이메일<input type="text" value="gildong.hong@example.com"></label>
+      <label>집 전화<input type="text" placeholder="자택전화번호를 입력하세요"></label>
+      <label>주소<input type="text" placeholder="주소를 입력하세요"></label>
+      <button class="ybtn" onclick="toast('개인정보가 저장됐어요 (목업)');go('s-my')">저장</button>
+    </div></div>
+  </section>
+
+  <!-- 마이페이지 > 입출금 내역. 환전하면 여기 쌓임 -->
+  <section class="screen" id="s-cashlog">
+    <div class="dhdr"><div class="l"><button onclick="go('s-my')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b>입출금 내역</b></div></div>
+    <div class="scroll" style="padding-bottom:70px">
+      <div class="acct-box">해외 파생상품 500-0001234</div>
+      <div class="range"><span id="clRange"></span><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" onclick="toast('기간 검색 (목업)')"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></div>
+      <div class="cashlog" id="clList"></div>
+    </div>
+    <button class="filt-pill" id="clFilt" onclick="cycleClFilter()"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg><span>전체</span></button>
+  </section>
+
+  <!-- 마이페이지 > 알림 설정 -->
+  <section class="screen" id="s-alarm">
+    <div class="dhdr"><div class="l"><button onclick="go('s-my')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b>알림 설정</b></div></div>
+    <div class="scroll"><div class="card alarm" id="alarmList"></div>
+      <div class="fx-hint" style="margin:0 6px">동의를 바꾸면 바로 반영돼요. 체결·만기 안내 같은 필수 알림은 설정과 관계없이 보내 드려요.</div>
+    </div>
   </section>
 
   <div class="sheet-bg" id="sheet" onclick="if(event.target===this)this.classList.remove('on')"><div class="sheet" id="sheetBody"></div></div>
@@ -348,13 +667,18 @@ function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';cl
 const SYMS=[
  {tk:'SPX',nm:'S&P 500 Index',p:7743.98,c:0.28,b:'S&P<br>500'},
  {tk:'XSP',nm:'Mini S&P 500 Index',p:774.40,c:0.28,b:'S&P<br>500'},
- {tk:'TSLA',nm:'Tesla, Inc. - Common Stock',p:null},
+ {tk:'TSLA',nm:'Tesla, Inc. - Common Stock',p:412.30,c:-0.16},
  {tk:'NVDA',nm:'NVIDIA Corporation - Common Stock',p:213.99,c:-1.15},
- {tk:'PLTR',nm:'Palantir Technologies Inc. - Class A Co...',p:null},
- {tk:'IONQ',nm:'IonQ, Inc. Common Stock',p:null},
- {tk:'SPY',nm:'State Street SPDR S&P 500 ETF Trust',p:null},
- {tk:'QQQ',nm:'Invesco QQQ Trust, Series 1',p:718.05,c:0.59,b:'나스닥'}
+ {tk:'PLTR',nm:'Palantir Technologies Inc. - Class A Common Stock',p:182.75,c:-0.88},
+ {tk:'IONQ',nm:'IonQ, Inc. Common Stock',p:48.62,c:-3.45},
+ {tk:'SPY',nm:'State Street SPDR S&P 500 ETF Trust',p:773.86,c:0.27},
+ {tk:'QQQ',nm:'Invesco QQQ Trust, Series 1',p:718.05,c:0.59,b:'나스닥'},
+ {tk:'NBIS',nm:'Nebius Group N.V. - Class A Ordinary Shares',p:173.00,c:7.00}
 ];
+// 현재가 표시: 오르면 빨강 ▲, 내리면 파랑 ▼
+const priceTxt=s=>`<b class="${s.c>=0?'up-c':'dn-c'}">${fmt(s.p)} ${s.c>=0?'▲':'▼'} ${Math.abs(s.c).toFixed(2)}%</b>`;
+// 관심 종목: 처음엔 전부 담겨 있고, 책갈피를 누르면 뺐다 넣었다 함
+const optWatch=new Set(SYMS.filter(s=>s.tk!=='NBIS').map(s=>s.tk));   // NBIS는 거래량 TOP에만 있고 관심에는 없음
 const TOP={
  multi:{
   '최근 7일':[['SPX','숏 풋 스프레드',7743.98,.28,'up'],['SPX','숏 콜 스프레드',7743.98,.28,'dn'],['NBIS','롱 콜 스프레드',173.00,7.00,'up','nv'],['XSP','롱 콜 스프레드',774.40,.28,'up'],['SPX','숏 아이언 버터플라이',7743.98,.28,'side']],
@@ -378,22 +702,159 @@ function renderTop(){
   $('#periodChips').innerHTML=periods.map(p=>`<button class="chip ${p===period?'on':''}">${p}</button>`).join('');
   $$('#periodChips .chip').forEach(b=>b.onclick=()=>{period=b.textContent;renderTop()});
   $('#topList').innerHTML=TOP[leg][period].map((r,i)=>`
-    <div class="rank" onclick="openDetail(${Math.max(0,SYMS.findIndex(s=>s.tk===r[0]))})">
+    <div class="rank" onclick="openTopRow('${r[0]}','${r[4]}')">
       <div class="n">${i+1}</div>${badge(r[5],r[4])}
       <div><div class="nm">${r[0]} ${r[1]}</div><div class="pr">${fmt(r[2])} <span class="${r[3]>=0?'up-c':'dn-c'}">${r[3]>=0?'+':''}${r[3].toFixed(2)}%</span></div></div>
     </div>${r[6]?'<div class="hot">🔥 평소보다 2배 이상 거래되고 있어요.</div>':''}`).join('');
 }
+// 거래량 TOP 줄을 누르면 그 종목의 옵션 전략 선택으로, 방향 버튼도 그 줄의 방향으로
+function openTopRow(tk,d){const i=SYMS.findIndex(s=>s.tk===tk);if(i<0){toast(tk+' 종목 화면은 준비 중이에요');return}
+  openDetail(i);dirIdx={up:0,dn:1,vol:2,side:3}[d]??0;renderDirs()}
 $$('#legSeg button').forEach(b=>b.onclick=()=>{$$('#legSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');leg=b.dataset.leg;renderTop()});
 
-function vote(btn,d){$$('.vote button').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');$('#voteRes').style.display='block'}
+// 오른다 → XSP 숏 콜 스프레드, 내린다 → XSP 숏 풋 스프레드 옵션체인으로 바로 감
+function vote(btn,d){$$('.vote button').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');$('#voteRes').style.display='block';
+  openDetail(1);dirIdx=d==='up'?0:1;renderDirs();
+  if(d==='up')openSpread('scs','숏 콜 스프레드');else openSpread('sps','숏 풋 스프레드')}
 
-function renderWatch(){
-  $('#watchList').innerHTML=SYMS.map((s,i)=>`
+function symRow(s){const i=SYMS.indexOf(s);return `
     <div class="it" onclick="openDetail(${i})">
       <div><div class="tk">${s.tk}<span>${s.nm}</span></div>
-      <div class="cp">현재가격 ${s.p?`<b class="up-c">${fmt(s.p)} ▲ ${s.c.toFixed(2)}%</b>`:'<b style="display:inline-block;width:40px;height:16px;background:#eee;border:1px solid #ddd;border-radius:3px;vertical-align:middle"></b>'}</div></div>
-      <div class="bm"></div></div>`).join('');
+      <div class="cp">현재가격 ${priceTxt(s)}</div></div>
+      <div class="bm ${optWatch.has(s.tk)?'':'off'}" onclick="event.stopPropagation();toggleOptWatch('${s.tk}')"></div></div>`}
+function renderWatch(){
+  const l=SYMS.filter(s=>optWatch.has(s.tk));
+  $('#watchList').innerHTML=l.length?l.map(symRow).join(''):'<div class="empty">관심 종목이 없어요.<br>돋보기에서 찾아 책갈피를 눌러 담아 보세요.</div>';
 }
+function toggleOptWatch(tk){optWatch.has(tk)?optWatch.delete(tk):optWatch.add(tk);
+  renderWatch();renderSearch();
+  $('#dBm').classList.toggle('off',!optWatch.has(sym.tk));$('#sBm').classList.toggle('off',!optWatch.has(sym.tk));
+  toast(optWatch.has(tk)?'관심에 담았어요':'관심에서 뺐어요')}
+/* ===== 커뮤니티 토론방 (닉네임·글·숫자 전부 가상) ===== */
+const POSTS = [
+  { nm: '스프레드연습중', col: '#f08c8c', d: '2026년 10월 28일', ed: true, like: 24, cmt: 6, img: true,
+    bd: '지난주에 지수가 많이 흔들려서 이번 주는 스프레드로 작게 연습해 봤어요.\n싱글로 들어갔으면 방향이 맞아도 시간가치 때문에 애매했을 텐데, 스프레드는 손실 한도가 정해져 있어서 마음이 편하네요 👍' },
+  { nm: '옵션은처음이라', col: '#7b9cf5', d: '2026년 10월 27일', like: 9, cmt: 11,
+    bd: '숏 풋 스프레드에서 "받을 프리미엄"이 최대 수익이라는 게 맞나요? 손익분기 계산이 아직 헷갈려서요 😅 앱에서 "주가가 $…보다 높으면 수익"이라고 써 주는 건 이해했는데 수수료는 따로 빼야 하는 거죠?' },
+  { nm: '만기전날', col: '#6cc27a', d: '2026년 10월 27일', like: 17, cmt: 4,
+    bd: '당일 만기는 움직임이 너무 빨라서 저는 2~3일 남긴 만기로만 보고 있어요. 다들 어떤 만기 위주로 보시나요? 저처럼 짧게 보는 분들 계신지 궁금합니다.' },
+  { nm: '야간알바개미', col: '#f0b14e', d: '2026년 10월 26일', like: 31, cmt: 8,
+    bd: '환전 우대 시간 확인하고 낮에 환전했어요. 영업일 09:00~16:00에 하면 우대율이 적용된다길래 미리 바꿔 뒀습니다. 밤에 급하게 환전하면 우대가 안 된다는 걸 이제 알았네요.' },
+  { nm: '콘도르연구소', col: '#a07cf0', d: '2026년 10월 25일', ed: true, like: 42, cmt: 13,
+    bd: '아이언 콘도르 처음 걸어 봤는데 양쪽에 날개가 있으니 최대 손실이 눈에 보여서 좋네요. 대신 받는 프리미엄이 작아서 수수료를 꼭 같이 계산해 보셔야 해요. 계약 수 늘리기 전에 1계약으로 먼저 해 보는 걸 추천합니다.' },
+  { nm: '달이랑공부중', col: '#4fb3bf', d: '2026년 10월 24일', like: 12, cmt: 2,
+    bd: '옵션 전략 선택 화면에서 화살표 네 개가 뭔지 몰랐는데 오름·내림·변동 큼·변동 작음이더라고요. 방향만 정하면 전략을 골라 주니까 처음에 어떤 걸 봐야 할지 감 잡기 좋았어요.' }];
+const followed = new Set();
+let cmTab = 'all';
+// 글에 붙는 그림은 진짜 캡처가 아니라 매매내역 모양 카드. 숫자는 가상
+const SHOT = `<div class="shot"><div class="r1"><span>유진투자선물</span><span>⌕ ✕</span></div>
+  <div class="tabs"><span>내 계좌</span><span>보유종목</span><span>주문내역</span><b>매매내역</b></div>
+  <div class="box"><div class="kv sub"><span>순실현손익</span><span class="r">+$38.04</span></div>
+  <div class="kv" style="margin-top:6px"><span>SPX 숏 풋 스프레드</span><span class="r">+$38.04</span></div>
+  <div class="kv sub"><span>수량 1개 · 수수료 $11.96</span><span class="r">(+13.59%)</span></div>
+  <div class="sub">2026. 10. 30. 만기 · 종료 2026. 10. 28.</div></div></div>`;
+function renderPosts() {
+  const l = POSTS.filter(p => cmTab === 'all' || p.img);
+  $('#postList').innerHTML = l.map((p, i) => `<div class="post">
+    <div class="ph"><div class="ava" style="background:${p.col}">${p.nm[0]}</div><div><div class="nm">${p.nm}</div><div class="dt">${p.d}${p.ed ? ' (편집됨)' : ''}</div></div>
+      <button class="fol ${followed.has(p.nm) ? 'on' : ''}" onclick="toggleFollow('${p.nm}')">${followed.has(p.nm) ? '팔로잉' : '팔로우'}</button></div>
+    <div class="bd">${p.bd}</div>${p.img ? SHOT : ''}
+    <div class="meta"><span>👍 ${p.like}</span><span>💬 ${p.cmt}</span></div></div>`).join('');
+}
+function toggleFollow(nm) { followed.has(nm) ? followed.delete(nm) : followed.add(nm); renderPosts(); toast(followed.has(nm) ? `${nm} 님을 팔로우했어요` : `${nm} 님 팔로우를 취소했어요`); }
+function openComm() { cmTab = 'all'; $$('#cmTabs button').forEach(b => b.classList.toggle('on', b.dataset.c === 'all')); renderPosts(); go('s-comm'); }
+$$('#cmTabs button').forEach(b => b.onclick = () => { cmTab = b.dataset.c; $$('#cmTabs button').forEach(x => x.classList.toggle('on', x === b)); renderPosts(); });
+/* ===== 마이페이지: 입출금 내역 / 알림 설정 ===== */
+// 입출금 내역. 처음엔 가상계좌 입금 한 건, 환전할 때마다 입금·출금 한 쌍씩 쌓임
+const koDate = d => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const CASHLOG = [{ t: '가상계좌 입금', amt: '+840,000원', k: 'in', d: koDate(new Date(Date.now() - 7 * 864e5)) }];
+let clFilter = 'all';
+function logCash(t, amt, k) { CASHLOG.unshift({ t, amt, k, d: koDate(new Date()) }); }
+function openCashLog() {
+  const to = new Date(), from = new Date(Date.now() - 7 * 864e5);
+  $('#clRange').innerHTML = `<b>${isoDate(from)}부터</b><b>${isoDate(to)}까지</b>`;
+  clFilter = 'all'; renderCashLog(); go('s-cashlog');
+}
+function renderCashLog() {
+  const l = CASHLOG.filter(c => clFilter === 'all' || c.k === clFilter);
+  $('#clFilt span').textContent = { all: '전체', in: '입금', out: '출금' }[clFilter];
+  $('#clList').innerHTML = l.length ? l.map(c => `<div class="it"><div><div class="t">${c.t}</div><div class="d">${c.d}</div></div>
+    <div class="amt ${c.k === 'in' ? 'up-c' : ''}">${c.amt}<small>${c.k === 'in' ? '입금' : '출금'}</small></div></div>`).join('')
+    : '<div class="empty">선택한 기간에 입출금 내역이 없어요.</div>';
+}
+function cycleClFilter() { clFilter = { all: 'in', in: 'out', out: 'all' }[clFilter]; renderCashLog(); }
+// 알림 설정: 동의/비동의 스위치
+const ALARMS = [
+  { k: 'sms', t: 'SMS 수신', p: '체결, 입출금, 환전 결과를 문자로 받아요', on: true },
+  { k: 'mkt', t: '마케팅 수신 동의', p: '이벤트와 혜택 소식을 받아요', on: false },
+  { k: 'kakao', t: '카카오 알림톡 동의', p: '문자 대신 카카오톡으로 알림을 받아요', on: true }];
+function renderAlarm() {
+  $('#alarmList').innerHTML = ALARMS.map((a, i) => `<div class="it"><div><h4>${a.t}</h4><p>${a.p}</p></div>
+    <button class="sw ${a.on ? 'on' : ''}" onclick="toggleAlarm(${i})"><span>${a.on ? '동의' : '비동의'}</span><i></i></button></div>`).join('');
+}
+function toggleAlarm(i) { ALARMS[i].on = !ALARMS[i].on; renderAlarm(); toast(`${ALARMS[i].t} ${ALARMS[i].on ? '동의' : '비동의'}로 바꿨어요`); }
+renderAlarm();
+// 가상계좌 번호 복사. 파일로 바로 연 경우 클립보드가 막힐 수 있어 토스트는 항상 띄움
+function copyAcct(id){const no=$('#'+id).textContent.split(' ').pop();
+  (navigator.clipboard?navigator.clipboard.writeText(no):Promise.reject()).catch(()=>{}).finally(()=>toast('계좌번호를 복사했어요'))}
+/* 환전하기. 원화 잔고와 환율은 가상. 원→달러면 CASH(주문가능 달러)가 늘고, 달러→원이면 줄어듦 */
+let KRW = 840000, fxDir = 'k2u';
+const FX_RATE = 1338.05;
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+const fxNum = s => parseFloat(String(s).replace(/[^\d.]/g, '')) || 0;
+// 들어갈 때는 금액 0, 칩은 아무것도 안 눌린 상태
+function openFx() { closePad(); setFxDir('k2u'); $$('.fx-chips .chip').forEach(c => c.classList.remove('on')); go('s-fx'); }
+function setFxDir(d) {
+  fxDir = d;
+  $('#fxU2K').classList.toggle('on', d === 'u2k'); $('#fxK2U').classList.toggle('on', d === 'k2u');
+  $('#fxFromU').textContent = d === 'k2u' ? '원을' : '달러를'; $('#fxToU').textContent = d === 'k2u' ? '달러로' : '원으로';
+  $('#fxAvail').textContent = d === 'k2u' ? won(KRW) : fmt(CASH);
+  $('#fxRate').textContent = FX_RATE.toLocaleString('ko-KR', { minimumFractionDigits: 2 }) + '원';
+  fxClear();
+}
+function fxCalc() {
+  const v = fxNum($('#fxFrom').value);
+  $('#fxTo').value = !v ? '' : fxDir === 'k2u' ? (v / FX_RATE).toFixed(2) : Math.round(v * FX_RATE).toLocaleString('ko-KR');
+  $('#fxPadBtn').disabled = !v || v > (fxDir === 'k2u' ? KRW : CASH);
+}
+function fxClear() { $$('.fx-chips .chip').forEach((c, i) => c.classList.toggle('on', i === 0)); $('#fxFrom').value = ''; fxCalc(); }
+function fxAll() { $$('.fx-chips .chip').forEach((c, i) => c.classList.toggle('on', i === 1)); $('#fxFrom').value = fxDir === 'k2u' ? KRW.toLocaleString('ko-KR') : CASH.toLocaleString('en-US', { minimumFractionDigits: 2 }); fxCalc(); }
+// 숫자 키패드. 금액 칸을 누르면 올라오고, 숫자를 누르면 칸에 쌓임 (←는 한 글자 지움)
+function openPad() { $('#fxPad').classList.add('on'); }
+function closePad() { $('#fxPad').classList.remove('on'); }
+function fxKey(k) {
+  let v = $('#fxFrom').value.replace(/\D/g, '');
+  v = k === 'bs' ? v.slice(0, -1) : (v + k).replace(/^0+(?=\d)/, '');
+  if (v.length > 12) return;
+  $('#fxFrom').value = v ? Number(v).toLocaleString('ko-KR') : '';
+  $$('.fx-chips .chip').forEach(c => c.classList.remove('on'));
+  fxCalc();
+}
+function fillFx() {
+  const v = fxNum($('#fxFrom').value); if (!v || $('#fxPadBtn').disabled) return;
+  closePad();
+  const rate = FX_RATE.toLocaleString('ko-KR', { minimumFractionDigits: 2 }) + ' 원';
+  let rows;
+  if (fxDir === 'k2u') { const usd = Math.round(v / FX_RATE * 100) / 100; KRW -= v; CASH += usd;
+    rows = [['원화출금', v.toLocaleString('ko-KR') + ' 원'], ['적용환율', rate], ['달러입금', '$ ' + usd.toLocaleString('en-US', { minimumFractionDigits: 2 })]];
+    logCash('환전출금', '-' + v.toLocaleString('ko-KR') + '원', 'out'); logCash('환전입금', '+' + fmt(usd), 'in'); }
+  else { const krw = Math.round(v * FX_RATE); CASH -= v; KRW += krw;
+    rows = [['달러출금', '$ ' + v.toLocaleString('en-US', { minimumFractionDigits: 2 })], ['적용환율', rate], ['원화입금', krw.toLocaleString('ko-KR') + ' 원']];
+    logCash('환전출금', '-' + fmt(v), 'out'); logCash('환전입금', '+' + krw.toLocaleString('ko-KR') + '원', 'in'); }
+  renderAsset(); setFxDir(fxDir);
+  // 완료 화면: 확인을 누르면 선물 홈으로
+  $('#fxDoneRows').innerHTML = rows.map(([k, v]) => `<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('');
+  go('s-fxdone');
+}
+/* 종목검색: 돋보기 누르면. 글자를 치면 티커·이름으로 거름 */
+function openSearch(){$('#srchIn').value='';renderSearch();go('s-search');setTimeout(()=>$('#srchIn').focus(),50)}
+function renderSearch(){
+  const q=$('#srchIn').value.trim().toLowerCase();
+  const l=SYMS.filter(s=>!q||s.tk.toLowerCase().includes(q)||s.nm.toLowerCase().includes(q));
+  $('#srchList').innerHTML=l.length?l.map(symRow).join(''):'<div class="empty">검색 결과가 없어요.</div>';
+}
+$('#srchIn').oninput=renderSearch;
 function showTab(t){$$('.hdr-tabs .t').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
   ['home','watch'].forEach(k=>$('#tab-'+k).style.display=k===t?'block':'none')}
 $$('.hdr-tabs .t').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -416,22 +877,28 @@ const DIRS=[
   s:[['롱풋','Long Put','풋 옵션을 구매해서 수익은 무제한, 손실은 제한해요.'],
      ['롱 풋 스프레드','Long Put Spread','2개의 옵션을 조합하여 수익과 손실을 제한해요.',[['숏풋','b'],['롱풋','r']],'lps'],
      ['숏 콜 스프레드','Short Call Spread','2개의 옵션을 조합하여 수익과 손실을 제한해요.',[['숏콜','b'],['롱콜','r']],'scs']]},
- {k:'vol',t:'이 종목 가격이 크게 움직일 것 같다면',ic:'<path d="M3 18l5-12 5 12 4-8 4 4" stroke="#e33fc0" stroke-width="2.4" fill="none" stroke-linejoin="round"/>',
-  s:[['롱 스트래들','Long Straddle','같은 행사가의 콜과 풋을 함께 사서 큰 변동에 대비해요.',[['롱콜','r'],['롱풋','r']]],
-     ['롱 스트랭글','Long Strangle','다른 행사가의 콜과 풋을 함께 사서 큰 변동에 대비해요.',[['롱콜','r'],['롱풋','r']]]]},
- {k:'side',t:'이 종목 가격이 횡보할 것 같다면',ic:'<path d="M3 13c3-5 6-5 9 0s6 5 9 0" stroke="#7a3fe0" stroke-width="2.4" fill="none"/>',
-  s:[['숏 아이언 버터플라이','Short Iron Butterfly','4개의 옵션을 조합하여 가격이 머물 때 수익을 노려요.',[['숏콜','b'],['숏풋','b'],['롱콜','r'],['롱풋','r']]],
-     ['숏 아이언 콘도르','Short Iron Condor','4개의 옵션을 조합하여 일정 구간에 머물 때 수익을 노려요.',[['숏콜','b'],['숏풋','b'],['롱콜','r'],['롱풋','r']]]]}
+ {k:'vol',t:'이 종목 가격 변동이 클 것 같다면',ic:'<path d="M3 15l4-9 5 12 5-9 4 5" stroke="#e33fc0" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>',
+  s:[['롱 스트래들','Long Straddle','2개의 옵션을 조합하여 수익은 무제한, 손실을 제한해요.',[['롱콜','r'],['롱풋','r']]],
+     ['롱 스트랭글','Long Strangle','2개의 옵션을 조합하여 수익은 무제한, 손실을 제한해요.',[['롱콜','r'],['롱풋','r']]],
+     ['롱 아이언 콘도르','Long Iron Condor','4개의 옵션을 조합하여 수익과 손실을 제한해요.',[['숏풋','b'],['롱풋','r'],['롱콜','r'],['숏콜','b']]],
+     ['롱 아이언 버터플라이','Long Iron Butterfly','4개의 옵션을 조합하여 수익과 손실을 제한해요.',[['숏풋','b'],['롱풋','r'],['롱콜','r'],['숏콜','b']]]]},
+ {k:'side',t:'이 종목 가격 변동이 작을 것 같다면',ic:'<path d="M3 13c3-6 6-6 9 0s6 6 9 0" stroke="#7a3fe0" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+  s:[['숏 아이언 콘도르','Short Iron Condor','4개의 옵션을 조합하여 수익과 손실을 제한해요.',[['롱풋','r'],['숏풋','b'],['숏콜','b'],['롱콜','r']]],
+     ['숏 아이언 버터플라이','Short Iron Butterfly','4개의 옵션을 조합하여 수익과 손실을 제한해요.',[['롱풋','r'],['숏풋','b'],['숏콜','b'],['롱콜','r']]]]}
 ];
-let sym=SYMS[0], dir=0;
-function openDetail(i){sym=SYMS[i];sym.p=sym.p||[0,0,412.30,213.99,182.75,48.62,672.10,0][i];sym.c=sym.c??0.15;
-  $('#dTk').textContent=sym.tk;$('#dNm').textContent=sym.nm;$('#dCur').textContent=`${fmt(sym.p)} ▲ ${sym.c.toFixed(2)}%`;
-  dir=0;renderDirs();setDTab('strat');drawChart();go('s-detail')}
+const DIR_CLS={up:'u',dn:'',vol:'v',side:'s'};
+// 방향 변수는 dirIdx. ('dir'이라 하면 버튼 onclick 안에서 요소의 dir 속성에 가려짐)
+let sym=SYMS[0], dirIdx=0;
+function openDetail(i){sym=SYMS[i];
+  $('#dTk').textContent=sym.tk;$('#dNm').textContent=sym.nm;$('#dCur').innerHTML=priceTxt(sym);
+  $('#dBm').classList.toggle('off',!optWatch.has(sym.tk));
+  dirIdx=0;renderDirs();setDTab('strat');drawChart();go('s-detail')}
 function renderDirs(){
-  $('#dirs').innerHTML=DIRS.map((d,i)=>`<button class="${i===dir?'on '+(d.k==='up'?'u':''):''}" onclick="dir=${i};renderDirs()"><svg viewBox="0 0 24 24">${d.ic}</svg></button>`).join('');
-  const d=DIRS[dir];$('#dirTitle').textContent=d.t;
-  $('#stratList').innerHTML=d.s.map(s=>`
-    <div class="s" onclick="${s[4]?`openSpread('${s[4]}','${s[0]}')`:`openSingle('${s[0]}')`}">
+  $('#dirs').innerHTML=DIRS.map((d,i)=>`<button class="${i===dirIdx?'on '+DIR_CLS[d.k]:''}" onclick="dirIdx=${i};renderDirs()"><svg viewBox="0 0 24 24">${d.ic}</svg></button>`).join('');
+  const d=DIRS[dirIdx];$('#dirTitle').textContent=d.t;
+  // 스프레드는 옵션체인 화면, 롱콜·롱풋은 싱글 리스트, 나머지 조합 전략은 주문 시트로
+  $('#stratList').innerHTML=d.s.map((s,j)=>`
+    <div class="s" onclick="${s[4]?`openSpread('${s[4]}','${s[0]}')`:s[0]==='롱콜'||s[0]==='롱풋'?`openSingle('${s[0]}')`:`openMulti(${dirIdx},${j})`}">
       <div class="h">${s[0]}<span>›</span></div><div class="en">${s[1]}</div><div class="ds">${s[2]}</div>
       ${s[3]?`<div class="tags">${s[3].map(t=>`<span class="tag ${t[1]}">${t[0]}</span>`).join('')}</div>`:''}
     </div>`).join('');
@@ -460,15 +927,39 @@ const SPREAD={
  sps:{col:'행사가 (숏 풋 / 롱 풋)',pr:'받을 프리미엄',credit:true,type:'put'},
  lps:{col:'행사가 (롱 풋 / 숏 풋)',pr:'낼 프리미엄',credit:false,type:'put'}
 };
-let spKey='scs',expIdx=0;
+let spKey='scs',expIdx=0,spMode='spread',singleName='롱콜';
 const EXPS=[['10월 29일','0일 후 만기'],['10월 30일','1일'],['11월 2일','4일'],['11월 3일','5일'],['11월 6일','8일']];
-function openSpread(k,name){spKey=k;expIdx=0;
-  $('.sTk').textContent=sym.tk;$('.sNm').textContent=sym.nm;
-  $('#spName').innerHTML=`${name} <span class="q">?</span>`;$('#colL').textContent=SPREAD[k].col;$('#colR').textContent=SPREAD[k].pr;
+// 옵션체인 화면(s-spread)은 스프레드와 싱글레그(롱콜·롱풋)가 같이 씀. 위쪽 설명과 열 제목만 바뀜
+function openChain(name,single){expIdx=0;spMode=single?'single':'spread';
+  $('.sTk').textContent=sym.tk;$('.sNm').textContent=sym.nm;$('#sBm').classList.toggle('off',!optWatch.has(sym.tk));
+  $('#spName').innerHTML=`${name} <span class="q">?</span>`;
+  $('#spSubSpread').style.display=single?'none':'';$('#spSubSingle').style.display=single?'':'none';$('#filtW').style.display=single?'none':'';
   renderExp();renderRows();go('s-spread');
   setTimeout(()=>{const c=$('#rows .anchor');if(c)$('#rows').scrollTop=c.offsetTop-160},30)}
+function openSpread(k,name){spKey=k;
+  $('#colL').textContent=SPREAD[k].col;$('#colR').textContent=SPREAD[k].pr;openChain(name,false)}
+function openSingle(name){singleName=name;
+  $('#colL').textContent=name==='롱콜'?'행사가 (롱 콜)':'행사가 (롱 풋)';$('#colR').textContent='내는 프리미엄';openChain(name,true)}
 function renderExp(){$('#expTabs').innerHTML=EXPS.map((e,i)=>`<button class="${i===expIdx?'on':''}" onclick="expIdx=${i};renderExp();renderRows()">${e[0]}<small>${e[1]}</small></button>`).join('')}
+/* 롱콜·롱풋 리스트 (ref/image/선물_XSP_롱콜 누르면.png)
+   프리미엄 = 내재가치 + 시간가치. 시간가치는 현재가에 가까울수록, 만기가 멀수록 큼 (목업용 근사) */
+function renderSingleRows(){
+  const call=singleName==='롱콜',P=sym.p,step=P>1000?5:1,base=Math.round(P/step)*step,tm=Math.sqrt(expIdx+1);
+  let html='',anchorDone=false;
+  for(let j=-10;j<=10;j++){
+    const K=base+j*step,d=(K-P)/(2.4*step*tm);
+    const prem=Math.max(.05,Math.round((Math.max(0,call?P-K:K-P)+1.6*step*tm*Math.exp(-d*d))*100)/100);
+    const iv=(0.19+Math.abs(K-P)/(step*200)+rnd()*.01).toFixed(2), vega=(0.08-Math.abs(K-P)/(step*300)).toFixed(2);
+    const be=call?K+prem:K-prem, txt=`주가가 ${fmt(be)}보다 ${call?'높으면':'낮으면'} 수익`;
+    if(!anchorDone&&K>P){html+=`<div class="curline anchor"><span>현재 가격 <b>${fmt(P)}</b> <b class="${sym.c>=0?'up-c':'dn-c'}">${sym.c>=0?'+':''}${sym.c.toFixed(2)}%</b></span></div>`;anchorDone=true}
+    html+=`<div class="row plain" onclick="openSingleOrder(${K},${prem},'${txt}')">
+      <div class="top"><div><div class="k">$${K.toLocaleString('en-US')}</div><div class="gk">IV: ${iv} &nbsp; 베가: ${vega}</div></div><div class="pm b">${fmt(prem)}</div></div>
+      <div class="be">만기 때, ${txt}</div></div>`;
+  }
+  $('#rows').innerHTML=html;
+}
 function renderRows(){
+  if(spMode==='single')return renderSingleRows();
   const cfg=SPREAD[spKey],P=sym.p,step=P>1000?5:1,w=step;
   const base=Math.round(P/step)*step,T=(expIdx+1)*0.6;
   let html='',prevGain=null,anchorDone=false;
@@ -523,34 +1014,104 @@ function renderAsset() {
   const ev = HOLD.reduce((a, h) => a + h.eval, 0);
   $('#aTotal').textContent = fmt(CASH + HOLD.reduce((a, h) => a + h.cost + h.eval, 0));
   $('#aCash').textContent = fmt(CASH);
+  $('#aKrw').textContent = won(KRW);   // 환전하면 달러(CASH)와 원화(KRW)가 같이 바뀜
   $('#aReal').textContent = (REAL >= 0 ? '+' : '') + money(REAL);
   $('#aEval').textContent = (ev >= 0 ? '+' : '') + money(ev);
   $('#aEval').className = ev >= 0 ? 'r' : 'dn-c';
-  $('#holdList').innerHTML = HOLD.length ? HOLD.map(h => `
-    <div class="it"><div><div class="tk">${h.tk}<span>${h.name} ${h.qty}계약</span></div>
-    <div class="cp">평가손익 <b class="${h.eval >= 0 ? 'up-c' : 'dn-c'}">${h.eval >= 0 ? '+' : ''}${money(h.eval)}</b></div></div><div class="bm"></div></div>`).join('')
-    : '<div class="empty">보유중인 종목이 없어요.</div>';
+  renderHold();
 }
+
+/* ===== 내 보유 화면: 내 계좌 / 보유종목 / 주문내역 / 매매내역 (ref/image/선물_*.png) ===== */
+// 주문·체결 내역은 이 세션에서 주문한 것만 쌓임 (처음엔 비어 있음)
+const ORDERS = [], TRADES = [];
+const signed = n => (n > 0 ? '+' : n < 0 ? '-' : '') + fmt(Math.abs(n));
+const EMPTY_SCROLL = '<svg viewBox="0 0 64 64" fill="none"><path d="M14 12h32a4 4 0 0 1 4 4v2H18v30a6 6 0 0 1-6 6h0a6 6 0 0 1-6-6v-2h12" fill="#dfe4ea"/><rect x="18" y="18" width="36" height="34" rx="2" fill="#e9edf2"/><path d="M50 12a4 4 0 0 1 4 4v2h-8v-2a4 4 0 0 1 4-4z" fill="#c9d1db"/><path d="M6 46h12v2a6 6 0 0 1-12 0v-2z" fill="#c9d1db"/><rect x="26" y="26" width="18" height="2.5" rx="1" fill="#aeb8c4"/><rect x="26" y="33" width="14" height="2.5" rx="1" fill="#aeb8c4"/><rect x="26" y="40" width="10" height="2.5" rx="1" fill="#aeb8c4"/></svg>';
+const EMPTY_DOC = '<svg viewBox="0 0 64 64" fill="none"><rect x="16" y="8" width="32" height="48" rx="3" fill="#d6d8dc"/><rect x="24" y="22" width="16" height="2.5" rx="1" fill="#fff"/><rect x="24" y="30" width="16" height="2.5" rx="1" fill="#fff"/><rect x="24" y="38" width="16" height="2.5" rx="1" fill="#fff"/></svg>';
+function histRow(h, right) {
+  return `<div class="it"><div><div class="tk">${h.tk}<span>${h.name} ${h.qty}계약</span></div><div class="cp">${h.cp}</div></div>${right}</div>`;
+}
+function renderHold() {
+  const ev = HOLD.reduce((a, h) => a + h.eval, 0);
+  const posEval = HOLD.reduce((a, h) => a + h.cost + h.eval, 0);
+  const buyOpt = HOLD.filter(h => !h.fut && h.cost > 0).reduce((a, h) => a + h.cost + h.eval, 0);
+  const sellOpt = HOLD.filter(h => !h.fut && h.cost < 0).reduce((a, h) => a + h.cost + h.eval, 0);
+  const margin = HOLD.filter(h => h.fut).reduce((a, h) => a + h.cost, 0);
+  const total = CASH + posEval;
+  const rows = [
+    ['총 예탁 자산 평가액', fmt(total)], ['자산현황', fmt(total)], ['주문가능금액', fmt(CASH)], ['원화 잔고', won(KRW)],
+    ['보유 종목 평가금액', fmt(posEval)], ['구매옵션 평가금액', fmt(buyOpt)], ['판매옵션 평가금액', signed(sellOpt)],
+    ['평가손익', signed(ev), ev >= 0 ? 'r' : 'b'], ['오늘 실현손익', signed(REAL)],
+    ['필요증거금', fmt(margin)], ['인출가능금액', fmt(Math.max(0, CASH - margin * 0.1))]];
+  $('#acctCard').innerHTML = rows.map(([k, v, c]) => `<div class="kv"><span>${k}</span><b class="${c || ''}">${v}</b></div>`).join('');
+
+  $('#hold-pos').innerHTML = HOLD.length
+    ? `<div class="card hist" style="padding:4px 16px">${HOLD.map(h => histRow({ ...h, cp: `평가손익 <b class="${h.eval >= 0 ? 'up-c' : 'dn-c'}">${signed(h.eval)}</b>` }, '<div class="bm"></div>')).join('')}</div><button class="ybtn" onclick="openDetail(0)">옵션 전략 선택하기</button>`
+    : `<div class="hold-empty">${EMPTY_SCROLL}<h3>보유중인 종목이 없어요</h3><button class="pill" onclick="go('s-main')">종목찾기 화면이동</button></div>`;
+
+  $('#ordBody').innerHTML = ORDERS.length
+    ? `<div class="card hist" style="padding:4px 16px">${ORDERS.map(o => histRow(o, `<div class="st ${o.side === '매수' ? 'b' : 's'}">${o.side} 체결</div>`)).join('')}</div>`
+    : `<div class="hold-empty">${EMPTY_DOC}<p>선택한 조건에 맞는 주문이 없거나,<br>아직 주문한 내역이 없어요.</p><button class="pill sm" onclick="go('s-main')">종목찾기 화면이동</button></div>`;
+
+  const d2 = new Date(), d1 = new Date(d2); d1.setMonth(d1.getMonth() - 1);
+  const ko = d => `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`;
+  $('#trdRange').textContent = `${ko(d1)} ~ ${ko(d2)}`;
+  $('#trdBody').innerHTML = TRADES.length
+    ? `<div class="card hist" style="padding:4px 16px">${TRADES.map(t => histRow(t, `<div class="st ${t.side === '매수' ? 'b' : 's'}">${t.side}</div>`)).join('')}</div>`
+    : `<div class="hold-empty">${EMPTY_DOC}<p>선택한 기간에 맞는 매매내역이 없어요</p></div>`;
+}
+// 주문하면 주문내역·매매내역에 같이 쌓임 (시연용이라 바로 체결로 봄)
+function logOrder(tk, name, qty, side, amtTxt) {
+  const now = new Date(), hm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const row = { tk, name, qty, side, cp: `${hm} · ${amtTxt}` };
+  ORDERS.unshift(row); TRADES.unshift(row);
+}
+function showHold(t) {
+  $$('#holdTabs .t').forEach(x => x.classList.toggle('on', x.dataset.h === t));
+  ['acct', 'pos', 'ord', 'trd'].forEach(k => $('#hold-' + k).style.display = k === t ? 'flex' : 'none');
+}
+$$('#holdTabs .t').forEach(b => b.onclick = () => showHold(b.dataset.h));
 // 프리미엄은 1계약 = 100배. 받는 전략은 현금이 늘고, 내는 전략은 줄어듦
 function fillOrder(name, prem, credit) {
   const amt = Math.round(prem * 100 * 100) / 100;
   CASH += credit ? amt : -amt;
   HOLD.unshift({ tk: sym.tk, name, qty: 1, cost: credit ? -amt : amt, eval: 0 });
+  logOrder(sym.tk, name, 1, credit ? '매도' : '매수', `${credit ? '받은' : '낸'} 프리미엄 ${fmt(amt)}`);
   $('#sheet').classList.remove('on');
   renderAsset();
+  showHold('pos');
   go('s-hold');
   toast(`${sym.tk} ${name} 1계약 체결 (${credit ? '받은' : '낸'} 프리미엄 ${fmt(amt)})`);
   if (window.dali && DALI_SYMS[sym.tk]) window.dali.record(sym.tk, `${name} 1계약`, '매수');
 }
-function openSingle(name) {
-  const prem = Math.max(0.5, Math.round(sym.p * 0.012 * 20) / 20);
+// 스트래들·스트랭글·아이언 콘도르·버터플라이: 현재가 가까운 행사가로 묶어 바로 주문 시트 (프리미엄은 목업용 근사)
+function openMulti(di, j) {
+  const s = DIRS[di].s[j], name = s[0], legs = s[3], credit = name.startsWith('숏');
+  const step = sym.p > 1000 ? 5 : 1, K = Math.round(sym.p / step) * step;
+  const prem = Math.round((credit ? step * 0.6 : legs.length === 2 ? step * 3.1 : step * 1.15) * 20) / 20;
+  const strikes = legs.length === 2
+    ? (name.includes('스트랭글') ? `${fmt(K - step)} / ${fmt(K + step)}` : fmt(K))
+    : `${fmt(K - 2 * step)} / ${fmt(K - step)} / ${fmt(K + step)} / ${fmt(K + 2 * step)}`;
   $('#sheetBody').innerHTML = `<h4>${name} · ${sym.tk}</h4>
    <div class="kv"><span>만기일</span><b>${EXPS[1][0]}</b></div>
-   <div class="kv"><span>행사가</span><b>${fmt(Math.round(sym.p))}</b></div>
-   <div class="kv"><span>낼 프리미엄</span><b class="up-c">${fmt(prem)}</b></div>
+   <div class="kv"><span>행사가</span><b>${strikes}</b></div>
+   <div class="kv" style="align-items:center"><span>구성</span><div class="tags" style="margin:0">${legs.map(t => `<span class="tag ${t[1]}">${t[0]}</span>`).join('')}</div></div>
+   <div class="kv"><span>${credit ? '받을' : '낼'} 프리미엄</span><b class="up-c">${fmt(prem)}</b></div>
    <div class="kv"><span>1계약 금액</span><b>${fmt(prem * 100)}</b></div>
    <div class="kv"><span>주문가능금액</span><b>${fmt(CASH)}</b></div>
-   <button class="ybtn" onclick="fillOrder('${name}', ${prem}, false)">주문하기</button>`;
+   <button class="ybtn" onclick="fillOrder('${name}', ${prem}, ${credit})">주문하기</button>`;
+  $('#sheet').classList.add('on');
+}
+// 롱콜·롱풋 리스트에서 행사가 한 줄을 누르면 뜨는 주문 확인
+function openSingleOrder(K, prem, txt) {
+  $('#sheetBody').innerHTML = `<h4>${singleName} · ${sym.tk}</h4>
+   <div class="kv"><span>만기일</span><b>${EXPS[expIdx][0]}</b></div>
+   <div class="kv"><span>행사가</span><b>${fmt(K)}</b></div>
+   <div class="kv"><span>낼 프리미엄</span><b class="up-c">${fmt(prem)}</b></div>
+   <div class="kv"><span>1계약 금액</span><b>${fmt(prem * 100)}</b></div>
+   <div class="kv"><span>최대 손실 (1계약)</span><b class="dn-c">${fmt(prem * 100)}</b></div>
+   <div class="kv"><span>손익분기</span><b>만기 때, ${txt}</b></div>
+   <div class="kv"><span>주문가능금액</span><b>${fmt(CASH)}</b></div>
+   <button class="ybtn" onclick="fillOrder('${singleName}', ${prem}, false)">주문하기</button>`;
   $('#sheet').classList.add('on');
 }
 /* ===== 해외선물 (CME 그룹) =====
@@ -640,13 +1201,14 @@ function renderFutOrder() {
    <div class="kv"><span>주문가능금액</span><b>${fmt(CASH)}</b></div>
    <div class="kv"><span>1% 움직이면</span><b>약 ${fmt(f.p * 0.01 * f.mult * fqty)}</b></div>
    ${ok ? '' : `<div class="warn">증거금이 ${fmt(need - CASH)} 모자라요.${mic ? ` 같은 상품을 1/10 크기로 거래하는 <b style="cursor:pointer;text-decoration:underline" onclick="$('#sheet').classList.remove('on');openFut('${mic.k}')">${mic.ko}</b>도 있어요.` : ''}</div>`}
-   <button class="ybtn" ${ok ? '' : 'disabled'} style="${ok ? `background:${fside === '매수' ? 'var(--red)' : 'var(--blue)'};color:#fff` : ''}" onclick="fillFut()">${fside === '매수' ? '매수' : '매도'} 주문하기</button>`;
+   <button class="ybtn" ${ok ? '' : 'disabled'} onclick="fillFut()">${fside === '매수' ? '매수' : '매도'} 주문하기</button>`;
 }
 // 증거금만큼 현금이 묶이고 보유에 포지션이 생김
 function fillFut() {
   const f = fcur, need = f.mg * fqty;
   CASH -= need;
   HOLD.unshift({ tk: fcode(f), name: `${f.ko} ${fside}`, qty: fqty, cost: need, eval: 0, fut: f.k, side: fside, entry: f.p });
+  logOrder(fcode(f), f.ko, fqty, fside, `체결가 ${f.p} · 증거금 ${fmt(need)}`);
   $('#sheet').classList.remove('on');
   renderAsset();
   toast(`${f.ko} ${fqty}계약 ${fside} 체결됐어요`);
@@ -673,10 +1235,11 @@ window.DALI_ORDER = name => {
 const goBase = go;
 go = function (id) {
   goBase(id);
-  document.querySelector('.phone').classList.toggle('dali-ordering', id === 's-detail' || id === 's-spread' || id === 's-fut');
+  document.querySelector('.phone').classList.toggle('dali-ordering', id === 's-detail' || id === 's-spread' || id === 's-fut' || id === 's-search' || id === 's-vacct' || id === 's-fx' || id === 's-fxdone' || id === 's-myinfo' || id === 's-cashlog' || id === 's-alarm' || id === 's-comm');
 };
 </script>
 <script src="features/dali/dali-data.js"></script>
+<script src="features/dali/dali-customer-fut.js"></script>
 <script src="features/dali/dali-feed.js"></script>
 <script src="features/dali/dali-chart.js"></script>
 <script src="features/dali/dali.js"></script>
