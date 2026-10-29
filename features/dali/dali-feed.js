@@ -1,7 +1,7 @@
 /* ---------- 달이 공시 피드 ----------
    종목 화면의 공시 탭이 Supabase disclosures 테이블을 읽는다 (정해 둔 4개 회사만 OpenDART에서 10분마다 수집, 최근 1년 중 최신 20건).
    공시는 지어내지 않는다. 연결 정보가 비었거나 불러오지 못하면 공시 탭에 안내만 띄운다.
-   구축 방법: feature/dali-supabase 브랜치의 docs/supabase-setup.md
+   구축 방법: docs/supabase-setup.md (수집 설정은 supabase/)
    dali-data.js 다음, dali.js 앞에 불러옵니다. */
 const DaliFeed = (function () {
   // Publishable 키는 공개돼도 되는 읽기 전용 키. service_role 키는 절대 넣지 않음
