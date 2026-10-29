@@ -176,26 +176,31 @@
 
   /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
-  // 살 때와 팔 때 그 순간의 시황 한 줄 (dali-customer.js 매매 사진의 코스피, 미국 지수, 업종, 수급, 그 종목 등락)
+  // 살 때와 팔 때 그 순간의 뉴스. 그날 그 종목 실제 뉴스가 있으면(최근 2주) 그걸, 없으면 그 순간의 가상 뉴스 한 줄
   const C_TR = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.trades : [];
   const tradeOf = t => t.app !== "stock" ? null : C_TR.find(x => x.id === t.tid) || C_TR.find(x => x.sym === t.sym && !x.sell && x.buySnap);
-  const sgn = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
-  const FLOW = { buy: ["순매수", "up"], sell: ["순매도", "down"], flat: ["보합", "flat"] };
-  const SECT = { up: ["↑ 오름세", "up"], flat: ["→ 보합", "flat"], down: ["↓ 내림세", "down"] };
-  const pc = n => [sgn(n), n > 0 ? "up" : n < 0 ? "down" : "flat"];
-  // 한 칸: 그 순간의 시황 다섯 줄. 오르면 빨강, 내리면 파랑
-  function mkCol(title, sym, sn) {
-    const sec = typeof DALI_SECTOR !== "undefined" ? DALI_SECTOR[sym] : "업종";
-    const rows = [["그날 " + sym, pc(sn.dayChg)], ["코스피", pc(sn.kospi)], [`전날 ${sn.usRef.name}`, pc(sn.usRef.chg)],
-      [`${sec} 업종 5일`, SECT[sn.sector]], ["외국인", FLOW[sn.flow5.foreign]], ["기관", FLOW[sn.flow5.inst]]];
-    return `<div class="dali-mk-col"><p class="dali-mk-head"><b>${title}</b><small>${sn.at}</small></p>
-      <ul>${rows.map(([k, [v, c]]) => `<li><span>${k}</span><b class="${c}">${v}</b></li>`).join("")}</ul></div>`;
+  const dayKo = d => { const [m, dd] = (d === "오늘" ? "10/29" : d).split("/").map(Number); return `${m}월 ${dd}일`; };
+  // 그날 실제 뉴스 (받아 둔 목록에서 날짜가 같은 것 2건까지). 아직 안 받았으면 받고 다시 그림
+  function realNews(sym, label) {
+    const code = DALI_SYMS[sym] && DALI_SYMS[sym].code;
+    if (!code || typeof DaliFeed === "undefined") return [];
+    const c = DaliFeed.getNews(code, () => { if (state.open && state.tab === "journal" && !state.page) render(); });
+    return (c.list || []).filter(a => a.time.startsWith(label)).slice(0, 2);
+  }
+  function newsCol(title, sym, date, at, fake) {
+    const label = dayKo(date), real = realNews(sym, label);
+    const rows = real.length
+      ? real.map(a => `<li><button type="button" data-article="${a.id}" data-sym="${sym}"><b>${a.title}</b><small>${a.author ? `${a.author}, ` : ""}${a.time.replace(label + " ", "")}</small></button></li>`).join("")
+      : fake ? `<li><p><b>${fake}</b><small>${at ? at.slice(6) : ""}</small></p></li>` : "";
+    return rows ? `<div class="dali-mn"><p class="dali-mn-head"><b>${title}</b><small>${label}</small></p><ul>${rows}</ul></div>` : "";
   }
   function market(t) {
-    const ct = tradeOf(t);
+    const ct = tradeOf(t), n = ct ? DALI_MOMENT_NEWS[ct.id] || [] : [];
     if (!ct || !ct.buySnap) return "";
-    const sell = t.sell && ct.sellSnap ? mkCol("팔 때", t.sym, ct.sellSnap) : `<div class="dali-mk-col dali-mk-hold"><p class="dali-mk-head"><b>팔 때</b></p><p>아직 들고 있어요</p></div>`;
-    return `<div class="dali-mk">${mkCol("살 때", t.sym, ct.buySnap)}${sell}</div>`;
+    const buy = newsCol("살 때", t.sym, t.buy.date, ct.buySnap.at, n[0]);
+    const sell = t.sell ? newsCol("팔 때", t.sym, t.sell.date, ct.sellSnap && ct.sellSnap.at, n[1])
+      : `<div class="dali-mn"><p class="dali-mn-head"><b>팔 때</b></p><p class="dali-mn-hold">아직 들고 있어요</p></div>`;
+    return buy || sell ? `<div class="dali-mns">${buy}${sell}</div>` : "";
   }
   function addInfo(t) {
     if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
