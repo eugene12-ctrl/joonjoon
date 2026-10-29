@@ -13,6 +13,7 @@
   const tabs = sheet.querySelector(".dali-tabs");
   const body = sheet.querySelector(".dali-body");
   const BASE = document.currentScript.src.replace(/[^/]*$/, "");
+  const FACE_S = `${BASE}dali-face.png`;
   const C = typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER : null;
   const won = n => `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(Math.round(n)).toLocaleString("ko-KR")}원`;
   const usd = n => `${n > 0 ? "+" : n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`;
@@ -46,13 +47,19 @@
     const src = s.code ? `${BASE}img/logo-${s.code}.png` : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
     return `<i class="dali-pro-logo${s.icon ? " icon" : ""}">${sym[0]}${src ? `<img src="${src}" alt="" onerror="this.remove()">` : ""}</i>`;
   }
-  // 한 장: 지금가와 등락, 한 줄, 버튼 하나
+  // 한 장: 오늘 탭 히어로와 같은 틀. 달이 얼굴과 라벨, 지금가와 등락, 한 줄, 버튼 하나, 오른쪽에 종목 로고 스티커
+  function art(sym) {
+    const s = DALI_SYMS[sym];
+    const src = s.code ? `${BASE}img/logo-${s.code}.png` : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
+    return src ? `<figure class="dali-pro-act-art ${s.code ? "logo" : "pic"}"><img src="${src}" alt="" onerror="this.parentNode.remove()"></figure>` : "";
+  }
   function slide(n, i) {
     const me = mine(n.sym), c = chg(n.sym);
     const big = `${price(n.sym)}<small class="${tone(c)}">${pct(c)}</small>`;
-    const top = me.held ? `${n.sym} 보유` : `${n.sym} 관심`;
+    const top = me.held ? `${n.sym} 소식, 보유 중` : `${n.sym} 소식`;
     return `<article class="dali-n2-slide" data-i="${i}">
-      <p class="dali-pro-act-top">${logo(n.sym)}${top}<span>${n.time}</span></p>
+      ${art(n.sym)}
+      <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${top}<span>${n.time}</span></p>
       <p class="dali-pro-act-big">${big}</p>
       <h2>${n.why}</h2>
       <div class="dali-pro-act-btns"><button type="button" data-n2-news="${n.id}">기사 보기</button></div>

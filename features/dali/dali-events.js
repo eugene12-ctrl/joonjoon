@@ -7,7 +7,7 @@
    art는 오늘 탭 맨 위 그림: logo는 종목 로고, 그 밖은 img/ 아래 파일 이름(png가 있으면 png, 없으면 svg). bg는 띠 색. dali-event.js가 읽는다. */
 const DALI_EVENTS = {
   "삼성전자": {
-    app: "stock", kind: "실적 발표", when: "오늘 09:30", short: "실적", art: "logo", bg: ["#0F3D47", "#061A20"],
+    app: "stock", kind: "실적 발표", when: "오늘 09:30", short: "실적", art: "logo", bg: ["#0A6270", "#004652"],
     axes: [["pre5", "발표 전 5일"], ["kospi", "코스피"], ["sector", "반도체 업종"], ["volume", "거래량"], ["vol", "변동"]],
     implied: 6.0,
     now: { pre5: 8.0, kospi: "up", sector: "up", volume: "high", vol: "wild", tag: "외국인 순매수", news: "발표 앞두고 외국인 사흘째 순매수, 어제 9% 급등" },
@@ -27,7 +27,7 @@ const DALI_EVENTS = {
     state: { morning: "wait", intraday: "live", close: "done", month: "done" },
   },
   "나스닥 100": {
-    app: "fut", kind: "미국 금리 결정 (FOMC)", when: "내일 새벽 3시", short: "FOMC", art: "ev-fomc", bg: ["#1B2A6B", "#0B1230"],
+    app: "fut", kind: "미국 금리 결정 (FOMC)", when: "내일 새벽 3시", short: "FOMC", art: "ev-fomc", bg: ["#0A6270", "#004652"],
     axes: [["pre5", "발표 전 5일"], ["kospi", "S&P 흐름"], ["sector", "기술주 흐름"], ["volume", "거래량"], ["vol", "변동성"]],
     implied: 1.8,
     now: { pre5: 2.5, kospi: "up", sector: "up", volume: "normal", vol: "calm", tag: "동결 예상", news: "금리 동결 예상 속 기술주 닷새째 상승" },

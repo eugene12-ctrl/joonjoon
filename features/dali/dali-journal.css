@@ -66,3 +66,9 @@
 .phone .dali-sheet .dali-mn-hot i { white-space: nowrap; }
 .phone .dali-sheet .dali-jmore p.dali-mn-hot, .phone .dali-sheet .dali-jmore button.dali-mn-hot { display: flex; gap: 8px; margin: 10px 0 0; padding: 10px 0 0; }
 .phone .dali-sheet .dali-mn-hot b { word-break: keep-all; }
+
+/* 기간 선택(일간, 주간, 월간)은 위 탭보다 한 단계 아래: 상자 없이 작은 글, 고른 것만 잉크 알약 */
+.phone .dali-sheet .dali-body .dali-jseg { gap: 4px; margin: 12px 20px 0; padding: 0; border-radius: 0; background: none; }
+.phone .dali-sheet .dali-body .dali-jseg button { flex: 0 0 auto; height: 28px; padding: 0 12px; border-radius: 999px; background: transparent; font-size: 13px; font-weight: 600; color: #8B95A1; }
+.phone .dali-sheet .dali-body .dali-jseg button.on { background: #191F28; color: #fff; font-weight: 700; box-shadow: none; }
+.phone .dali-sheet .dali-body .dali-jseg + .dali-jsum { padding-top: 12px; }
