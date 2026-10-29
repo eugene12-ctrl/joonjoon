@@ -350,12 +350,17 @@
       <div class="dali-mts-foot"><button type="button" class="dali-btn wide ${o.side === "매도" ? "sell" : "buy"}" data-mts="fill">${o.side === "매도" ? "매도" : "매수"}</button></div>`;
   }
   function renderMts() {
-    if (!state.order) { mts.classList.remove("open"); mts.inert = true; phone.classList.remove("dali-ordering"); return; }
+    if (!state.order) { mts.classList.remove("open"); mts.inert = true; syncOrdering(); return; }
     mts.innerHTML = mtsHTML(state.order);
     mts.classList.add("open");
     mts.inert = false;
-    phone.classList.add("dali-ordering");
+    syncOrdering();
   }
+  // 주문 화면(달이 주문 화면이나 MTS의 #order)에서는 달이를 숨김
+  function syncOrdering() {
+    phone.classList.toggle("dali-ordering", !!state.order || /^#order/.test(location.hash));
+  }
+  window.addEventListener("hashchange", syncOrdering);
   function openNews(id) {
     const n = state.news.find(x => x.id === id);
     if (isFlag(n) && !n.seen) { n.seen = true; complete("m-alert"); paintAlert(); }
@@ -526,5 +531,6 @@
   window.dali = { open, close, openNews, openOrder, setApp, alertNews, record };
 
   render();
+  syncOrdering();
   setTimeout(() => sayOnce("좋은 아침이에요! 따라가는 종목에 확인할 소식이 있어요."), 800);
 })();
