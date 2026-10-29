@@ -1,0 +1,24 @@
+/* ===== 달이 옮기기 (dali-move.js) ===== */
+.dali-fab { touch-action: none; transition: left .28s cubic-bezier(.2, .8, .2, 1), top .28s cubic-bezier(.2, .8, .2, 1); }
+.dali-fab.dali-moving { transition: none; animation: none; cursor: grabbing; }
+.dali-fab.dali-tucked { pointer-events: none; }
+
+/* 숨었을 때 오른쪽 가장자리에 붙는 < 버튼 */
+.dali-tab {
+  position: absolute; right: 0; z-index: 12; width: 26px; height: 52px; padding: 0;
+  display: none; align-items: center; justify-content: center;
+  border: 0; border-radius: 14px 0 0 14px; background: #fff; color: #4E5968;
+  box-shadow: -4px 4px 14px -6px rgba(0, 0, 0, .35), 0 0 0 1px rgba(0, 0, 0, .05);
+  cursor: pointer; animation: dali-tab-in .28s ease both;
+}
+.phone.dali-is-tucked .dali-tab { display: flex; }
+.phone.dali-is-tucked .dali-bubble { display: none; }
+.phone.dali-ordering .dali-tab { display: none; }
+.dali-tab-dot { position: absolute; top: 6px; left: 5px; width: 7px; height: 7px; border-radius: 50%; background: #C8202C; transform: scale(0); transition: transform .2s ease; }
+.dali-tab.has-alert .dali-tab-dot { transform: scale(1); }
+@keyframes dali-tab-in { from { transform: translateX(100%); } to { transform: none; } }
+
+/* 왼쪽에 붙었을 때 말풍선 꼬리 방향 */
+.dali-bubble.dali-bubble-left { border-radius: 14px 14px 14px 4px; }
+
+@media (prefers-reduced-motion: reduce) { .dali-fab, .dali-tab { transition: none; animation: none; } }
