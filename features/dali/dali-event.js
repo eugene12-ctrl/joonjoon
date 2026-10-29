@@ -60,9 +60,9 @@
     if (st === "wait") return { k: "event", score: 99, ...look, top: app === "fut" ? "관심 종목 일정" : "내 종목 일정", big: app === "fut" ? e.kind.replace(/ \(.*\)/, "") : `${e.sym} ${e.kind}`,
       title: `${e.when} 발표`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
     if (st === "live" && r) return { k: "event", score: 99, ...look, top: `${who} 발표 뒤`, big: pct(r.val),
-      title: nowP && m ? `${won(nowP)}, ${m.qty}` : e.sym, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
+      title: nowP && m ? `${won(nowP)}, ${m.qty}` : DALI_NAME(e.sym), feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     if (st === "done" && r) return { k: "event", score: 92, ...look, top: `${who} 뒤 ${r.label}`, big: pct(r.val),
-      title: nowP && m ? `${won(nowP)}, ${m.qty}` : e.sym, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
+      title: nowP && m ? `${won(nowP)}, ${m.qty}` : DALI_NAME(e.sym), sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     return null;
   }
 
@@ -94,13 +94,13 @@
     const range = m ? an.map(x => m.per * x.next) : null;
     const money = m ? `<p class="dali-ev-money"><b>${m.qty}</b>로는 <b class="${tone(Math.min(...range))}">${m.fmt(Math.min(...range))}</b> ~ <b class="${tone(Math.max(...range))}">${m.fmt(Math.max(...range))}</b></p>` : "";
     return `
-      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>${esc(e.sym)} ${esc(e.kind)}</strong></header>
+      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>${esc(DALI_NAME(e.sym))} ${esc(e.kind)}</strong></header>
       <div class="dali-page-body dali-ev">
         <section class="dali-ev-top">${head}</section>
         <section class="dali-ev-sec">${grid}
           <div class="dali-ev-ai" data-k="0"></div>
           ${money}</section>
-        <div class="dali-ev-btns"><button type="button" data-ev="order" data-sym="${esc(e.sym)}">${esc(e.sym)} 주문</button></div>
+        <div class="dali-ev-btns"><button type="button" data-ev="order" data-sym="${esc(e.sym)}">${esc(DALI_NAME(e.sym))} 주문</button></div>
       </div>`;
   }
   // 그때 뉴스가 지금과 같은 이야기였던 때가 있으면 한 줄, 없으면 줄 없음

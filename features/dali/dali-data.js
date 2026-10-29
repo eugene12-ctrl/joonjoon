@@ -16,10 +16,11 @@ const DALI_SYMS = {
   "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8, code: "035420" },
   // 유진투자선물 앱(futures.html): CME 해외선물. 주식은 증권 앱에서 따라가므로 여기선 선물만.
   // 이름은 futures.html FUTS의 ko와 같게 (종목을 누르면 그 선물 화면으로 감). 마이크로 계약은 원 계약 이름으로 묶음
-  "크루드 오일": { app: "fut", kind: "hold", price: 61.84, chg: -1.12, dec: 2, icon: "oil" },
-  "금": { app: "fut", kind: "hold", price: 4128.4, chg: 0.46, dec: 1, icon: "gold" },
-  "S&P 500": { app: "fut", kind: "watch", price: 7768.25, chg: 0.31, dec: 2, icon: "sp500" },
-  "나스닥 100": { app: "fut", kind: "watch", price: 29512.5, chg: 0.62, dec: 2, icon: "nasdaq100" },
+  // name: 화면에 보이는 이름(선물 코드 병기). 키는 그대로 두고 DALI_NAME(sym)으로 꺼내 쓴다
+  "크루드 오일": { app: "fut", kind: "hold", price: 61.84, chg: -1.12, dec: 2, icon: "oil", name: "크루드 오일 CL" },
+  "금": { app: "fut", kind: "hold", price: 4128.4, chg: 0.46, dec: 1, icon: "gold", name: "금 GC" },
+  "S&P 500": { app: "fut", kind: "watch", price: 7768.25, chg: 0.31, dec: 2, icon: "sp500", name: "S&P500 선물 ES" },
+  "나스닥 100": { app: "fut", kind: "watch", price: 29512.5, chg: 0.62, dec: 2, icon: "nasdaq100", name: "나스닥 선물 NQ" },
 };
 
 // 느낌표는 AI의 감이 아니라 객관 기준(공시, 실적, 큰 변동)일 때만
@@ -160,3 +161,5 @@ const DALI_NEWS_TEXT = {
   a1: { title: "반도체 대형주 강세 이어져", body: "반도체 대형주가 함께 크게 오르며 장을 이끌었다. 개별 회사의 새 공시는 없었다." },
   a2: { title: "WTI 선물 짧은 시간에 급락", body: "원유 선물이 짧은 시간에 크게 내렸다. 갖고 계신 CL 1계약은 평가손실이 커지며 증거금 여유가 줄었다. 여유가 바닥나면 추가 증거금이 필요할 수 있다. 달이는 여기까지만 알려 드리고, 판단은 고객님이 해요." },
 };
+// 화면에 보이는 종목 이름 (선물은 코드 병기)
+const DALI_NAME = sym => (DALI_SYMS[sym] && DALI_SYMS[sym].name) || sym;

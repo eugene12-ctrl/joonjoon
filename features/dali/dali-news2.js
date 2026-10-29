@@ -56,7 +56,7 @@
   function slide(n, i) {
     const me = mine(n.sym), c = chg(n.sym);
     const big = `${price(n.sym)}<small class="${tone(c)}">${pct(c)}</small>`;
-    const top = me.held ? `${n.sym} 소식, 보유 중` : `${n.sym} 소식`;
+    const top = me.held ? `${DALI_NAME(n.sym)} 소식, 보유 중` : `${DALI_NAME(n.sym)} 소식`;
     return `<article class="dali-n2-slide" data-i="${i}">
       ${art(n.sym)}
       <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${top}<span>${n.time}</span></p>
@@ -70,7 +70,7 @@
     const c = chg(n.sym), val = `<b>${price(n.sym)}</b><small class="${tone(c)}">${pct(c)}</small>`;
     return `<li><button type="button" class="dali-pro-row" data-n2-news="${n.id}">
       ${logo(n.sym)}
-      <span class="dali-pro-name"><b>${n.sym}<em>${n.time}</em></b><small>${n.why}</small></span>
+      <span class="dali-pro-name"><b>${DALI_NAME(n.sym)}<em>${n.time}</em></b><small>${n.why}</small></span>
       <span class="dali-pro-val">${val}</span>
     </button></li>`;
   }
@@ -100,11 +100,25 @@
     const ids = [...body.querySelectorAll("[data-news]")].map(b => ({ id: b.dataset.news, flag: !!b.querySelector(".dali-bang") }));
     if (!ids.length) return;
     body.innerHTML = html(ids);
-    const track = body.querySelector(".dali-n2-track"), dots = body.querySelectorAll(".dali-n2-dots i");
-    track.addEventListener("scroll", () => {
-      const i = Math.round(track.scrollLeft / track.clientWidth);
-      dots.forEach((d, k) => d.classList.toggle("on", k === i));
-    }, { passive: true });
+    const track = body.querySelector(".dali-n2-track"), dots = [...body.querySelectorAll(".dali-n2-dots i")], n = dots.length;
+    const at = () => Math.round(track.scrollLeft / track.clientWidth);
+    const go = (i, smooth = true) => track.scrollTo({ left: ((i % n) + n) % n * track.clientWidth, behavior: smooth ? "smooth" : "auto" });
+    track.addEventListener("scroll", () => { const i = at(); dots.forEach((d, k) => d.classList.toggle("on", k === i)); }, { passive: true });
+    // 손가락 스와이프 말고도 넘어가게: 4초마다 자동, 점 누르기, 마우스로 끌기. 손을 대면 자동은 잠시 멈춤
+    let timer = null, hold = 0;
+    const play = () => { clearInterval(timer); timer = setInterval(() => { if (!track.isConnected) return clearInterval(timer); if (Date.now() > hold) go(at() + 1); }, 4000); };
+    const pause = ms => { hold = Date.now() + ms; };
+    dots.forEach((d, k) => d.addEventListener("click", () => { pause(8000); go(k); }));
+    let drag = null;
+    track.addEventListener("pointerdown", e => { if (e.pointerType === "touch") { pause(8000); return; } drag = { x: e.clientX, left: track.scrollLeft, moved: false }; pause(8000); });
+    track.addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; track.scrollLeft = drag.left - dx; });
+    const end = e => { if (!drag) return; const dx = e.clientX - drag.x; const i = at(); drag = null; if (Math.abs(dx) > track.clientWidth / 5) go(dx < 0 ? Math.floor(track.scrollLeft / track.clientWidth) + 1 : Math.ceil(track.scrollLeft / track.clientWidth) - 1); else go(i); };
+    track.addEventListener("pointerup", end); track.addEventListener("pointercancel", end); track.addEventListener("pointerleave", end);
+    // 끌다가 놓은 게 버튼 위면 누른 걸로 치지 않음
+    track.addEventListener("click", e => { if (e.target.closest("button") && track.dataset.dragged) { e.stopPropagation(); e.preventDefault(); } delete track.dataset.dragged; }, true);
+    track.addEventListener("pointerup", e => { if (drag === null && Math.abs(e.clientX - (track._x0 || e.clientX)) > 4) track.dataset.dragged = "1"; }, true);
+    track.addEventListener("pointerdown", e => { track._x0 = e.clientX; }, true);
+    play();
   }
   new MutationObserver(repaint).observe(body, { childList: true });
   // 발표자 상자에서 시연 장면을 바꾸면 뉴스 탭 숫자도 다시

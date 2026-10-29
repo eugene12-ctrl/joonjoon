@@ -46,3 +46,8 @@
 .dali-n2 .dali-pro-val b { color: var(--d-ink, #191F28); }
 .dali-n2 .dali-pro-val small.up { color: var(--d-up, #C8202C); }
 .dali-n2 .dali-pro-val small.down { color: var(--d-down, #2F5BD3); }
+
+/* 마우스로 끌어 넘기기 */
+.dali-n2-track { cursor: grab; user-select: none; touch-action: pan-y; }
+.dali-n2-track:active { cursor: grabbing; }
+.dali-n2-dots i { cursor: pointer; padding: 6px 0; background-clip: content-box; box-sizing: content-box; }
