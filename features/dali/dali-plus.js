@@ -230,24 +230,34 @@
   }
   let holdTimer = null, held = false, hideTimer = null;
   const hidePeek = () => peek.classList.remove("show");
+  function showPeek() {
+    if (sheet.classList.contains("open")) window.dali.close();
+    peek.innerHTML = peekHTML();
+    peek.classList.add("show");
+    phone.querySelector(".dali-bubble")?.classList.remove("show");
+    fab.animate([{ transform: "scale(1)" }, { transform: "scale(.92)" }, { transform: "scale(1)" }], { duration: 260 });
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hidePeek, 3200);
+  }
   fab.addEventListener("pointerdown", () => {
     held = false;
     clearTimeout(holdTimer);
-    holdTimer = setTimeout(() => {
-      held = true;
-      peek.innerHTML = peekHTML();
-      peek.classList.add("show");
-      phone.querySelector(".dali-bubble")?.classList.remove("show");
-      fab.animate([{ transform: "scale(1)" }, { transform: "scale(.92)" }, { transform: "scale(1)" }], { duration: 260 });
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(hidePeek, 3200);
-    }, 450);
+    holdTimer = setTimeout(() => { held = true; showPeek(); }, 450);
   });
+  // 발표자용 버튼: 꾹 누르기를 화면 밖에서도 보여 줌
+  const demoAlert = document.querySelector(".dali-demo [data-demo=alert]");
+  if (demoAlert) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "3초 요약 (달이 꾹 누르기)";
+    b.addEventListener("click", showPeek);
+    demoAlert.after(b);
+  }
   ["pointerup", "pointerleave", "pointercancel"].forEach(t => fab.addEventListener(t, () => clearTimeout(holdTimer)));
   fab.addEventListener("click", e => { if (held) { held = false; e.stopImmediatePropagation(); } }, true);
   fab.addEventListener("contextmenu", e => e.preventDefault());
   peek.addEventListener("click", e => {
     if (e.target.closest("[data-peek=open]")) { hidePeek(); window.dali.open("news"); }
   });
-  sheet.addEventListener("transitionstart", hidePeek);
+  sheet.addEventListener("transitionstart", () => { if (sheet.classList.contains("open")) hidePeek(); });
 })();
