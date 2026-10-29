@@ -215,3 +215,19 @@
 }
 .phone .dali-intro-go { border-radius: 12px; padding: 15px; font-size: 16px; font-weight: 700; background: var(--d-brand2); }
 .phone .dali-intro-foot { text-align: center; color: var(--d-sub); font-size: 12.5px; }
+
+/* ---------- 새 달이 그림 (점토 해달): 얼굴은 버튼과 머리, 전신은 바다 ----------
+   옷장 아이템 자리는 새 전신 그림(머리가 오른쪽 위로 기울어짐)에 맞춤 */
+.dali-fab img { width: 50px; height: 50px; }
+/* 머리 윤곽을 재서 맞춤: 머리는 오른쪽으로 12° 기울어 있음 */
+.dali-wear { transform-origin: 50% 50%; }
+.dali-wear.glasses { display: none; } /* 안경은 옷장에서 뺌. 예전에 저장된 상태로 남아 있어도 안 보이게 */
+.dali-wear.ribbon { left: 28%; top: -4%; width: 23%; rotate: -14deg; }
+.dali-wear.hibiscus { left: 70%; top: 1%; width: 21%; rotate: 16deg; }
+.dali-wear.graduation_cap { left: 41%; top: -11%; width: 34%; rotate: 12deg; }
+.phone .dali-intro-ribbon { display: none; }
+.dali-next .dali-bar i { background: var(--d-brand2); }
+.dali-next small { color: var(--d-sub); }
+.dali-next b { color: var(--d-ink); }
+.dali-next em { color: var(--d-sub); }
+.dali-closet { grid-template-columns: repeat(3, 1fr); }
