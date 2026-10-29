@@ -319,7 +319,33 @@
         ${DaliChart.day(n.sym, fmt)}
         <div class="dali-ctx"><p><em>왜?</em> ${n.why}</p></div>
         <article class="dali-article"><h3>${txt.title}</h3><p class="dali-hint">${n.time}</p><p>${txt.body}</p></article>
+        ${feedHTML(n)}
       </div>`;
+  }
+
+  /* --- 종목 화면 아래 뉴스, 공시 탭 (날짜 | 제목과 한 줄) ---
+     뉴스는 달이 가상 뉴스, 공시는 실제 DART 공시(dali-feed.js). 공시는 종목코드가 있는 주식만 */
+  function feedHTML(n) {
+    const code = DALI_SYMS[n.sym].code;
+    const sub = code && state.page.sub === "disc" ? "disc" : "news";
+    const tabs = code ? [["news", "뉴스"], ["disc", "공시"]] : [["news", "뉴스"]];
+    return `
+      <nav class="dali-subtabs">${tabs.map(([k, l]) => `<button type="button" data-act="sub" data-v="${k}" class="${sub === k ? "on" : ""}">${l}</button>`).join("")}</nav>
+      ${sub === "disc" ? discList(code) : symNewsList(n)}`;
+  }
+  function symNewsList(n) {
+    return `<div class="dali-feed">${state.news.filter(x => x.sym === n.sym).map(x => `
+      <button type="button" class="dali-feed-row${x.id === n.id ? " on" : ""}" data-news="${x.id}"><span class="dali-feed-date">${x.time}</span>
+        <span><b>${DALI_NEWS_TEXT[x.id].title}</b><small>${x.why}</small></span></button>`).join("")}</div>`;
+  }
+  function discList(code) {
+    const c = DaliFeed.get(code, () => { if (state.page) render(); });
+    if (!c.list) return `<p class="dali-hint center dali-feed-empty">${c.loading ? "공시를 불러오는 중이에요." : "지금은 공시를 불러오지 못했어요."}</p>`;
+    if (!c.list.length) return `<p class="dali-hint center dali-feed-empty">최근 1년 동안 올라온 공시가 없어요.</p>`;
+    return `<div class="dali-feed">${c.list.map(d => `
+      <a class="dali-feed-row" href="${d.url}" target="_blank" rel="noopener"><span class="dali-feed-date">${d.date}</span>
+        <span><b>${d.title}</b><small>${d.sub}</small></span></a>`).join("")}</div>
+      <p class="dali-hint">출처: 금융감독원 전자공시(DART). 누르면 원문이 열려요.</p>`;
   }
 
   /* --- MTS 종목 주문 화면 (달이 밖, 앱의 주문 화면으로 이동) --- */
@@ -444,7 +470,12 @@
     if (state.tab === "manage") playFx();
     else if (state.fx && !state.fx.grew) state.fx = null;
     if (state.page) {
+      // 같은 화면을 다시 그릴 때(뉴스, 공시 탭 전환, 공시 도착)는 스크롤 위치를 지킴
+      const same = !pageEl.hidden && pageEl.dataset.id === state.page.id;
+      const y = same ? pageEl.querySelector(".dali-page-body").scrollTop : 0;
       pageEl.innerHTML = newsPage(state.page.id);
+      pageEl.dataset.id = state.page.id;
+      pageEl.querySelector(".dali-page-body").scrollTop = y;
       pageEl.hidden = false;
     } else pageEl.hidden = true;
     paintAlert();
@@ -470,6 +501,7 @@
     const act = b.dataset.act, id = b.dataset.id;
     const t = id && state.trades.find(x => x.id === id);
     if (act === "back") { state.page = null; render(); }
+    else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
     else if (act === "edit") { state.editing = id; render(); sheet.querySelector(".dali-input")?.focus(); }
     else if (act === "cancel") { state.editing = null; render(); }

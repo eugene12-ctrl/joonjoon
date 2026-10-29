@@ -8,10 +8,11 @@ const DALI_APPS = {
 
 // 관심종목(watch)과 보유(hold). 관심종목에 넣으면 달이가 자동으로 추적
 const DALI_SYMS = {
-  "삼성전자": { app: "stock", kind: "hold", price: 242000, chg: 9.0 },
-  "SK하이닉스": { app: "stock", kind: "watch", price: 1487000, chg: 10.9 },
-  "현대차": { app: "stock", kind: "hold", price: 297000, chg: 1.9 },
-  "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8 },
+  // code: 종목 화면 공시 탭이 실제 공시(DART)를 찾을 때 쓰는 6자리 종목코드
+  "삼성전자": { app: "stock", kind: "hold", price: 242000, chg: 9.0, code: "005930" },
+  "SK하이닉스": { app: "stock", kind: "watch", price: 1487000, chg: 10.9, code: "000660" },
+  "현대차": { app: "stock", kind: "hold", price: 297000, chg: 1.9, code: "005380" },
+  "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8, code: "035420" },
   // 유진투자선물 앱(futures.html): CME 해외선물. 주식은 증권 앱에서 따라가므로 여기선 선물만.
   // 이름은 futures.html FUTS의 ko와 같게 (종목을 누르면 그 선물 화면으로 감). 마이크로 계약은 원 계약 이름으로 묶음
   "크루드 오일": { app: "fut", kind: "hold", price: 61.84, chg: -1.12, dec: 2 },

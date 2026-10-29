@@ -300,6 +300,18 @@
 .dali-article { background: #fff; border-radius: 14px; padding: 14px; font-size: 14px; line-height: 1.7; word-break: keep-all; }
 .dali-article h3 { margin: 0 0 4px; font-size: 15.5px; line-height: 1.45; }
 .dali-article p { margin: 6px 0 0; }
+/* 종목 화면 아래 뉴스, 공시 탭: 날짜 | 굵은 제목과 회색 한 줄 */
+.dali-subtabs { display: flex; gap: 18px; border-bottom: 1px solid #EDE3DA; margin-top: 4px; }
+.dali-subtabs button { padding: 8px 2px; font-size: 14px; font-weight: 700; color: #8A7670; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.dali-subtabs button.on { color: #2A1416; border-bottom-color: #C8202C; }
+.dali-feed { display: flex; flex-direction: column; }
+.dali-feed-row { display: grid; grid-template-columns: 50px 1fr; gap: 10px; width: 100%; padding: 11px 2px; text-align: left; color: #2A1416; text-decoration: none; border-bottom: 1px solid #F1E8E0; }
+.dali-feed-row:last-child { border-bottom: 0; }
+.dali-feed-row.on b { color: #C8202C; }
+.dali-feed-date { font-size: 12px; color: #8A7670; padding-top: 2px; }
+.dali-feed-row b { display: block; font-size: 14px; line-height: 1.4; word-break: keep-all; }
+.dali-feed-row small { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.45; color: #8A7670; word-break: keep-all; }
+.dali-feed-empty { padding: 18px 0; }
 
 /* 매매일지 카드 */
 .dali-sum { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; background: #fff; border-radius: 14px; padding: 12px 14px; }
