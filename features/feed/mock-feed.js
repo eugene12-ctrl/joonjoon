@@ -8,7 +8,7 @@ const MOCK_DISCLOSURES = [
 ];
 
 const MOCK_NEWS = [
-  { link: "#", title: "증시, 장 초반 혼조세로 출발", description: "주요 지수가 오르내림을 반복하며 방향을 탐색하는 모습입니다. (가상 뉴스)", pub_date: "2026-10-29T00:30:00Z", keyword: "증시" },
-  { link: "#", title: "코스닥, 거래대금 평소 수준 유지", description: "뚜렷한 쏠림 없이 업종별로 엇갈린 흐름을 보였습니다. (가상 뉴스)", pub_date: "2026-10-29T00:10:00Z", keyword: "코스닥" },
-  { link: "#", title: "코스피, 외부 변수 주시하며 관망세", description: "투자자들이 다음 주 일정을 앞두고 신중한 모습입니다. (가상 뉴스)", pub_date: "2026-10-28T23:50:00Z", keyword: "코스피" }
+  { link: "#", title: "증시, 장 초반 혼조세로 출발", description: "주요 지수가 오르내림을 반복하며 방향을 탐색하는 모습입니다. (가상 뉴스)", pub_date: "2026-10-29T00:30:00Z", keyword: "시장", source: "toss", author: "가상일보" },
+  { link: "#", title: "코스닥, 거래대금 평소 수준 유지", description: "뚜렷한 쏠림 없이 업종별로 엇갈린 흐름을 보였습니다. (가상 뉴스)", pub_date: "2026-10-29T00:10:00Z", keyword: "시장", source: "toss", author: "샘플경제" },
+  { link: "#", title: "코스피, 외부 변수 주시하며 관망세", description: "투자자들이 다음 주 일정을 앞두고 신중한 모습입니다. (가상 뉴스)", pub_date: "2026-10-28T23:50:00Z", keyword: "시장", source: "toss", author: "예시뉴스" }
 ];
