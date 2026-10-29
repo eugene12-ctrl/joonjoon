@@ -21,6 +21,8 @@
   content: ""; position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; height: 56px; pointer-events: none;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .55) 60%, #fff 100%);
 }
+/* 카드에 쌓임 맥락: 안쪽 z-index(칩 5, 다음 선물 줄 7)가 z-index 2인 .dali-page(달이 키우기 등)를 뚫고 올라오지 않게 */
+.phone .dali-sheet .dali-card.grow.compact { position: relative; isolation: isolate; z-index: 0; }
 /* 다음 선물 줄을 바다 끝에 겹치고, 조개 아이콘은 원형 흰 배경으로 경계선에 걸침 */
 .phone .dali-sheet .dali-next { position: relative; z-index: 7; margin-top: -24px; padding: 0 18px 18px; align-items: flex-start; }
 .phone .dali-sheet .dali-next > img {
