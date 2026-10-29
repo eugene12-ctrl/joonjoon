@@ -65,3 +65,4 @@
 .phone .dali-sheet .dali-jmore .dali-mn-avg b { font-weight: 700; color: #191F28; }
 .phone .dali-sheet .dali-mn-hot i { white-space: nowrap; }
 .phone .dali-sheet .dali-jmore p.dali-mn-hot, .phone .dali-sheet .dali-jmore button.dali-mn-hot { display: flex; gap: 8px; margin: 10px 0 0; padding: 10px 0 0; }
+.phone .dali-sheet .dali-mn-hot b { word-break: keep-all; }

@@ -101,7 +101,7 @@ const DaliChart = (function () {
       <path d="${p.d}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>
       ${marks}
       <circle cx="${ex}" cy="${ey}" r="5" fill="#fff" stroke="${c}" stroke-width="2.5"/>
-      <text x="${ex - 10}" y="${ey < H / 2 ? ey + 4 : ey - 9}" text-anchor="end" class="dali-axis">지금 ${pct(t.pct)}</text>
+      <text x="${ex - 10}" y="${ey < H / 2 ? ey + 4 : ey - 9}" text-anchor="end" class="dali-axis">평단 대비 ${pct(t.pct)}</text>
     </svg>`;
   }
   function trade(t) {
