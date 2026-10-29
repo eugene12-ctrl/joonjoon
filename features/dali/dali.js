@@ -71,7 +71,7 @@
     <nav class="dali-fut-tabs"><button class="on" type="button">해외선물</button><button type="button">국내선물</button><button type="button">야간</button><button type="button">옵션</button></nav>
     <ul class="dali-fut-list">
       ${Object.keys(DALI_SYMS).filter(s => appOf(s) === "fut").map(s => `
-        <li><button type="button" data-sym="${s}"><span><b>${s}</b><small>${kindLabel(s)}</small></span>${quote(s)}</button></li>`).join("")}
+        <li><button type="button" data-sym="${s}"><span><b>${DALI_NAME(s)}</b><small>${kindLabel(s)}</small></span>${quote(s)}</button></li>`).join("")}
     </ul>
     <p class="dali-fut-note">시세는 10월 28일 수준을 참고한 시연용 숫자입니다.</p>`;
 
@@ -161,7 +161,7 @@
     const flag = isFlag(n);
     return `
       <button type="button" class="dali-news${flag && !n.seen ? " unseen" : ""}" data-news="${n.id}"><span class="dali-news-main">
-        <span class="dali-news-top">${flag ? `<span class="dali-bang">!</span>` : ""}<b>${n.sym}</b>${quote(n.sym)}<span class="dali-time">${n.time}</span></span>
+        <span class="dali-news-top">${flag ? `<span class="dali-bang">!</span>` : ""}<b>${DALI_NAME(n.sym)}</b>${quote(n.sym)}<span class="dali-time">${n.time}</span></span>
         <span class="dali-why"><em>AI 요약</em> ${n.why}</span></span>${DaliChart.spark(n.sym)}
       </button>`;
   }
@@ -170,7 +170,7 @@
     const sorted = [...list.filter(isFlag), ...list.filter(n => !isFlag(n))];
     const tracked = Object.keys(DALI_SYMS).filter(s => appOf(s) === state.app);
     return `
-      <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${s}</i>`).join("")}</div>` +
+      <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${DALI_NAME(s)}</i>`).join("")}</div>` +
       sorted.map(newsRow).join("") +
       `<p class="dali-hint center">${state.app === "fut" ? "관심과 보유 계약을 달이가 알아서 따라가요. 느낌표는 큰 변동, 만기, 증거금일 때만." : "관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만."}</p>`;
   }
@@ -238,7 +238,7 @@
       <li class="dali-jrow${open ? " open" : ""}${t.live ? " new" : ""}">
         <button type="button" class="dali-jline" data-act="trade" data-id="${t.id}" aria-expanded="${open}">
           <i class="dali-jlogo${DALI_SYMS[t.sym].icon ? " icon" : ""}">${t.sym[0]}${symImg(t.sym)}</i>
-          <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
+          <span class="dali-jname"><b>${DALI_NAME(t.sym)}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
           <span class="dali-jval ${tone(val)}"><b>${won(val)}</b><small>${pct(valPct)}</small></span>
         </button>
         ${open ? (() => { const mk = market(t);
@@ -475,11 +475,11 @@
   function readBand(sym, time, why) {
     const s = DALI_SYMS[sym], R = typeof DaliRules !== "undefined" ? DaliRules : null, sc = window.daliPro ? window.daliPro.sc : "morning";
     const stock = s.app === "stock" && R, now = stock ? R.nowPrice(sym, sc) : s.price, chg = stock ? R.todayPct(sym, sc) : s.chg;
-    let top = `${sym} 관심`, big = pct(chg);
+    let top = `${DALI_NAME(sym)} 관심`, big = pct(chg);
     const p = s.app === "stock" && typeof DALI_CUSTOMER !== "undefined" ? DALI_CUSTOMER.positions.find(x => x.sym === sym) : null;
     const t = s.app === "fut" && typeof DALI_TRADES !== "undefined" ? DALI_TRADES.find(x => x.sym === sym && !x.sell) : null;
     if (p) { top = `${sym} ${p.qty}주`; big = won(p.qty * now * chg / (100 + chg), "stock"); }
-    else if (t) { top = `${sym} ${t.qty.replace(/^\S+\s/, "")}`; big = won(t.pnl, "fut"); }
+    else if (t) { top = `${DALI_NAME(sym)} ${t.qty.replace(/^\S+\s/, "")}`; big = won(t.pnl, "fut"); }
     return `<div class="dali-pro dali-read"><section class="dali-pro-act dali-read-act">
         <p class="dali-pro-act-top"><i class="dali-pro-logo">${sym[0]}${symImg(sym)}</i>${top}<span>${time}</span></p>
         <p class="dali-pro-act-big">${big}</p>
@@ -487,7 +487,7 @@
       </section></div>`;
   }
   const readHead = sym => `<header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button>
-        <button type="button" class="dali-symlink" data-act="order" data-sym="${sym}">${sym} 주문<span class="dali-go">›</span></button></header>`;
+        <button type="button" class="dali-symlink" data-act="order" data-sym="${sym}">${DALI_NAME(sym)} 주문<span class="dali-go">›</span></button></header>`;
 
   /* --- 뉴스 읽기 화면 (오른쪽 위 "주문"을 누르면 주문창) --- */
   function newsPage(id) {

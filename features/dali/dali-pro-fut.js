@@ -108,7 +108,7 @@
     const n = newsOf(sym);
     return `<li><button type="button" class="dali-pro-row" ${n ? `data-pro-news="${n.id}"` : ""}>
       <i class="dali-pro-logo icon">${sym[0]}${DALI_SYMS[sym].icon ? `<img src="${BASE}../futures/img/${DALI_SYMS[sym].icon}.png" alt="" onerror="this.remove()">` : ""}</i>
-      <span class="dali-pro-name"><b>${sym}</b><small>${sub}</small></span>
+      <span class="dali-pro-name"><b>${DALI_NAME(sym)}</b><small>${sub}</small></span>
       <span class="dali-pro-val"><b>${val}</b><small class="${tone(chg)}">${pct(chg)}</small></span>
     </button></li>`;
   }
