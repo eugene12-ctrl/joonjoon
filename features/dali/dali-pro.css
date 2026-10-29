@@ -231,3 +231,73 @@
 /* 작은 표시: 꽉 찬 원 대신 청록 테두리 */
 .dali-pro-more button { color: var(--d-brand2); }
 .dali-pro-unfold { border: 1.5px solid var(--d-brand2); background: #fff; color: var(--d-brand2); }
+
+/* ===== 오늘 탭: 토스증권 "내 종목" 형태 =====
+   요약 칸 없이 목록이 전부. 달이가 본 것은 종목 줄 안 한 줄(해달 얼굴 + 글) */
+.dali-pro-list2 { padding-bottom: 8px; }
+.dali-pro-head { padding: 22px 20px 14px; }
+.dali-pro-head p { margin: 0 0 4px; font-size: 14px; color: var(--d-sub); font-weight: 500; }
+.dali-pro-head b { display: block; font-size: 28px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.dali-pro-head small { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dali-pro-sec { margin: 0; padding: 22px 20px 4px; font-size: 15px; font-weight: 700; border-top: 8px solid var(--d-band); }
+
+.dali-pro-rows { list-style: none; margin: 0; padding: 0 0 6px; }
+.dali-pro-row {
+  display: grid; grid-template-columns: 40px 1fr auto; column-gap: 12px; row-gap: 6px; align-items: center;
+  width: 100%; padding: 12px 20px; text-align: left; background: none; border-radius: 0;
+}
+.dali-pro-row:active { background: var(--d-band); transform: none; }
+.dali-pro-logo {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--d-band); color: var(--d-ink2); font-style: normal; font-weight: 700; font-size: 15px;
+}
+.dali-pro-row.cash .dali-pro-logo { color: var(--d-brand2); }
+.dali-pro-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dali-pro-name b { font-size: 16px; font-weight: 600; letter-spacing: -.02em; color: var(--d-ink); }
+.dali-pro-name small { font-size: 13px; color: var(--d-sub); }
+.dali-pro-val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-variant-numeric: tabular-nums; }
+.dali-pro-val b { font-size: 16px; font-weight: 600; color: var(--d-ink); }
+.dali-pro-val small { font-size: 13px; font-weight: 600; }
+/* 달이 한 줄: 이름 아래 열에 맞춰 */
+.dali-pro-note2 {
+  grid-column: 2 / -1; display: flex; align-items: center; gap: 6px;
+  font-size: 13px; line-height: 1.4; color: var(--d-ink2); word-break: keep-all;
+}
+.dali-pro-note2 img { width: 18px; height: 18px; flex: 0 0 auto; }
+.dali-pro-note2 b { font-weight: 600; }
+
+.dali-pro-list2 .dali-pro-unfold {
+  display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0;
+  padding: 18px 20px; border: 0; border-top: 8px solid var(--d-band); border-radius: 0;
+  background: none; color: var(--d-ink); font-size: 15px; font-weight: 600;
+}
+.dali-pro-list2 .dali-pro-unfold span { color: var(--d-sub); font-size: 18px; }
+
+/* 달이가 먼저 말함: 해달 얼굴 + 말풍선. 내 데이터를 읽는 단계가 잠깐 보이고, 문장이 써진 뒤 종목 줄 한 줄이 하나씩 켜짐 */
+.dali-pro-say { display: flex; align-items: flex-start; gap: 10px; padding: 18px 16px 4px 16px; }
+.dali-pro-say > img { width: 40px; height: 40px; flex: 0 0 auto; border-radius: 50%; background: var(--d-brand-tint); }
+.dali-pro-bubble { flex: 1; min-width: 0; }
+.dali-pro-bubble.dali-ai { padding: 12px 14px; border-radius: 4px 18px 18px 18px; background: var(--d-band); gap: 6px; }
+.dali-pro-bubble .dali-ai-head { display: none; }
+.dali-pro-bubble .dali-ai-text { font-size: 15px; line-height: 1.6; font-weight: 500; color: var(--d-ink); }
+.dali-pro-bubble .dali-ai-steps { font-size: 13px; }
+.dali-pro-bubble .dali-ai-basis { border-top: 0; padding-top: 0; font-size: 11.5px; }
+.dali-pro-head { padding-top: 14px; }
+/* 말풍선을 다 쓰기 전엔 종목 줄 한 줄이 숨어 있다가 차례로 켜짐 */
+.dali-pro-list2 .dali-pro-note2 { opacity: 0; transform: translateY(-3px); transition: opacity .35s ease, transform .35s ease; }
+.dali-pro-list2.ready .dali-pro-note2 { opacity: 1; transform: none; }
+.dali-pro-list2.ready .dali-pro-rows li:nth-child(2) .dali-pro-note2 { transition-delay: .15s; }
+.dali-pro-list2.ready .dali-pro-rows li:nth-child(3) .dali-pro-note2 { transition-delay: .3s; }
+.dali-pro-list2.ready .dali-pro-rows li:nth-child(4) .dali-pro-note2 { transition-delay: .45s; }
+@media (prefers-reduced-motion: reduce) { .dali-pro-list2 .dali-pro-note2 { opacity: 1; transform: none; transition: none; } }
+
+/* 지금 할 수 있는 행동 하나: 맨 위 카드. 버튼은 그 일을 하는 화면으로 바로 */
+.dali-pro-act { margin: 16px 16px 4px; padding: 18px 18px 16px; border-radius: 18px; background: var(--d-band); }
+.dali-pro-act-top { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--d-brand2); }
+.dali-pro-act-top img { width: 22px; height: 22px; border-radius: 50%; }
+.dali-pro-act h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.35; letter-spacing: -.02em; word-break: keep-all; }
+.dali-pro-act-sub { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--d-ink2); word-break: keep-all; }
+.dali-pro-act-btns { display: flex; gap: 8px; margin-top: 16px; }
+.dali-pro-act-btns button { flex: 1; padding: 13px 0; border-radius: 12px; background: var(--d-brand2); color: #fff; font-size: 15px; font-weight: 700; }
+.dali-pro-act-btns button.ghost { background: #fff; color: var(--d-ink); }
+.dali-pro-act + .dali-pro-head { padding-top: 22px; }

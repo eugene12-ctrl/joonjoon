@@ -6,7 +6,10 @@ const DaliRules = (function () {
   const price = sym => DALI_SYMS[sym].price;
   const prevClose = sym => Math.round(price(sym) / (1 + DALI_SYMS[sym].chg / 100));
   // 시연 시각의 현재가. 아침은 어제 종가, 장중은 가상 등락, 마감은 어제 종가 그대로(10월 28일 종가를 오늘로 씀)
-  const nowPrice = (sym, sc) => sc === "morning" || sc === "month" ? price(sym) : Math.round(prevClose(sym) * (1 + M[sc].pct[sym] / 100));
+  // 월말(10월 31일)은 10월 28일 종가에서 그날 등락만큼 움직인 값. 그래야 합계와 "오늘" 변화가 맞음
+  const nowPrice = (sym, sc) => sc === "morning" ? price(sym)
+    : sc === "month" ? Math.round(price(sym) * (1 + M.month.pct[sym] / 100))
+    : Math.round(prevClose(sym) * (1 + M[sc].pct[sym] / 100));
   const todayPct = (sym, sc) => sc === "morning" ? DALI_SYMS[sym].chg : M[sc].pct[sym];
 
   const fmtWon = n => `${n < 0 ? "-" : "+"}${Math.abs(Math.round(n)).toLocaleString("ko-KR")}원`;
@@ -57,48 +60,50 @@ const DaliRules = (function () {
   const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
   const sgn = n => (n > 0 ? "+" : "") + n.toFixed(1) + "%";
   const dayLabel = sc => (sc === "morning" ? "어제" : "오늘");
+  // 맨 위 줄은 만 원 단위로 짧게 (카드 안 상세만 원 단위)
+  const man = n => `${n < 0 ? "-" : n > 0 ? "+" : ""}${Math.round(Math.abs(n) / 10000).toLocaleString("ko-KR")}만 원`;
   function diff(sc) {
     const m = money(sc), h = habits(), ss = m.pos.find(p => p.sym === "삼성전자");
-    const share = Math.round(m.topShare), pend = C.pending, gap = nowPrice(pend.sym, sc) - pend.price;
-    const lines = [], todo = [];
-    let noTodo = "";
+    const pend = C.pending, gap = nowPrice(pend.sym, sc) - pend.price;
+    const L = (k, hd, t) => ({ k, h: hd, t });
+    // 한 숫자는 한 곳에만: 줄 제목에 쓴 숫자는 본문에 다시 안 쓰고, 맨 위에 쓴 것은 아래 카드에서 뺀다 (cards, skipCal)
+    let lines = [], todo = [], noTodo = "", cards = [], skipCal = [];
     if (sc === "morning") {
-      lines.push({ k: "night", t: `밤사이 미국 반도체 대형주가 올라 마감했고, 삼성전자는 어제 ${sgn(ss.pct)}로 끝나 내 ${ss.qty}주가 ${fmtWon(ss.today)} 늘었어요` });
-      lines.push({ k: "order", t: `어제 저녁 걸어 둔 ${pend.sym} ${pend.qty}주 ${won(pend.price)} 매수는 아직 체결 전이라 오늘 시가에 다시 볼게요` });
-      lines.push({ k: "event", t: `내일은 삼성전자 실적 발표 예정일. 지난 4번 실적일 평균 변동이 ±6%인데 이 종목이 내 돈의 ${share}%를 차지해요` });
-      lines.push({ k: "cash", t: `현금 ${won(C.cash)}은 ${C.idleCashDays}일째 그대로고, 이번 달 배당금 ${won(C.dividend)}도 함께 쉬는 중` });
-      noTodo = "현대차 주문은 걸려 있고 실적 발표는 내일이라, 오늘 아침은 보기만 해도 괜찮아요";
+      lines = [
+        L("night", "밤사이 미국 반도체가 올랐어요", `어제 ${sgn(ss.pct)}로 끝난 삼성전자, 내 ${ss.qty}주는 ${man(ss.today)}`),
+        L("order", `${pend.sym} ${pend.qty}주 매수는 대기 중`, `${won(pend.price)}에 걸어 둔 주문이라 오늘 시가에 다시 볼게요`),
+        L("event", "내일 삼성전자 실적 발표", "지난 4번 실적일엔 평균 ±6% 움직였어요"),
+      ];
+      noTodo = "오늘 아침은 보기만 해도 괜찮아요";
+      cards = ["money", "calendar", "costs", "habits"]; skipCal = ["삼성전자"];
     } else if (sc === "intraday") {
-      lines.push({ k: "shock", t: `장 시작 뒤 4시간 동안 꾸준히 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}예요` });
-      lines.push({ k: "habit", t: `지난 3개월 동안 손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올라 있었고, 평균으로는 ${sgn(h.quick.laterAvg)}` });
-      lines.push({ k: "watch", t: `관심종목 SK하이닉스는 ${sgn(todayPct("SK하이닉스", sc))}. 급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}로 끝난 자리예요` });
-      lines.push({ k: "order", t: `${pend.sym} ${pend.qty}주 매수 주문은 ${won(pend.price)}에 걸려 있고, 지금 가격이 지정가보다 ${won(gap)} 위라 아직 체결 전` });
+      lines = [
+        L("shock", `삼성전자 ${sgn(ss.pct)}, 내 돈 ${man(ss.today)}`, `장 시작 뒤 4시간 동안 꾸준히 내렸고, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
+        L("habit", "급하게 판 날의 기록", `손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올라 있었어요`),
+        L("watch", `SK하이닉스 ${sgn(todayPct("SK하이닉스", sc))}`, `관심종목이에요. 급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${sgn(h.spike.avg)}로 끝났고요`),
+      ];
       noTodo = "팔거나 살 이유가 새로 생긴 건 아니라서, 지금은 지켜보기만 해도 돼요";
+      cards = ["money", "calendar", "costs"]; // 습관은 맨 위 두 줄이 이미 말함
     } else if (sc === "close") {
-      lines.push({ k: "close", t: `내 ${ss.qty}주가 오늘 ${fmtWon(ss.today)}, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}` });
-      lines.push({ k: "fill", t: `${pend.sym} ${pend.qty}주는 장중에 ${won(pend.price)}에 체결됐고, 그때 상황은 매매일지에 적어 뒀어요` });
-      lines.push({ k: "conc", t: `이제 삼성전자가 내 돈의 ${share}%. 이 종목이 5% 내리면 내 돈 전체가 ${(share * 0.05).toFixed(1)}% 줄어요` });
-      lines.push({ k: "event", t: "내일 실적 발표를 앞둔 종목이고, 지난 4번 중 2번은 발표 전날 크게 올랐어요" });
-      noTodo = "오늘 안에 할 건 없고, 내일 아침 실적 발표 전에 다시 알려 드릴게요";
+      lines = [
+        L("close", `삼성전자 ${sgn(ss.pct)} 마감`, `내 ${ss.qty}주가 오늘 ${man(ss.today)}, 내 돈 전체로 보면 ${sgn(ss.today / m.total * 100)}`),
+        L("fill", `${pend.sym} ${pend.qty}주 체결`, `장중 ${won(pend.price)}에 체결됐고, 그때 상황은 매매일지에 적어 뒀어요`),
+        L("event", "내일 삼성전자 실적 발표", "지난 4번 중 2번은 발표 전날 크게 올랐어요"),
+      ];
+      noTodo = "오늘 안에 할 건 없어요. 내일 아침에 다시 알려 드릴게요";
+      cards = ["money", "calendar", "costs", "habits"]; skipCal = ["삼성전자"];
     } else {
-      lines.push({ k: "month", t: `10월에는 ${C.month.trades}번 매매해서 ${fmtWon(C.month.realized)}을 실현했어요` });
-      lines.push({ k: "cost", t: `수수료와 세금으로 ${won(C.month.fee + C.month.tax)}이 나가, 실현 수익의 ${Math.round((C.month.fee + C.month.tax) / C.month.realized * 100)}%가 비용이었고요` });
-      lines.push({ k: "habit", t: "이번 달 습관 거울과 달이가 지켜준 돈은 아래에 모아 뒀어요" });
+      const cost = C.month.fee + C.month.tax;
+      lines = [
+        L("month", `10월 실현 ${man(C.month.realized)}`, `한 달 동안 ${C.month.trades}번 매매한 결과예요`),
+        L("cost", `수수료와 세금 ${man(cost).replace("+", "")}`, `실현 수익의 ${Math.round(cost / C.month.realized * 100)}%가 비용으로 나갔어요`),
+      ];
       noTodo = "월말 정리를 읽어 보기만 하면 돼요";
-      // 네 장면 중 할 일이 있는 장면 하나: 쉬는 현금 (한 번 누르면 끝나는 일만 할 일로 둠)
-      todo.push({ t: `현금 ${won(C.cash)}이 ${C.idleCashDays}일째 이자 없이 그대로예요` });
+      // 네 장면 중 할 일이 있는 장면 하나: 쉬는 현금
+      todo.push({ t: `현금 ${man(C.cash).replace("+", "")}이 ${C.idleCashDays}일째 이자 없이 그대로예요` });
+      cards = ["review", "habits", "costs", "money"];
     }
-    // 줄마다 굵은 제목 하나 (첫 화면엔 제목만 크게, 문장은 그 아래 작게)
-    const H = {
-      night: "밤사이 미국 반도체가 올랐어요", order: `${pend.sym} 매수는 아직 대기 중`, event: "내일 삼성전자 실적 발표",
-      cash: `현금 ${Math.round(C.cash / 10000)}만 원이 ${C.idleCashDays}일째 쉬는 중`,
-      shock: `삼성전자 ${sgn(ss.pct)}, 내 돈 ${ss.today < 0 ? "-" : "+"}${Math.round(Math.abs(ss.today) / 10000)}만 원`, habit: "급하게 판 날의 기록", watch: `SK하이닉스 ${sgn(todayPct("SK하이닉스", sc))}`,
-      close: `삼성전자 ${sgn(ss.pct)} 마감`, fill: `${pend.sym} ${pend.qty}주 체결`, conc: `삼성전자가 내 돈의 ${share}%`,
-      month: `10월 실현 ${fmtWon(C.month.realized)}`, cost: `비용 ${won(C.month.fee + C.month.tax)}`,
-    };
-    if (sc === "month") H.habit = "이번 달 정리";
-    lines.forEach(l => { l.h = H[l.k] || ""; });
-    return { lines, todo, noTodo, since: C.lastSeen[sc], hours: C.lastSeenHours[sc] };
+    return { lines, todo, noTodo, cards, skipCal, since: C.lastSeen[sc], hours: C.lastSeenHours[sc] };
   }
 
   /* --- 내 시간 띠: 마지막으로 닫은 때부터 지금까지, 나에게 영향 준 선 하나와 달이가 본 일 ---

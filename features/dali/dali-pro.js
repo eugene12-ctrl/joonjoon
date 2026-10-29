@@ -44,53 +44,98 @@
   const FACES = [];
   const face = sc => (FACES.includes(sc) ? `${BASE}img/face-${sc}.png` : `${BASE}dali-face.png`);
 
-  /* 내 시간 띠: 마지막으로 닫은 때부터 지금까지. 선은 나에게 영향 준 것 하나, 점은 달이가 본 일, 끝에 해달 */
-  function strip() {
-    const t = R.timeline(pro.sc), H = 100;
-    if (t.dots) {
-      const max = Math.max(...t.dots.map(d => Math.abs(d.y)));
-      const y = v => 56 - v / max * 34;
-      return `<div class="dali-pro-strip dots" style="--n:${t.dots.length}">
-        <i class="dali-pro-zero" style="top:56%"></i>
-        ${t.dots.map((d, i) => `<i class="dali-pro-dot ${d.y >= 0 ? "gain" : "loss"} ${d.spike ? "spike" : ""}" style="left:${(d.x * 86).toFixed(1)}%;top:${y(d.y).toFixed(1)}%;--i:${i}"></i>`).join("")}
-        <img class="dali-pro-face" src="${face(pro.sc)}" alt="" style="left:100%;top:56%">
-        <span class="dali-pro-from">${t.from}</span><span class="dali-pro-to">${t.to}</span>
-        <span class="dali-pro-what">${t.what}<em>테두리 점은 급등한 날 산 것</em></span>
-      </div>`;
+  /* ---------- 첫 화면: 토스증권 "내 종목"처럼 목록이 전부 ----------
+     따로 요약 화면을 두지 않는다. 달이가 본 것은 그 종목 줄 안에 해달 얼굴과 한 줄로 붙는다.
+     시각(아침, 장중, 마감, 월말)에 따라 가격과 한 줄이 바뀐다. 줄을 누르면 그 종목 화면(주문까지 한 번)으로 */
+  const FACE_S = `${BASE}dali-face.png`;
+  const short = t => t.replace(/s*(.*?)/g, "");
+  // 종목 하나에 달이가 붙일 한 줄. 같은 줄에 이미 보이는 가격과 등락은 다시 말하지 않고,
+  // 이 장면에서 고객이 몰랐을 것만: 내 돈에서의 몫, 걸어 둔 주문, 다가오는 일정, 내 지난 기록
+  const man = n => `${n < 0 ? "-" : "+"}${Math.round(Math.abs(n) / 10000).toLocaleString("ko-KR")}만 원`;
+  function noteFor(sym) {
+    const sc = pro.sc, m = R.money(sc), h = R.habits(), p = m.pos.find(x => x.sym === sym);
+    const share = p ? Math.round(p.value / m.total * 100) : 0;
+    const ev = M.calendar.find(e => e.sym === sym);
+    const when = ev && (ev.date === "10월 30일" ? (sc === "month" ? "" : "내일") : ev.date.replace("월 ", "/").replace("일", ""));
+    if (sym === C.pending.sym) {
+      if (sc === "close") return `${C.pending.qty}주 더 체결됐어요. 매매일지에 적어 뒀어요`;
+      if (sc !== "month") return `${C.pending.qty}주 ${won(C.pending.price)} 매수 걸어 둠, 아직 대기`;
     }
-    const ys = t.series.map(p => p.y), lo = Math.min(0, ...ys), hi = Math.max(0, ...ys), pad = (hi - lo) * 0.18 || 1;
-    const y = v => (H - (v - lo + pad) / (hi - lo + 2 * pad) * H);
-    const line = t.series.map((p, i) => `${i ? "L" : "M"}${(p.x * 300).toFixed(1)} ${y(p.y).toFixed(1)}`).join(" ");
-    const last = t.series[t.series.length - 1];
-    const up = last.y >= t.series[0].y;
-    return `<div class="dali-pro-strip">
-      <svg viewBox="0 0 300 ${H}" preserveAspectRatio="none" aria-hidden="true">
-        <defs><linearGradient id="dpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD1D9" stop-opacity=".35"/><stop offset="1" stop-color="#7FD1D9" stop-opacity="0"/></linearGradient></defs>
-        <line class="dali-pro-zl" x1="0" x2="300" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" vector-effect="non-scaling-stroke"/>
-        <path class="dali-pro-area" d="${line} L300 ${H} L0 ${H} Z" fill="url(#dpg)"/>
-        <path class="dali-pro-line" d="${line}" pathLength="1" vector-effect="non-scaling-stroke"/>
-      </svg>
-      ${t.events.map((e, i) => `<span class="dali-pro-ev" style="left:${e.x * 100}%;top:${(y(e.y) / H * 100).toFixed(1)}%;--i:${i}"><i></i><b>${e.label}</b></span>`).join("")}
-      <img class="dali-pro-face" src="${face(pro.sc)}" alt="" style="left:100%;top:${(y(last.y) / H * 100).toFixed(1)}%">
-      <span class="dali-pro-now ${up ? "up" : "down"} ${y(last.y) < 40 ? "low" : ""}" style="top:${(y(last.y) / H * 100).toFixed(1)}%">${pct(last.y)}</span>
-      <span class="dali-pro-from">${t.from}</span><span class="dali-pro-to">${t.to}</span>
-      <span class="dali-pro-what">${t.what}</span>
-    </div>`;
+    if (p && sc === "intraday" && p.today < 0) return `내 돈 ${man(p.today)}, 내 돈의 ${share}%가 이 종목`;
+    if (p && share >= 50 && ev && when) return `${when} 실적 발표. 내 돈의 ${share}%가 이 종목이에요`;
+    if (!p && R.todayPct(sym, sc) >= 5) return `급등한 날 바로 산 지난 ${h.spike.n}번은 평균 ${pct(h.spike.avg)}였어요`;
+    if (sc === "month") { const t = C.trades.filter(x => x.sym === sym && x.sell && x.sell.startsWith("10/")); if (t.length) return `10월에 ${t.length}번 사고팔아 ${pct(t.reduce((a, x) => a + x.pct, 0) / t.length)}`; }
+    if (ev && when) return `${when} ${ev.what.replace(sym + " ", "").replace(/ 예정$/, "")}`;
+    return "";
+  }
+  function cashNote() {
+    if (pro.sc === "month") return `${C.idleCashDays}일째 이자 없이 그대로예요`;
+    if (pro.sc === "morning") return `이번 달 배당금 ${won(C.dividend)}도 여기 들어와 있어요`;
+    return "";
+  }
+  function row(sym, sub, value, p, held) {
+    const n = newsOf(sym);
+    return `<li><button type="button" class="dali-pro-row" ${n ? `data-pro-news="${n.id}"` : ""}>
+      <i class="dali-pro-logo">${sym[0]}</i>
+      <span class="dali-pro-name"><b>${sym}</b><small>${sub}</small></span>
+      <span class="dali-pro-val"><b>${won(value)}</b><small class="${tone(p)}">${pct(p)}</small></span>
+    </button></li>`;
   }
 
+  // 달이가 먼저 하는 말: 지금 시각, 내 보유, 내 지난 기록을 엮어 두세 문장. 숫자는 전부 규칙에서
+  function say() {
+    const sc = pro.sc, m = R.money(sc), h = R.habits(), ss = m.pos.find(p => p.sym === "삼성전자");
+    const share = Math.round(ss.value / m.total * 100);
+    const T = {
+      morning: `밤사이 미국 반도체가 올랐고, 삼성전자는 어제 ${pct(ss.pct)}로 끝나 내 ${ss.qty}주가 ${man(ss.today)}이에요. 내일 실적 발표가 있는데 이 종목이 내 돈의 ${share}%라, 오늘 아침은 지켜보기만 해도 괜찮아요.`,
+      intraday: `삼성전자가 4시간 새 ${pct(ss.pct)}, 내 돈으로 ${man(ss.today)}이에요. 지난 석 달 손실 난 날 바로 판 ${h.quick.n}번 중 ${h.quick.up}번은 2주 뒤 더 올라 있었어요. 팔 이유가 새로 생긴 건 아니에요.`,
+      close: `삼성전자가 ${pct(ss.pct)}로 마감해 내 ${ss.qty}주가 ${man(ss.today)}이에요. 현대차 ${C.pending.qty}주는 체결돼서 매매일지에 적어 뒀어요. 내일 실적 발표 전에 다시 알려 드릴게요.`,
+      month: `10월엔 ${C.month.trades}번 매매해 ${man(C.month.realized)}을 실현했고, 수수료와 세금이 그중 ${Math.round((C.month.fee + C.month.tax) / C.month.realized * 100)}%였어요. 현금 ${man(C.cash).replace("+", "")}이 ${C.idleCashDays}일째 이자 없이 쉬고 있어요.`,
+    };
+    const read = {
+      morning: [`어제 20:10 이후 밤사이 뉴스 읽는 중`, `내 종목 ${m.pos.length + C.watch.length}개와 걸어 둔 주문 확인하는 중`],
+      intraday: ["오늘 07:40 이후 시세 읽는 중", `내 매매 ${h.count}건과 비교하는 중`],
+      close: ["장 마감 시세와 체결 읽는 중", "내일 일정 확인하는 중"],
+      month: [`10월 매매 ${C.month.trades}건과 비용 읽는 중`, "쉬고 있는 돈 찾는 중"],
+    };
+    return { key: `say-${sc}`, steps: read[sc], text: T[sc], basis: "내 보유와 걸어 둔 주문, 지난 3개월 매매 기록을 보고 썼어요." };
+  }
+
+  // 지금 할 수 있는 행동 하나. 장면(시각)과 내 보유, 걸어 둔 주문으로 고르고, 버튼은 그 일을 하는 화면으로 바로
+  function action() {
+    const sc = pro.sc, m = R.money(sc), ss = m.pos.find(p => p.sym === "삼성전자"), pend = C.pending;
+    const why = sym => (newsOf(sym) || {}).why || "";
+    if (sc === "morning") return { sym: pend.sym, top: "걸어 둔 주문", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)} 매수 대기`,
+      sub: `지금 ${won(R.nowPrice(pend.sym, sc))}, 9시 시가에 다시 봐요`, btns: [["order", pend.sym, "주문 정정"], ["news", pend.sym, "현대차 보기"]] };
+    if (sc === "intraday") return { sym: "삼성전자", top: "지금 크게 움직여요", title: `삼성전자 ${pct(ss.pct)}, 내 ${ss.qty}주 ${signed(ss.today)}`,
+      sub: why("삼성전자"), btns: [["order", "삼성전자", "삼성전자 주문"], ["news", "삼성전자", "차트 보기"]] };
+    if (sc === "close") return { sym: pend.sym, top: "체결됐어요", title: `${pend.sym} ${pend.qty}주 ${won(pend.price)}에 체결`,
+      sub: "살 때 상황은 매매일지에 적어 뒀어요", btns: [["journal", "", "매매일지"], ["news", pend.sym, "현대차 보기"]] };
+    return { sym: "", top: "이번 달", title: `10월 실현 ${signed(C.month.realized)}`,
+      sub: `${C.month.trades}번 매매, 수수료와 세금 ${won(C.month.fee + C.month.tax)}`, btns: [["journal", "", "매매일지"]] };
+  }
   function hero() {
-    const d = R.diff(pro.sc);
-    const answer = d.todo.length ? `지금 할 일 ${d.todo.length}개` : "지금 할 일 없어요";
+    const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = action();
+    const held = m.pos.map(p => row(p.sym, `${p.qty}주`, p.value, p.pct, true));
+    const watch = C.watch.map(s => row(s, "관심", R.nowPrice(s, pro.sc), R.todayPct(s, pro.sc), false));
     return `
-      <section class="dali-pro-night${pro.play ? " play" : ""}">
-        <p class="dali-pro-since">${pro.sc === "month" ? "석 달 동안 달이가 본 내 매매" : `${d.hours}시간 동안 달이가 본 것`}</p>
-        ${strip()}
-        <h2 class="${d.todo.length ? "todo" : ""}">${answer}</h2>
-        <p class="dali-pro-why">${d.todo.length ? d.todo.map(x => x.t).join("<br>") : d.noTodo}</p>
+      <section class="dali-pro-act">
+        <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
+        <h2>${paintNums(a.title)}</h2>
+        ${a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
+        <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
       </section>
-      <ul class="dali-pro-seen">
-        ${d.lines.slice(0, 3).map(l => `<li><b>${paintNums(l.h)}</b><p>${paintNums(l.t)}</p></li>`).join("")}
-      </ul>`;
+      <section class="dali-pro-head">
+        <p>내 돈</p>
+        <b>${won(m.total)}</b>
+        <small class="${tone(m.today)}">${day} ${signed(m.today)} (${pct(m.today / (m.total - m.today) * 100)})</small>
+      </section>
+      <ul class="dali-pro-rows">${held.join("")}
+        <li><div class="dali-pro-row cash"><i class="dali-pro-logo">₩</i><span class="dali-pro-name"><b>현금</b><small>원화</small></span>
+          <span class="dali-pro-val"><b>${won(C.cash)}</b></span></div></li>
+      </ul>
+      <p class="dali-pro-sec">관심</p>
+      <ul class="dali-pro-rows">${watch.join("")}</ul>`;
   }
 
   const newsOf = sym => DALI_NEWS.find(n => n.sym === sym);
@@ -202,10 +247,7 @@
   };
 
   function html() {
-    // 첫 화면은 띠와 세 줄뿐. 나머지는 한 번 눌러 펼침
-    const cards = pro.more ? R.priority(pro.sc).map(k => (CARDS[k] ? CARDS[k]() : "")).join("")
-      : `<button type="button" class="dali-pro-unfold" data-pro="unfold">내 돈, 일정, 습관 더 보기</button>`;
-    return `<div class="dali-pro">${hero()}${cards}
+    return `<div class="dali-pro dali-pro-list2 ready">${hero()}
       <section class="dali-pro-card dali-pro-foot">
         <button type="button" data-pro="grow">달이 키우기<span>›</span></button>
       </section></div>`;
@@ -221,11 +263,10 @@
     });
     const y = body.querySelector(".dali-pro") ? body.scrollTop : 0;
     body.innerHTML = html();
+    const replay = pro.play;
     pro.play = false; // 띠 그리는 연출은 열 때와 장면 바꿀 때만
     body.scrollTop = y;
     // dali-ai.js가 있으면 맨 위 답을 달이가 그 자리에서 쓰는 것처럼
-    const why = body.querySelector(".dali-pro-why");
-    if (window.DaliAI && why && !y) window.DaliAI.write(why, { facts: R.diff(pro.sc), fallback: why.innerHTML });
   }
   function show() { pro.on = true; pro.play = true; paint(); }
 
@@ -252,6 +293,14 @@
   body.addEventListener("click", e => {
     const n = e.target.closest("[data-pro-news]");
     if (n) { window.dali.openNews(n.dataset.proNews); return; }
+    const g = e.target.closest("[data-go]");
+    if (g) {
+      const k = g.dataset.go, sym = g.dataset.sym;
+      if (k === "order") window.dali.openOrder(sym);
+      else if (k === "news") { const n = newsOf(sym); if (n) window.dali.openNews(n.id); }
+      else if (k === "journal") tabs.querySelector('[data-tab="journal"]').click();
+      return;
+    }
     const b = e.target.closest("[data-pro]");
     if (!b) return;
     if (b.dataset.pro === "more") { pro.open[b.dataset.k] = true; paint(); }
