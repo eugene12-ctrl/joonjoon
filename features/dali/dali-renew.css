@@ -267,3 +267,7 @@
 .phone .dali-sheet .dali-closet button img { width: 32px; height: 32px; }
 .phone .dali-sheet .dali-ghero, .phone .dali-sheet .dali-gsec { text-align: left; }
 .phone .dali-sheet .dali-ghero > div { align-items: flex-start; }
+
+/* 관리 탭도 오늘, 뉴스, 매매일지처럼 흰 바탕. 카드는 그림자 대신 옅은 테두리로 */
+.phone .dali-sheet:has(.dali-tabs button.on[data-tab="manage"]) .dali-body { background: #fff; }
+.phone .dali-sheet:has(.dali-tabs button.on[data-tab="manage"]) .dali-body > .dali-card { box-shadow: none; border: 1px solid #E9EDF0; }
