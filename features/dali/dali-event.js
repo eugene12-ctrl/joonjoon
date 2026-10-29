@@ -10,6 +10,11 @@
   if (!sheet || !window.dali || typeof DALI_EVENTS === "undefined") return;
 
   const app = window.DALI_PAGE_APP === "fut" ? "fut" : "stock";
+  const BASE = document.currentScript.src.replace(/[^/]*$/, "");
+  // 맨 위 그림: 종목 로고(흰 동그라미)나 이벤트 그림(img/<이름>.png, 없으면 .svg)
+  const art = e => e.art === "logo" && DALI_SYMS[e.sym].code
+    ? { cls: "logo", img: `${BASE}img/logo-${DALI_SYMS[e.sym].code}.png` }
+    : e.art ? { cls: "pic", img: `${BASE}img/${e.art}.png`, alt: `${BASE}img/${e.art}.svg` } : null;
   const pageEl = sheet.querySelector(".dali-page");
   const tabs = sheet.querySelector(".dali-tabs");
   const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
@@ -62,11 +67,12 @@
     const btn = [["event", e.sym, app === "fut" ? "나스닥 지난 결과는?" : "지난 결과는?"]];
     const who = app === "fut" ? e.short : `${e.sym} ${e.short}`;
     const share = app === "stock" && typeof DaliRules !== "undefined" ? Math.round(DaliRules.money(s).pos.find(p => p.sym === e.sym).value / DaliRules.money(s).total * 100) : 0;
-    if (st === "wait") return { k: "event", score: 99, top: app === "fut" ? "내 관심 종목에 영향 줄 이벤트" : "내 종목에 영향 줄 이벤트", big: app === "fut" ? e.kind.replace(/ \(.*\)/, "") : `${e.sym} ${e.kind}`,
+    const look = { art: art(e), bg: e.bg };
+    if (st === "wait") return { k: "event", score: 99, ...look, top: app === "fut" ? "내 관심 종목에 영향 줄 이벤트" : "내 종목에 영향 줄 이벤트", big: app === "fut" ? e.kind.replace(/ \(.*\)/, "") : `${e.sym} ${e.kind}`,
       title: `${e.when}. ${share ? `내 돈의 ${share}%가 이 종목이고, ` : `${e.sym}은 `}지난 ${e.past.length}번 발표 다음 날 평균 ±${avgAbs(e).toFixed(1)}% 움직였어요`, sym: e.sym, btns: btn, line: `${e.sym} ${e.short} ${e.when}` };
-    if (st === "live" && r) return { k: "event", score: 99, top: `${who} 발표 뒤`, big: pct(r.val),
-      title: `${nowP ? `${won(nowP)}, ` : ""}${m ? m.qty : ""}. 닮은 때 ${two}와 같은 방향이에요`, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
-    if (st === "done" && r) return { k: "event", score: 92, top: `${who} 뒤 ${r.label}`, big: pct(r.val),
+    if (st === "live" && r) return { k: "event", score: 99, ...look, top: `${who} 발표 뒤`, big: pct(r.val),
+      title: `${nowP ? `${won(nowP)}, ` : ""}${m ? m.qty : ""}. 가장 닮은 때(${pct(an[0].next)})와 ${Math.sign(r.val) === Math.sign(an[0].next) ? "같은" : "다른"} 방향이에요`, feat, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
+    if (st === "done" && r) return { k: "event", score: 92, ...look, top: `${who} 뒤 ${r.label}`, big: pct(r.val),
       title: `${e.past.length + 1}번째 결과로 남았어요. 닮은 때 ${two}와 ${Math.sign(r.val) === Math.sign(an[0].next) ? "같은" : "다른"} 방향이에요`, sym: e.sym, btns: btn, line: `${e.sym} 발표 뒤 ${pct(r.val)}` };
     return null;
   }
@@ -94,13 +100,12 @@
     const nums = an.map(x => pct(x.next)).join(", ");
     const head = st === "wait"
       ? `<small>${esc(e.sym)} ${esc(e.kind)} · ${esc(e.when)}</small><h2>지난 ${e.past.length}번 중 지금과 닮은 <b>${an.length}번</b></h2>
-         <p>발표 전 5일 흐름, ${esc(e.axes[1][1])}, 업종, 거래량, 변동이 지금과 가장 가까운 때예요. 발표 순간 앞뒤 흐름이에요.</p>`
+         <p>그때 결과와 발표 순간 앞뒤 흐름이에요.</p>`
       : `<small>${esc(e.sym)} ${esc(e.kind)} 뒤 ${esc(r.label)}</small><h2>이번 결과 <b class="${tone(r.val)}">${pct(r.val)}</b></h2>
          <p>지금과 닮은 ${an.length}번은 다음 날 ${nums}였어요. 이번은 가장 닮은 때와 ${Math.sign(r.val) === Math.sign(an[0].next) ? "같은" : "다른"} 방향이에요.</p>`;
     const grid = `<div class="dali-ev-grid">${an.map(p => `<figure class="dali-ev-card">
-        <figcaption><b>${esc(p.at)}</b><small>${e.axes.length}개 중 ${p.same.length}개 같음</small></figcaption>
-        ${miniSVG(p)}
-        <p class="dali-ev-hot"><i>특징뉴스</i>${esc(p.news)}</p></figure>`).join("")}</div>`;
+        <figcaption><b>${esc(p.at)}</b><i class="${p.res[1]}">${esc(p.res[0])}</i></figcaption>
+        ${miniSVG(p)}</figure>`).join("")}</div>`;
     const range = m ? an.map(x => m.per * x.next) : null;
     const money = m ? `<p class="dali-ev-money"><b>${m.qty}</b> 닮은 ${an.length}번처럼 움직이면 <b class="${tone(Math.min(...range))}">${m.fmt(Math.min(...range))}</b> ~ <b class="${tone(Math.max(...range))}">${m.fmt(Math.max(...range))}</b></p>` : "";
     return `
@@ -109,7 +114,6 @@
         <section class="dali-ev-top">${head}</section>
         <section class="dali-ev-sec">${grid}
           <div class="dali-ev-ai" data-k="0"></div>
-          <p class="dali-ev-note">지난 ${e.past.length}번 평균 ±${avgAbs(e).toFixed(1)}%. 옵션 시장은 이번에 <b>±${e.implied.toFixed(1)}%</b>를 봐요</p>
           ${money}</section>
         <div class="dali-ev-btns"><button type="button" data-ev="order" data-sym="${esc(e.sym)}">${esc(e.sym)} 주문</button></div>
       </div>`;

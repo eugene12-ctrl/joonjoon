@@ -69,3 +69,20 @@ svg.dali-ev-mini polyline.down { stroke: #3E7BFA; stroke-width: 2.2; }
 .dali-ev-hot { display: flex; gap: 6px; align-items: flex-start; margin: 6px 0 0; font-size: 11.5px; line-height: 1.4; color: #4E5968; word-break: keep-all; }
 .dali-ev-hot i { flex: none; padding: 1px 5px; border-radius: 4px; background: #FDECEC; font-style: normal; font-size: 10px; font-weight: 800; color: #E5484D; }
 .dali-ev-sec .dali-ev-note { margin: 12px 0 0; }
+
+/* ===== 오늘 탭 맨 위, 이벤트 한 장: 이벤트마다 띠 색과 그림이 통째로 바뀜 ===== */
+.phone .dali-sheet .dali-pro-act.st-event { position: relative; overflow: hidden; padding-right: 20px;
+  background: radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, .14) 0%, rgba(255, 255, 255, 0) 55%), linear-gradient(160deg, var(--ev-bg0, #0F3D47) 0%, var(--ev-bg1, #061A20) 100%); }
+.phone .dali-sheet .dali-pro-act.st-event > *:not(.dali-pro-act-art) { position: relative; z-index: 1; }
+.phone .dali-sheet .dali-pro-act.st-event .dali-pro-act-big, .phone .dali-sheet .dali-pro-act.st-event h2 { max-width: calc(100% - 104px); }
+.dali-pro-act-art { position: absolute; right: 18px; top: 42px; margin: 0; z-index: 0; }
+.dali-pro-act-art::before { content: ""; position: absolute; inset: -22px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 70%); }
+.dali-pro-act-art img { position: relative; display: block; }
+/* 종목 로고: 흰 동그라미 안에 크게 */
+.dali-pro-act-art.logo img { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; background: #fff; box-shadow: 0 10px 28px rgba(0, 0, 0, .35), 0 0 0 4px rgba(255, 255, 255, .18); }
+/* 이벤트 그림(금리 결정 등): 선 그림이나 png */
+.dali-pro-act-art.pic img { width: 104px; height: 104px; object-fit: contain; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .35)); }
+/* 지난 결과 차트의 그때 결과 꼬리표 */
+.dali-ev-card figcaption i { flex: none; padding: 2px 7px; border-radius: 6px; font-style: normal; font-size: 10.5px; font-weight: 800; background: #EEF1F3; color: #6B7684; }
+.dali-ev-card figcaption i.up { background: #FDECEC; color: #E5484D; }
+.dali-ev-card figcaption i.down { background: #E8F0FF; color: #3E7BFA; }
