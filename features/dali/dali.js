@@ -478,8 +478,9 @@
   document.body.appendChild(demo);
 
   function setApp(app) {
-    const page = app === "fut" ? "futures.html" : "index.html";
-    if (!location.pathname.endsWith(page)) { location.href = page; return; }
+    // 두 앱 페이지는 저장소 맨 위에 있음. 어느 화면에서 눌러도 맞게 이 파일 위치 기준으로 찾음
+    const onFut = location.pathname.endsWith("/futures.html");
+    if ((app === "fut") !== onFut) { location.href = new URL(app === "fut" ? "../../futures.html" : "../../index.html", BASE).href; return; }
     state.app = app;
     state.page = null;
     state.order = null;
