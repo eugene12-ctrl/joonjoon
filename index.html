@@ -57,7 +57,7 @@
 <script src="features/dali/dali-after.js"></script>
 <script>
   // 달이에서 종목 이름을 누르면 국내주식 MTS 주문 화면으로 (features/mts, 그 종목)
-  window.DALI_ORDER = name => { const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) location.href = "features/mts/index.html#order/" + c; };
+  window.DALI_ORDER = name => { const n = DALI_NEWS.find(x => x.sym === name); try { n ? sessionStorage.setItem("dali-back", n.id) : sessionStorage.removeItem("dali-back"); } catch (e) { /* 돌아갈 곳만 못 기억함 */ } const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) location.href = "features/mts/index.html#order/" + c; };
 </script>
 </body>
 </html>

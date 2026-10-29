@@ -4,13 +4,16 @@
 const ORDER_TABS = ["일반주문", "차트주문", "호가주문", "자동주문", "쾌속주문"];
 const SIDES = ["매수", "매도", "정정/취소", "체결/미체결"];
 
+// 헤더의 달이 버튼: 주문 화면에선 달이가 숨으니, 보던 달이 화면으로 한 번에 돌아가는 길
+const daliJump = () => `<button type="button" class="dali-jump" data-act="dali" aria-label="달이로 돌아가기"><img src="../dali/dali-face.png" alt="">달이</button>`;
+
 Screens.order = {
   tab: "일반주문", side: "매수", credit: false, market: false, auto: true, qty: 1, price: null,
   render() {
     const s = stockBy(App.code);
     if (this.price == null || this.priceOf !== s.code) { this.price = s.price; this.priceOf = s.code; } // 처음엔 현재가
     if (this.tab !== "일반주문") {
-      return header("주문", `${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
+      return header("주문", `${daliJump()}${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
         + topTabs(ORDER_TABS, this.tab) + `<div class="mts-body"><p class="empty">${this.tab}은 준비 중이에요</p></div>`;
     }
     const buy = this.side === "매수", sell = this.side === "매도";
@@ -35,7 +38,7 @@ Screens.order = {
         <div class="ord-btns"><button type="button" class="btn dark" data-act="reset" aria-label="초기화">${icon("undo")}</button>
           <button type="button" class="btn ${buy ? "red" : "blue"}" data-act="submit">${this.credit ? "신용" : "현금"}${this.side}</button></div>
       </div>` : `<div class="ord-form"><p class="empty small">${this.side} 내역이 없어요</p></div>`;
-    return header("주문", `${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
+    return header("주문", `${daliJump()}${select("KRX", "krx")}${iconBtn("star", "관심 등록")}${iconBtn("gear", "주문 설정")}`)
       + topTabs(ORDER_TABS, this.tab)
       + `<div class="order-top">${stockInfo(s)}</div>`
       + subTabs(SIDES, this.side, "data-side").replace('class="sub-tabs"', 'class="sub-tabs side-tabs"')
@@ -70,6 +73,14 @@ Screens.order = {
     });
     el.querySelectorAll("[data-quick]").forEach(b => b.onclick = () => { this.qty = 10; App.render(); });
     el.querySelector("[data-act=able]")?.addEventListener("click", () => App.toast("주문가능금액: 10,000,000원"));
+    el.querySelector("[data-act=dali]")?.addEventListener("click", () => {
+      if (!window.dali) return;
+      // 달이에서 왔으면 보던 뉴스로, 아니면 오늘 탭으로
+      let back = null;
+      try { back = sessionStorage.getItem("dali-back"); } catch (e) { /* 없으면 오늘 탭 */ }
+      window.dali.open(back ? "news" : null);
+      if (back) window.dali.openNews(back);
+    });
     el.querySelector("[data-act=reset]")?.addEventListener("click", () => { this.qty = 1; this.price = null; this.market = false; App.render(); });
     el.querySelector("[data-act=submit]")?.addEventListener("click", () => this.submit());
     // 현재가 줄이 보이도록 호가를 가운데로
