@@ -9,13 +9,13 @@ const STOCKS = [
   { code: "000660", name: "SK하이닉스", margin: "현20 신45", nxt: "NXT가능", price: 1487000, change: 146000, rate: 10.89, volume: 6120300, volRate: 248.1, dir: "up" },
   { code: "005380", name: "현대차", margin: "현20 신45", nxt: "NXT가능", price: 297000, change: 5500, rate: 1.89, volume: 1032800, volRate: 96.3, dir: "up" },
   { code: "035420", name: "NAVER", margin: "현20 신45", nxt: "NXT가능", price: 220500, change: 4000, rate: 1.85, volume: 815400, volRate: 88.7, dir: "up" },
-  // 아직 관심에 없는 종목: 종목 고르기에서 들어가 별을 누르면 관심1과 달이에 같이 담김 (달이 쪽 이름 키와 같은 이름)
+  // 유진투자증권은 처음부터 관심1(달이도 처음부터 봄). LG에너지솔루션은 종목 고르기에서 들어가 별을 누르면 관심1과 달이에 같이 담김
   { code: "001200", name: "유진투자증권", margin: "현40 신50", nxt: "NXT가능", price: 4820, change: 55, rate: 1.15, volume: 1386200, volRate: 118.4, dir: "up" },
   { code: "373220", name: "LG에너지솔루션", margin: "현20 신45", nxt: "NXT가능", price: 412000, change: -2900, rate: -0.70, volume: 284600, volRate: 74.1, dir: "down" },
 ];
 
 // 관심종목 하위 탭별 종목
-const WATCH_GROUPS = { "보유": ["005930", "005380"], "최근": ["000660"], "관심1": ["005930", "000660", "005380", "035420"] };
+const WATCH_GROUPS = { "보유": ["005930", "005380"], "최근": ["000660"], "관심1": ["005930", "000660", "005380", "035420", "001200"] };
 // 별로 더한 종목은 이 브라우저에 남김 (처음으로 누르면 달이 쪽과 함께 비워짐)
 try { (JSON.parse(localStorage.getItem("mts-watch") || "[]")).forEach(c => { if (!WATCH_GROUPS["관심1"].includes(c)) WATCH_GROUPS["관심1"].push(c); }); } catch (e) { /* 저장 못 읽으면 기본 관심만 */ }
 
