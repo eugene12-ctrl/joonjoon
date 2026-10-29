@@ -55,3 +55,9 @@
 .phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-top: auto; margin-bottom: 14px; }
 .phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding-bottom: 4px; }
 .phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots { bottom: 5px; }
+/* 점 줄은 버튼 아래 일반 흐름에 둔다. 띄워 두면(absolute) 예전 CSS가 남았을 때 버튼과 겹쳐 보여서 */
+.phone .dali-sheet .dali-pro-act.dali-n2-act { padding-bottom: 0; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding-bottom: 6px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-bottom: 0; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots { position: static; flex: none; height: 6px; margin: 0 0 10px; bottom: auto; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots i { padding: 0; height: 6px; }
