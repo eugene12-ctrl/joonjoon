@@ -51,3 +51,7 @@
 .dali-n2-track { cursor: grab; user-select: none; touch-action: pan-y; }
 .dali-n2-track:active { cursor: grabbing; }
 .dali-n2-dots i { cursor: pointer; padding: 6px 0; background-clip: content-box; box-sizing: content-box; }
+/* 점 줄이 버튼과 겹치지 않게: 버튼 자체에 아래 여백 (장 여백이 다른 규칙에 덮여도 안전) */
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide > .dali-pro-act-btns { margin-top: auto; margin-bottom: 14px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-slide { padding-bottom: 4px; }
+.phone .dali-sheet .dali-pro-act.dali-n2-act .dali-n2-dots { bottom: 5px; }
