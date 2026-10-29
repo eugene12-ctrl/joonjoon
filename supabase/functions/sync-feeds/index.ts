@@ -36,6 +36,7 @@ type NewsRow = {
   source: "toss" | "naver";
   stock_code: string | null;
   author: string | null;
+  content: string | null;  // 본문 전체. 화면에서 밖으로 나가지 않고 보여 줍니다
 };
 
 const DESCRIPTION_MAX = 160;
@@ -55,6 +56,9 @@ const TOSS_DASHBOARD_URL = `${TOSS_API}/api/v1/dashboard/wts/news`;
 // 종목별 뉴스. 코드는 6자리만 받습니다 (A005930 같은 7자리는 오류 없이 0건이 옴).
 // 페이지 번호는 1부터, 크기는 1~100 (101 이상은 조용히 빈 결과).
 const TOSS_COMPANY_URL = (code: string) => `${TOSS_API}/api/v2/news/companies/${code}`;
+// 기사 상세. 본문이 블록(summary / sub_headline / text / image)으로 옵니다. 없는 기사는 200 {"result": null}.
+const TOSS_DETAIL_URL = (newsId: string) => `${TOSS_API}/api/v2/news/${newsId}`;
+const TOSS_BODY_BLOCKS = ["summary", "sub_headline", "text"];
 const TOSS_PAGE_SIZE = 20;
 const TOSS_MARKET_KEYWORD = "시장";
 
@@ -114,7 +118,20 @@ function normalizeStockCode(code: string) {
   return code.length === 7 && code.startsWith("A") ? code.slice(1) : code;
 }
 
+// 기사 본문. 라이브러리 extract_body_text 와 같습니다: 본문 블록만 태그 없이 줄바꿈으로 잇습니다.
+async function tossArticleBody(newsId: string) {
+  const payload = await tossRequest(TOSS_DETAIL_URL(newsId));
+  const blocks = payload?.result?.kr?.content;
+  if (!Array.isArray(blocks)) return null;
+  const parts = blocks
+    .filter((b) => TOSS_BODY_BLOCKS.includes(b?.type))
+    .map((b) => String(b.content ?? "").replace(/<[^>]+>/g, "").trim())
+    .filter(Boolean);
+  return parts.length ? parts.join("\n") : null;
+}
+
 // 종목별 뉴스 1페이지. 응답: { result: { body: [{ id, title, summary, contentText, source: { name }, createdAt, ... }] } }
+// summary 가 본문 전체이고 contentText 는 앞부분 100자쯤입니다 (2026-10-29 실측).
 async function tossCompanyNews(stockCode: string, keyword: string): Promise<NewsRow[]> {
   const code = normalizeStockCode(stockCode);
   if (!/^[0-9A-Z]{6}$/.test(code)) throw new Error(`종목코드는 6자리여야 합니다: ${stockCode}`);
@@ -134,12 +151,13 @@ async function tossCompanyNews(stockCode: string, keyword: string): Promise<News
       link: tossArticleUrl(it.id),
       original_link: null,
       title: it.title,
-      description: shorten(it.summary || it.contentText),
+      description: shorten(it.contentText || it.summary),
       pub_date: pubDate,
       keyword,
       source: "toss",
       stock_code: code,
       author: typeof it.source === "object" ? it.source?.name ?? null : it.source ?? null,
+      content: (it.summary ?? "").trim() || null,
     });
   }
   return rows;
@@ -171,7 +189,19 @@ async function tossMarketNews(): Promise<NewsRow[]> {
       source: "toss",
       stock_code: first ? normalizeStockCode(first) : null,
       author: typeof it.source === "object" ? it.source?.name ?? null : it.source ?? null,
+      content: null,  // 대시보드 summary 는 300자에서 잘립니다. 본문은 아래에서 상세로 채웁니다
     });
+  }
+
+  // 본문이 아직 없는 기사만 상세를 받습니다 (10분마다 같은 기사를 다시 받지 않도록).
+  const { data: stored, error } = await db
+    .from("news").select("link").in("link", rows.map((r) => r.link)).not("content", "is", null);
+  if (error) throw error;
+  const hasBody = new Set((stored ?? []).map((r) => r.link));
+  for (const row of rows) {
+    if (hasBody.has(row.link)) continue;
+    const newsId = items.find((it) => tossArticleUrl(it.newsId) === row.link)?.newsId;
+    row.content = (newsId && await tossArticleBody(newsId)) || row.description || null;
   }
   return rows;
 }
@@ -233,6 +263,7 @@ async function syncNaver() {
         source: "naver",
         stock_code: null,
         author: null,
+        content: null,
       });
     }
   }

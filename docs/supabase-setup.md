@@ -23,7 +23,8 @@ Edge Function(Deno)은 이 방식을 지원하지 않아 `HandshakeFailure`로 �
 | `supabase/migrations/20261029000200_dart_via_pg_net.sql` | 공시: 10분마다 OpenDART 요청, 1분마다 응답을 테이블에 저장 |
 | `supabase/migrations/20261029000300_dart_tracked_corps.sql` | 공시를 정해 둔 회사(`dart_corps` 표: 삼성전자, SK하이닉스, 현대차, NAVER)만 받도록 바꿈. 10분마다 회사별 최근 1년 중 최신 20건 |
 | `supabase/migrations/20261029000400_news_toss_source.sql` | `news` 표에 출처(source)·종목코드·언론사 열 추가 |
-| `supabase/functions/sync-feeds/index.ts` | 뉴스: 토스증권 뉴스(`dart_corps` 회사별 20건 + 시장 주요 뉴스)를 테이블에 저장. 네이버 키가 있으면 검색 결과도 함께 |
+| `supabase/migrations/20261029000500_news_content.sql` | `news` 표에 본문(content) 열 추가 |
+| `supabase/functions/sync-feeds/index.ts` | 뉴스: 토스증권 뉴스(`dart_corps` 회사별 20건 + 시장 주요 뉴스)를 본문까지 테이블에 저장. 네이버 키가 있으면 검색 결과도 함께 |
 | `features/feed/` | 시장 소식 화면. 연결 정보가 비어 있으면 가상 데이터로 보여 줌 |
 
 ## 1. 계정과 키 준비 (한 번만)
@@ -127,7 +128,7 @@ const SUPABASE_ANON_KEY = "<Publishable key (sb_publishable_...)>";
 - Publishable 키는 공개돼도 되는 읽기 전용 키입니다. 테이블에 읽기 권한만 열려 있습니다.
 - Secret 키(`service_role`)는 모든 권한이 있으니 화면 코드에 절대 넣지 않습니다.
 
-`features/feed/index.html`을 브라우저로 열면 하단 출처가 "OpenDART, 토스증권 뉴스"로 바뀝니다.
+`features/feed/index.html`을 브라우저로 열면 하단의 "지금은 가상 데이터를 보여 주고 있어요" 문구가 사라지고 실제 공시·뉴스가 보입니다.
 
 ## 운영 메모
 

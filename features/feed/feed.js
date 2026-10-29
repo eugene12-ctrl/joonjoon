@@ -6,7 +6,6 @@
 const FEED_LIMIT = 30;
 const DART_VIEW_URL = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=";
 const CORP_CLS = { Y: "유가", K: "코스닥" };
-const NEWS_SOURCES = { toss: "토스증권 뉴스", naver: "네이버 뉴스 검색" };
 
 const feedState = { tab: "disclosures", disclosures: [], news: [], isMock: false };
 
@@ -62,9 +61,10 @@ function disclosureItemHTML(d) {
     </a>`;
 }
 
-function newsItemHTML(n) {
+// 뉴스는 밖(토스증권)으로 내보내지 않고 이 화면 안에서 본문을 보여 줍니다.
+function newsItemHTML(n, i) {
   return `
-    <a class="feed-item" href="${escapeHTML(n.link)}" target="_blank" rel="noopener">
+    <button class="feed-item" type="button" data-news="${i}">
       <div class="feed-meta">
         <span class="chip">${escapeHTML(n.keyword)}</span>
         ${n.author ? `<strong>${escapeHTML(n.author)}</strong>` : ""}
@@ -72,20 +72,46 @@ function newsItemHTML(n) {
       </div>
       <p class="feed-title">${escapeHTML(n.title)}</p>
       <p class="feed-sub">${escapeHTML(n.description)}</p>
-    </a>`;
+    </button>`;
+}
+
+function newsDetailHTML(n) {
+  const body = (n.content || n.description || "").split(/\n+/).filter((p) => p.trim());
+  return `
+    <button class="feed-detail-back" type="button">← 목록으로</button>
+    <div class="feed-meta">
+      <span class="chip">${escapeHTML(n.keyword)}</span>
+      ${n.author ? `<strong>${escapeHTML(n.author)}</strong>` : ""}
+      <span class="date">${timeLabel(n.pub_date)}</span>
+    </div>
+    <h2 class="feed-detail-title">${escapeHTML(n.title)}</h2>
+    <div class="feed-detail-body">${body.map((p) => `<p>${escapeHTML(p)}</p>`).join("")}</div>
+    ${n.content ? "" : `<p class="feed-hint">본문은 아직 받지 못해 앞부분만 보여 줘요.</p>`}`;
+}
+
+function openNews(i) {
+  const n = feedState.news[i];
+  if (!n) return;
+  document.querySelector(".feed-detail").innerHTML = newsDetailHTML(n);
+  document.querySelector(".feed-detail").hidden = false;
+  document.querySelector(".feed-list").hidden = true;
+  document.querySelector(".feed-detail").scrollTop = 0;
+}
+
+function closeNews() {
+  document.querySelector(".feed-detail").hidden = true;
+  document.querySelector(".feed-list").hidden = false;
 }
 
 function renderFeed() {
   const list = feedState[feedState.tab];
   const count = feedState.disclosures.length + feedState.news.length;
   document.querySelector(".buddy-say").textContent = `새 소식 ${count}건을 물어 왔어요!`;
-  const newsSources = [...new Set(feedState.news.map((n) => NEWS_SOURCES[n.source] || NEWS_SOURCES.naver))];
-  document.querySelector(".source-note").textContent = feedState.isMock
-    ? "지금은 가상 데이터를 보여 주고 있어요."
-    : "출처: " + ["금융감독원 OpenDART", ...newsSources].join(", ");
+  document.querySelector(".source-note").textContent = feedState.isMock ? "지금은 가상 데이터를 보여 주고 있어요." : "";
   document.querySelectorAll(".feed-tab").forEach((b) => b.classList.toggle("on", b.dataset.tab === feedState.tab));
 
   const item = feedState.tab === "disclosures" ? disclosureItemHTML : newsItemHTML;
+  closeNews();
   document.querySelector(".feed-list").innerHTML = list.length
     ? list.map(item).join("")
     : `<p class="feed-empty">아직 가져온 소식이 없어요.</p>`;
@@ -94,6 +120,13 @@ function renderFeed() {
 document.querySelectorAll(".feed-tab").forEach((b) =>
   b.addEventListener("click", () => { feedState.tab = b.dataset.tab; renderFeed(); })
 );
+document.querySelector(".feed-list").addEventListener("click", (e) => {
+  const item = e.target.closest("[data-news]");
+  if (item) openNews(Number(item.dataset.news));
+});
+document.querySelector(".feed-detail").addEventListener("click", (e) => {
+  if (e.target.closest(".feed-detail-back")) closeNews();
+});
 document.querySelector(".feed-refresh").addEventListener("click", async () => { await loadFeeds(); renderFeed(); });
 
 loadFeeds().then(renderFeed);
