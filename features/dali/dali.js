@@ -457,7 +457,8 @@
         }).join("")}</ol>
         <p class="dali-gsec">옷장</p>
         <div class="dali-closet">${DALI_WEARS.map(w => {
-          const open = si >= w.stage;
+          // 시연용: 사이즈를 맞춰 봐야 해서 단계와 상관없이 모든 옷을 바로 입힐 수 있게 연다 (원래 규칙: si >= w.stage)
+          const open = true;
           return `<button type="button" class="${state.wear === w.id ? "on" : ""}" data-act="wear" data-id="${w.id}" ${open ? "" : "disabled"}>
             <img src="${IMG(w.id)}" alt=""><small>${open ? w.name : DALI_STAGES[w.stage].name.replace(" 달이", "") + "에 열려요"}</small></button>`;
         }).join("")}</div>
