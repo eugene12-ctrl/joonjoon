@@ -162,6 +162,15 @@
 .dali-ctx { background: var(--d-band); margin: 0 20px; }
 .dali-ctx em, .dali-mts-note em { color: var(--d-brand2); background: none; padding: 0; }
 .dali-mts-note { background: var(--d-band); }
+/* 종목 화면 아래 뉴스, 공시 탭: 회색 띠로 기사와 나누고 목록 줄로 */
+.dali-subtabs { margin: 0; padding: 0 20px; gap: 20px; border-top: 10px solid var(--d-band); border-bottom-color: var(--d-line); }
+.dali-subtabs button { padding: 13px 0 11px; font-size: 15px; font-weight: 500; color: var(--d-sub); }
+.dali-subtabs button.on { color: var(--d-ink); font-weight: 700; border-bottom-color: var(--d-ink); }
+.dali-feed { padding: 0 20px; }
+.dali-feed-row { grid-template-columns: 56px 1fr; padding: 14px 0; color: var(--d-ink); border-bottom-color: var(--d-line); }
+.dali-feed-row.on b { color: var(--d-brand2); }
+.dali-feed-date, .dali-feed-row small { color: var(--d-sub); }
+.dali-feed + .dali-hint, .dali-feed-empty { padding-left: 20px; padding-right: 20px; color: var(--d-sub); }
 
 /* 발표자 상자 (휴대폰 밖) */
 .dali-demo button { background: var(--d-brand); }
