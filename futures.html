@@ -157,6 +157,29 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .empty{text-align:center;color:var(--sub);font-size:13px;padding:40px 0 10px}
 .menu .m{display:flex;justify-content:space-between;padding:15px 2px;border-bottom:1px solid var(--line);font-size:15px}
 .menu .m:last-child{border:none}
+/* 해외선물 (CME): 목록 탭은 없고, 달이에서 종목을 누르면 열리는 종목 화면만 있음 */
+.fbadge{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.fbadge img{display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
+.fhero{display:flex;align-items:center;gap:14px}
+.fhero .fbadge{width:56px;height:56px;border-radius:18px}
+.fprice{padding:4px 16px 0}
+.fprice .p{font-size:28px;font-weight:700}
+.fprice .c{font-size:14px;margin-top:2px}
+.spec .kv{display:flex;justify-content:space-between;font-size:14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.spec .kv:last-child{border:none}
+.spec .kv span{color:var(--sub)}
+.tipbox{background:#f3f6fb;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.55;color:#333;margin-bottom:12px}
+.tipbox b{color:#111}
+.obar{flex:none;display:flex;gap:10px;padding:10px 16px 22px;background:#fff;border-top:1px solid var(--line)}
+.obar button{flex:1;height:52px;border-radius:14px;font-size:16px;font-weight:700;color:#fff}
+.obar .s{background:var(--blue)}.obar .b{background:var(--red)}
+.side2{display:flex;background:#f1f2f4;border-radius:12px;padding:4px;margin-bottom:12px}
+.side2 button{flex:1;height:40px;border-radius:9px;font-size:15px;font-weight:700;color:var(--sub)}
+.side2 button.on.b{background:var(--red);color:#fff}.side2 button.on.s{background:var(--blue);color:#fff}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:32px;height:32px;border-radius:50%;background:#f1f2f4;font-size:18px;font-weight:700}
+.warn{font-size:12.5px;color:var(--blue);background:var(--blue-tint);border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.5}
+.ybtn:disabled{background:#e5e7eb;color:#9aa0a8}
 /* 달이: 이 앱의 하단 메뉴 위에 띄움 */
 .dali-fab{bottom:90px}
 .dali-bubble{bottom:106px}
@@ -220,6 +243,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
     <div class="scroll" id="tab-watch" style="display:none">
       <div class="card wl" id="watchList" style="padding:4px 16px"></div>
     </div>
+
     <nav class="nav" data-nav></nav>
   </section>
 
@@ -263,6 +287,23 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
       <div class="colh"><span id="colL">행사가 (숏 콜 / 롱 콜)</span><span id="colR">받을 프리미엄</span></div>
     </div>
     <div class="rows" id="rows"></div>
+  </section>
+
+  <!-- 해외선물 종목 -->
+  <section class="screen" id="s-fut">
+    <div class="dhdr">
+      <div class="l"><button onclick="go('s-main')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button><b id="fTk">CLZ26</b><span id="fNm">크루드 오일</span></div>
+      <div class="bm" id="fBm" onclick="toggleFutWatch()" style="cursor:pointer"></div>
+    </div>
+    <div class="scroll" style="padding-top:0">
+      <div class="fprice fhero" style="margin:0 -12px"><div class="fbadge" id="fImg"></div><div><div class="p" id="fP"></div><div class="c" id="fC"></div></div></div>
+      <div class="chart" style="height:220px"><svg id="fChart" width="100%" height="220" viewBox="0 0 390 220" preserveAspectRatio="none"></svg></div>
+      <div class="tf"><div class="g" id="fTf"><button>1분</button><button class="on">1일</button><button>1주</button><button>1달</button></div></div>
+      <div class="card" id="fPos" style="display:none"></div>
+      <div class="tipbox" id="fTip"></div>
+      <div class="card spec" id="fSpec" style="padding:4px 16px"></div>
+    </div>
+    <div class="obar"><button class="s" onclick="openFutOrder('매도')">매도</button><button class="b" onclick="openFutOrder('매수')">매수</button></div>
   </section>
 
   <!-- HOLD / MY -->
@@ -338,8 +379,9 @@ function renderWatch(){
       <div class="cp">현재가격 ${s.p?`<b class="up-c">${fmt(s.p)} ▲ ${s.c.toFixed(2)}%</b>`:'<b style="display:inline-block;width:40px;height:16px;background:#eee;border:1px solid #ddd;border-radius:3px;vertical-align:middle"></b>'}</div></div>
       <div class="bm"></div></div>`).join('');
 }
-$$('.hdr-tabs .t').forEach(b=>b.onclick=()=>{$$('.hdr-tabs .t').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  $('#tab-home').style.display=b.dataset.tab==='home'?'block':'none';$('#tab-watch').style.display=b.dataset.tab==='watch'?'block':'none'});
+function showTab(t){$$('.hdr-tabs .t').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
+  ['home','watch'].forEach(k=>$('#tab-'+k).style.display=k===t?'block':'none')}
+$$('.hdr-tabs .t').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 /* nav */
 const NAV=[['s-main','홈','<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="currentColor"/>'],
@@ -455,8 +497,12 @@ function openOrder(a,b,p,txt){
 }
 
 /* ===== 돈과 체결 (목업용 숫자) ===== */
-let CASH = 24350, REAL = 185;
-const HOLD = [{ tk: 'XSP', name: '숏 풋 스프레드', qty: 1, cost: -68, eval: 42 }];
+let CASH = 24350, REAL = 1180;
+// 해외선물 보유는 달이 매매일지(dali-data.js t6, t7)와 같은 숫자
+const HOLD = [
+  { tk: 'CLZ26', name: '크루드 오일 매수', qty: 1, cost: 6200, eval: -310, fut: 'CL', side: '매수', entry: 62.15 },
+  { tk: 'MGCZ26', name: '마이크로 금 매수', qty: 2, cost: 3300, eval: 540, fut: 'MGC', side: '매수', entry: 4101.4 },
+  { tk: 'XSP', name: '숏 풋 스프레드', qty: 1, cost: -68, eval: 42 }];
 const money = n => (n < 0 ? '-' : '') + fmt(Math.abs(n));
 function renderAsset() {
   const ev = HOLD.reduce((a, h) => a + h.eval, 0);
@@ -479,7 +525,7 @@ function fillOrder(name, prem, credit) {
   renderAsset();
   go('s-hold');
   toast(`${sym.tk} ${name} 1계약 체결 (${credit ? '받은' : '낸'} 프리미엄 ${fmt(amt)})`);
-  if (window.dali) window.dali.record(sym.tk, `${name} 1계약`, '매수');
+  if (window.dali && DALI_SYMS[sym.tk]) window.dali.record(sym.tk, `${name} 1계약`, '매수');
 }
 function openSingle(name) {
   const prem = Math.max(0.5, Math.round(sym.p * 0.012 * 20) / 20);
@@ -492,19 +538,127 @@ function openSingle(name) {
    <button class="ybtn" onclick="fillOrder('${name}', ${prem}, false)">주문하기</button>`;
   $('#sheet').classList.add('on');
 }
+/* ===== 해외선물 (CME 그룹) =====
+   계약 단위와 틱 크기는 CME 상품 규격, 가격과 증거금은 목업용 숫자.
+   mult: 가격 1 움직일 때 1계약 손익($), tick: 최소 호가 단위, mg: 1계약 증거금($) */
+const FCAT = { 지수: '#2a3b9c', 에너지: '#3b3f46', 금속: '#b0862a', 농산물: '#4f9a1d', 금리: '#13808a', 통화: '#7a3fe0' };
+const FUTS = [
+  { k: 'ES', m: 'Z26', ko: 'S&P 500', en: 'E-mini S&P 500', cat: '지수', p: 7768.25, c: 0.31, mult: 50, tick: 0.25, dec: 2, mg: 25300, unit: '지수 × $50', last: '26년 12월 18일', micro: 'MES' },
+  { k: 'MES', m: 'Z26', ko: '마이크로 S&P 500', en: 'Micro E-mini S&P 500', cat: '지수', p: 7768.25, c: 0.31, mult: 5, tick: 0.25, dec: 2, mg: 2530, unit: '지수 × $5', last: '26년 12월 18일' },
+  { k: 'NQ', m: 'Z26', ko: '나스닥 100', en: 'E-mini Nasdaq-100', cat: '지수', p: 29512.50, c: 0.62, mult: 20, tick: 0.25, dec: 2, mg: 36000, unit: '지수 × $20', last: '26년 12월 18일', micro: 'MNQ' },
+  { k: 'MNQ', m: 'Z26', ko: '마이크로 나스닥', en: 'Micro E-mini Nasdaq-100', cat: '지수', p: 29512.50, c: 0.62, mult: 2, tick: 0.25, dec: 2, mg: 3600, unit: '지수 × $2', last: '26년 12월 18일' },
+  { k: 'YM', m: 'Z26', ko: '다우존스', en: 'E-mini Dow ($5)', cat: '지수', p: 49210, c: 0.18, mult: 5, tick: 1, dec: 0, mg: 15000, unit: '지수 × $5', last: '26년 12월 18일' },
+  { k: 'RTY', m: 'Z26', ko: '러셀 2000', en: 'E-mini Russell 2000', cat: '지수', p: 2584.3, c: -0.22, mult: 50, tick: 0.1, dec: 1, mg: 11000, unit: '지수 × $50', last: '26년 12월 18일' },
+  { k: 'CL', m: 'Z26', ko: '크루드 오일', en: 'Crude Oil (WTI)', cat: '에너지', p: 61.84, c: -1.12, mult: 1000, tick: 0.01, dec: 2, mg: 6200, unit: '1,000배럴', last: '26년 11월 19일', micro: 'MCL' },
+  { k: 'MCL', m: 'Z26', ko: '마이크로 크루드 오일', en: 'Micro WTI Crude Oil', cat: '에너지', p: 61.84, c: -1.12, mult: 100, tick: 0.01, dec: 2, mg: 620, unit: '100배럴', last: '26년 11월 18일' },
+  { k: 'NG', m: 'Z26', ko: '천연가스', en: 'Henry Hub Natural Gas', cat: '에너지', p: 3.412, c: 2.35, mult: 10000, tick: 0.001, dec: 3, mg: 4300, unit: '10,000MMBtu', last: '26년 11월 25일' },
+  { k: 'GC', m: 'Z26', ko: '금', en: 'Gold', cat: '금속', p: 4128.4, c: 0.46, mult: 100, tick: 0.1, dec: 1, mg: 16500, unit: '100트로이온스', last: '26년 12월 29일', micro: 'MGC' },
+  { k: 'MGC', m: 'Z26', ko: '마이크로 금', en: 'Micro Gold', cat: '금속', p: 4128.4, c: 0.46, mult: 10, tick: 0.1, dec: 1, mg: 1650, unit: '10트로이온스', last: '26년 12월 29일' },
+  { k: 'SI', m: 'Z26', ko: '은', en: 'Silver', cat: '금속', p: 48.215, c: 1.08, mult: 5000, tick: 0.005, dec: 3, mg: 19000, unit: '5,000트로이온스', last: '26년 12월 29일' },
+  { k: 'HG', m: 'Z26', ko: '구리', en: 'Copper', cat: '금속', p: 5.0825, c: -0.35, mult: 25000, tick: 0.0005, dec: 4, mg: 9000, unit: '25,000파운드', last: '26년 12월 29일' },
+  { k: 'ZC', m: 'Z26', ko: '옥수수', en: 'Corn', cat: '농산물', p: 428.25, c: -0.41, mult: 50, tick: 0.25, dec: 2, mg: 1300, unit: '5,000부셸 (센트/부셸)', last: '26년 12월 14일' },
+  { k: 'ZS', m: 'F27', ko: '대두', en: 'Soybeans', cat: '농산물', p: 1062.50, c: 0.24, mult: 50, tick: 0.25, dec: 2, mg: 2600, unit: '5,000부셸 (센트/부셸)', last: '27년 1월 14일' },
+  { k: 'ZW', m: 'Z26', ko: '소맥', en: 'Chicago SRW Wheat', cat: '농산물', p: 531.75, c: -0.65, mult: 50, tick: 0.25, dec: 2, mg: 2000, unit: '5,000부셸 (센트/부셸)', last: '26년 12월 14일' },
+  { k: 'ZN', m: 'Z26', ko: '미국 10년 국채', en: '10-Year T-Note', cat: '금리', p: 112.656, c: 0.09, mult: 1000, tick: 0.015625, dec: 3, mg: 2100, unit: '액면 $100,000', last: '26년 12월 21일' },
+  { k: '6E', m: 'Z26', ko: '유로', en: 'Euro FX', cat: '통화', p: 1.1645, c: 0.12, mult: 125000, tick: 0.00005, dec: 5, mg: 2700, unit: '125,000유로', last: '26년 12월 14일' },
+  { k: '6J', m: 'Z26', ko: '일본 엔', en: 'Japanese Yen', cat: '통화', p: 0.0065550, c: -0.18, mult: 12500000, tick: 0.0000005, dec: 7, mg: 3300, unit: '12,500,000엔', last: '26년 12월 14일' },
+];
+// 종목 그림: Fluent 3D 이모지 (MIT, features/futures/img/LICENSE-fluentui-emoji.txt)
+const FIMG = {ES: 'chart_increasing', MES: 'chart_increasing', NQ: 'laptop', MNQ: 'laptop', YM: 'classical_building', RTY: 'bar_chart', CL: 'oil_drum', MCL: 'oil_drum', NG: 'fire', GC: 'coin', MGC: 'coin', SI: '2nd_place_medal', HG: 'nut_and_bolt', ZC: 'ear_of_corn', ZS: 'beans', ZW: 'sheaf_of_rice', ZN: 'bank', '6E': 'euro_banknote', '6J': 'yen_banknote'};
+const fimg = (f, size = 28) => `<img src="features/futures/img/${FIMG[f.k]}.png" alt="" width="${size}" height="${size}">`;
+const MONTH = { F: '1월물', Z: '12월물' };
+const fcode = f => f.k + f.m;
+const fnum = (v, d) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fchg = c => `<span class="${c >= 0 ? 'up-c' : 'dn-c'}">${c >= 0 ? '+' : ''}${c.toFixed(2)}%</span>`;
+const futWatch = new Set(['CL', 'GC', 'ES']);
+let fcur = FUTS[0], fside = '매수', fqty = 1;
+
+// 종목마다 고정된 가상 흐름. 끝값이 오늘 등락과 같은 방향
+function fpath(f, n) {
+  let s = [...f.k].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) % 2147483647 || 1;
+  const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const pts = [0]; for (let i = 1; i < n; i++) pts.push(pts[i - 1] + (r() - .5) + f.c / n * 6);
+  return pts;
+}
+function openFut(k) {
+  fcur = FUTS.find(f => f.k === k);
+  const f = fcur, up = f.c >= 0;
+  $('#fTk').textContent = fcode(f); $('#fNm').textContent = f.ko;
+  $('#fBm').style.opacity = futWatch.has(f.k) ? 1 : .25;
+  const diff = f.p * f.c / (100 + f.c);
+  $('#fP').textContent = fnum(f.p, f.dec);
+  $('#fImg').style.background = FCAT[f.cat] + '14'; $('#fImg').innerHTML = fimg(f, 38);
+  $('#fC').innerHTML = `<span class="${up ? 'up-c' : 'dn-c'}">${up ? '▲' : '▼'} ${fnum(Math.abs(diff), f.dec)} (${up ? '+' : ''}${f.c.toFixed(2)}%)</span> <span style="color:var(--sub)">· ${f.en}</span>`;
+  const p = fpath(f, 90), mn = Math.min(...p), mx = Math.max(...p), col = up ? '#ef3b3b' : '#1d6fe0';
+  const xy = p.map((v, i) => [i * 390 / 89, 24 + (1 - (v - mn) / (mx - mn || 1)) * 170]);
+  const d = xy.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' '), last = xy[xy.length - 1];
+  $('#fChart').innerHTML = `<defs><linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".16"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${d} L390 220 L0 220Z" fill="url(#fg)"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2"/>
+    <circle cx="${last[0] - 4}" cy="${last[1]}" r="5" fill="${col}"/>`;
+  // 1틱, 1% 움직일 때 1계약 손익을 먼저 보여 줌. 선물이 처음인 사람도 크기를 감 잡게
+  const tickV = f.tick * f.mult, pctV = f.p * 0.01 * f.mult;
+  const mic = f.micro && FUTS.find(x => x.k === f.micro);
+  $('#fTip').innerHTML = `1계약 기준, 가격이 <b>1틱(${fnum(f.tick, (String(f.tick).split('.')[1] || '').length)})</b> 움직이면 <b>${fmt(tickV)}</b>, <b>1%</b> 움직이면 약 <b>${fmt(pctV)}</b>가 오가요.`
+    + (mic ? `<br>부담되면 크기가 1/10인 <b style="color:var(--blue);cursor:pointer" onclick="openFut('${mic.k}')">${mic.ko} (${mic.k}) ›</b>도 있어요.` : '');
+  $('#fSpec').innerHTML = [['거래소', 'CME 그룹'], ['상품 코드', `${fcode(f)} (${MONTH[f.m[0]]})`], ['계약 단위', f.unit],
+    ['1틱 가치', fmt(tickV)], ['1계약 증거금', fmt(f.mg)], ['최종거래일', f.last], ['거래시간', '07:00 ~ 다음 날 06:00 (한국시간)']]
+    .map(([a, b]) => `<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('');
+  const pos = HOLD.filter(h => h.fut === f.k);
+  $('#fPos').style.display = pos.length ? 'block' : 'none';
+  $('#fPos').innerHTML = pos.length ? `<div class="sec-t" style="font-size:16px;margin-bottom:6px">내 포지션</div>` + pos.map(h =>
+    `<div class="kv" style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0"><span>${h.side} ${h.qty}계약 · 진입 ${fnum(h.entry, f.dec)} · 증거금 ${fmt(h.cost)}</span><b class="${h.eval >= 0 ? 'up-c' : 'dn-c'}">${h.eval >= 0 ? '+' : ''}${money(h.eval)}</b></div>`).join('') : '';
+  go('s-fut');
+}
+function toggleFutWatch() {
+  futWatch.has(fcur.k) ? futWatch.delete(fcur.k) : futWatch.add(fcur.k);
+  $('#fBm').style.opacity = futWatch.has(fcur.k) ? 1 : .25;
+  toast(futWatch.has(fcur.k) ? '관심에 담았어요' : '관심에서 뺐어요');
+}
+function openFutOrder(side) { fside = side; fqty = 1; renderFutOrder(); $('#sheet').classList.add('on'); }
+function renderFutOrder() {
+  const f = fcur, need = f.mg * fqty, ok = need <= CASH, mic = f.micro && FUTS.find(x => x.k === f.micro);
+  $('#sheetBody').innerHTML = `<h4>${f.ko} · ${fcode(f)}</h4>
+   <div class="side2"><button class="b ${fside === '매수' ? 'on' : ''}" onclick="fside='매수';renderFutOrder()">매수</button><button class="s ${fside === '매도' ? 'on' : ''}" onclick="fside='매도';renderFutOrder()">매도</button></div>
+   <div class="kv"><span>가격</span><b>시장가 (지금 ${fnum(f.p, f.dec)})</b></div>
+   <div class="kv" style="align-items:center"><span>수량</span><div class="stepper"><button onclick="fqty=Math.max(1,fqty-1);renderFutOrder()">−</button><b>${fqty}계약</b><button onclick="fqty++;renderFutOrder()">+</button></div></div>
+   <div class="kv"><span>필요 증거금</span><b>${fmt(need)}</b></div>
+   <div class="kv"><span>주문가능금액</span><b>${fmt(CASH)}</b></div>
+   <div class="kv"><span>1% 움직이면</span><b>약 ${fmt(f.p * 0.01 * f.mult * fqty)}</b></div>
+   ${ok ? '' : `<div class="warn">증거금이 ${fmt(need - CASH)} 모자라요.${mic ? ` 같은 상품을 1/10 크기로 거래하는 <b style="cursor:pointer;text-decoration:underline" onclick="$('#sheet').classList.remove('on');openFut('${mic.k}')">${mic.ko}</b>도 있어요.` : ''}</div>`}
+   <button class="ybtn" ${ok ? '' : 'disabled'} style="${ok ? `background:${fside === '매수' ? 'var(--red)' : 'var(--blue)'};color:#fff` : ''}" onclick="fillFut()">${fside === '매수' ? '매수' : '매도'} 주문하기</button>`;
+}
+// 증거금만큼 현금이 묶이고 보유에 포지션이 생김
+function fillFut() {
+  const f = fcur, need = f.mg * fqty;
+  CASH -= need;
+  HOLD.unshift({ tk: fcode(f), name: `${f.ko} ${fside}`, qty: fqty, cost: need, eval: 0, fut: f.k, side: fside, entry: f.p });
+  $('#sheet').classList.remove('on');
+  renderAsset();
+  toast(`${f.ko} ${fqty}계약 ${fside} 체결됐어요`);
+  // 달이는 마이크로 계약도 원 계약 이름으로 묶어서 일지에 적음
+  const base = FUTS.find(x => x.micro === f.k) || f;
+  if (window.dali && typeof DALI_SYMS !== 'undefined' && DALI_SYMS[base.ko]) window.dali.record(base.ko, `${f.k} ${fqty}계약 ${fside}`, fside);
+  openFut(f.k);
+}
+$$('#fTf button').forEach(b => b.onclick = () => { $$('#fTf button').forEach(x => x.classList.remove('on')); b.classList.add('on'); });
+
 renderAsset();
 renderTop();renderWatch();
 
 /* ===== 달이 연결 =====
    이 페이지는 유진투자선물 앱. 달이는 여기서 선물 앱 종목만 따라가고,
-   종목을 누르면 이 앱의 종목 화면(옵션 전략 선택)으로 보낸다.
+   종목을 누르면 이 앱의 종목 화면(옵션 전략 선택, 해외선물은 선물 종목 화면)으로 보낸다.
    종목 화면과 주문 화면에서는 달이를 숨긴다. */
 window.DALI_PAGE_APP = 'fut';
-window.DALI_ORDER = tk => { const i = SYMS.findIndex(s => s.tk === tk); if (i >= 0) openDetail(i); };
+window.DALI_ORDER = name => {
+  const held = HOLD.find(h => h.fut && (FUTS.find(f => f.k === h.fut).ko === name || FUTS.find(f => f.micro === h.fut)?.ko === name));
+  const f = held ? FUTS.find(x => x.k === held.fut) : FUTS.find(x => x.ko === name);
+  if (f) openFut(f.k);
+};
 const goBase = go;
 go = function (id) {
   goBase(id);
-  document.querySelector('.phone').classList.toggle('dali-ordering', id === 's-detail' || id === 's-spread');
+  document.querySelector('.phone').classList.toggle('dali-ordering', id === 's-detail' || id === 's-spread' || id === 's-fut');
 };
 </script>
 <script src="features/dali/dali-data.js"></script>
