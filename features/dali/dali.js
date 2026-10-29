@@ -40,7 +40,8 @@
   }
 
   const isFlag = n => DALI_FLAG_TYPES.includes(n.type);
-  const appOf = sym => DALI_SYMS[sym].app;
+  // 아직 달이가 안 보는 종목(DALI_CATALOG, 관심에 넣기 전)의 소식은 app이 없어 걸러진다
+  const appOf = sym => DALI_SYMS[sym]?.app;
   const mine = list => list.filter(x => appOf(x.sym) === state.app);
   const josa = (w, a, b) => {
     const c = w.charCodeAt(w.length - 1) - 0xac00;
