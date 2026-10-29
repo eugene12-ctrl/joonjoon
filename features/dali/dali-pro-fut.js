@@ -68,6 +68,9 @@
   function action() {
     const sc = pro.sc, m = money(sc), h = habits(), did = memo(), pend = C.pending;
     const cl = m.pos.find(p => p.sym === "크루드 오일");
+    // 관심 종목에 걸린 이벤트(FOMC 등)가 있으면 아침과 다음 날 아침은 그 한 장 (dali-event.js)
+    const ec = window.DaliEvent && (sc === "morning" || sc === "close") ? DaliEvent.card(sc) : null;
+    if (ec) return ec;
     if (sc === "morning") {
       return { top: "밤사이 내 계약", big: usd(m.today),
         title: `크루드 오일 ${pct(cl.pct)}, 금 ${pct(m.pos[1].pct)}. 12월물 최종거래일은 3주 뒤예요`,
@@ -183,6 +186,7 @@
       if (k === "order") { if (pro.sc === "intraday") remember("sold", true); window.dali.openOrder(sym); }
       else if (k === "news") { const x = newsOf(sym); if (x) window.dali.openNews(x.id); }
       else if (k === "journal") tabs.querySelector('[data-tab="journal"]').click();
+      else if (k === "event") window.DaliEvent?.open(sym);
       return;
     }
     if (e.target.closest('[data-pro="grow"]')) tabs.querySelector('[data-tab="manage"]').click();

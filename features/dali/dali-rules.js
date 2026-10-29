@@ -311,6 +311,8 @@ const DaliRules = (function () {
         sub: `${sc === "morning" ? "어제 종가" : "지금"} ${won(now)}, 주문가보다 ${gap.toFixed(1)}% 위`, sym: pd.sym,
         btns: [["order", pd.sym, "주문 보기"], ["news", pd.sym, `${pd.sym} 보기`]], line: `${pd.sym} ${pd.qty}주 ${won(pd.price)} 매수 대기` });
     }
+    // 내 종목에 걸린 이벤트(실적 발표 등)가 있으면 그 한 장이 맨 위 (dali-event.js)
+    if (window.DaliEvent) { const ec = DaliEvent.card(sc); if (ec) cards.push(ec); }
     const top = m.pos[0];
     cards.push({ k: "hold", score: 10, top: "내 종목", big: `${top.pct > 0 ? "+" : ""}${top.pct.toFixed(1)}%`, title: `${top.sym} ${won(top.now)}`, feat: feat(top.sym, sc), sym: top.sym,
       btns: [["news", top.sym, "특징뉴스 보기"]], line: m.pos.map(p => `${p.sym} ${p.pct > 0 ? "+" : ""}${p.pct.toFixed(1)}%`).join(", ") });

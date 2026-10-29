@@ -253,6 +253,7 @@
       if (k === "order") { if (pro.sc === "intraday") remember("sold", true); window.dali.openOrder(sym); }
       else if (k === "news") { const n = newsOf(sym); if (n) window.dali.openNews(n.id); }
       else if (k === "journal") tabs.querySelector('[data-tab="journal"]').click();
+      else if (k === "event") window.DaliEvent?.open(sym);
       else if (k === "tab-news") tabs.querySelector('[data-tab="news"]').click();
       return;
     }
