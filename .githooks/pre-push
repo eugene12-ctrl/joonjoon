@@ -1,0 +1,19 @@
+#!/bin/sh
+# 원격 main을 직접 바꾸는 푸시를 막습니다. main 변경은 GitHub PR로만 합니다.
+# (원격에 main이 아직 없을 때의 첫 푸시만 허용)
+
+while read local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main|refs/heads/master)
+      case "$remote_sha" in
+        *[!0]*)
+          echo "[푸시 차단] 원격 ${remote_ref#refs/heads/}에는 직접 푸시할 수 없습니다."
+          echo "  작업 브랜치를 푸시하고 GitHub에서 PR을 만드세요."
+          exit 1
+          ;;
+      esac
+      ;;
+  esac
+done
+
+exit 0

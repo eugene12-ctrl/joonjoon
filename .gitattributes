@@ -1,0 +1,4 @@
+* text=auto
+
+# Git 훅은 Windows에서도 LF로 유지해야 동작합니다
+.githooks/* text eol=lf

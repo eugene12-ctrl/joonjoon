@@ -1,0 +1,21 @@
+#!/bin/sh
+# main에 직접 커밋하지 않고, 브랜치 이름 규칙을 지키게 합니다.
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+case "$branch" in
+  main|master)
+    echo "[커밋 차단] $branch 브랜치에는 직접 커밋할 수 없습니다."
+    echo "  작업 브랜치를 만든 뒤 커밋하세요: git switch -c feature/<이름>"
+    exit 1
+    ;;
+esac
+
+if [ -n "$branch" ] && ! echo "$branch" | grep -Eq '^(feature|fix|style|refactor|docs|chore)/[a-z0-9._-]+$'; then
+  echo "[커밋 차단] 브랜치 이름 '$branch'이(가) 규칙에 맞지 않습니다."
+  echo "  형식: <종류>/<영문-소문자-이름>  (종류: feature, fix, style, refactor, docs, chore)"
+  echo "  이름 바꾸기: git branch -m feature/<이름>"
+  exit 1
+fi
+
+exit 0
