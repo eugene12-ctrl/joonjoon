@@ -3,14 +3,15 @@
 .phone .dali-sheet:has(.dali-tabs button.on:not([data-tab="today"])) .dali-body:has(> .dali-n2) { background: #fff; padding: 0 0 24px; }
 
 /* 맨 위 띠: 오늘 탭 기본(짙은 잉크)과 같은 바탕, 안에서 옆으로 넘김 */
-.dali-n2-act { padding: 0 0 14px; overflow: hidden; }
-.dali-n2-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.dali-n2-act { display: flex; flex-direction: column; padding: 0 0 14px; overflow: hidden; }
+.dali-n2-track { display: flex; flex: 1; min-height: 0; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .dali-n2-track::-webkit-scrollbar { display: none; }
-.dali-n2-slide { flex: 0 0 100%; box-sizing: border-box; padding: 18px 18px 0; scroll-snap-align: start; }
+.dali-n2-slide { flex: 0 0 100%; display: flex; flex-direction: column; box-sizing: border-box; padding: 18px 18px 0; scroll-snap-align: start; }
+.dali-n2-slide .dali-pro-act-btns { margin-top: auto; }
 .dali-n2-slide .dali-pro-act-top { gap: 8px; }
 .dali-n2-slide .dali-pro-act-top .dali-pro-logo { width: 26px; height: 26px; font-size: 11px; flex: 0 0 auto; }
 .dali-n2-slide .dali-pro-act-top span { margin-left: auto; font-weight: 500; color: rgba(255, 255, 255, .6); }
-.dali-n2-slide h2 { min-height: 2.7em; margin-top: 8px; }
+.dali-n2-slide h2 { margin-top: 8px; }
 
 /* 몇 번째 장인지 */
 .dali-n2-dots { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
