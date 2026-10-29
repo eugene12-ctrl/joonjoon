@@ -113,11 +113,16 @@ const DALI_MISSIONS = [
 
 // 성장 단계. 시연에서 미션만으로 끝까지 볼 수 있게 시작 7개, 미션 합계 8개에 맞춤
 // icon은 features/dali/img/ 안의 Fluent 3D 이미지
+// gift: 이 단계가 되면 달이가 새로 해 주는 일 (키우는 이유). preview는 열었을 때 보이는 예시, 숫자는 가상
 const DALI_STAGES = [
-  { min: 0, name: "아기 달이", note: "물에 둥둥 떠서 세상 구경 중이에요", icon: "baby_bottle", scale: .74 },
-  { min: 8, name: "헤엄치는 달이", note: "조약돌 고르는 법을 배우는 중이에요", icon: "bubbles", scale: .86 },
-  { min: 11, name: "조개 여는 달이", note: "모은 조약돌로 조개를 열 수 있어요", icon: "oyster", scale: .96 },
-  { min: 14, name: "꾸준한 달이", note: "매일 조금씩, 바다 친구들이 따라 배워요", icon: "glowing_star", scale: 1.04 },
+  { min: 0, name: "아기 달이", note: "물에 둥둥 떠서 세상 구경 중이에요", icon: "baby_bottle", scale: .74,
+    gift: "아침마다 내 종목 소식 한 줄", preview: "지금 받고 있어요. 매일 아침 8시, 관심종목과 보유 종목 소식을 한 줄로 알려 줘요." },
+  { min: 8, name: "헤엄치는 달이", note: "조약돌 고르는 법을 배우는 중이에요", icon: "bubbles", scale: .86,
+    gift: "주간 돌아보기 카드", preview: "이번 주 매매 2건. 2건 모두 살 때 관련 뉴스를 읽었어요. 크게 오른 날 바로 산 건 0건이에요. (가상)" },
+  { min: 11, name: "조개 여는 달이", note: "모은 조약돌로 조개를 열 수 있어요", icon: "oyster", scale: .96,
+    gift: "한 달 습관 리포트", preview: "10월엔 리포트를 12번 읽었고, 급한 날 하루 기다린 적이 1번 있어요. 한 종목 비중은 가장 클 때 38%였어요. (가상)" },
+  { min: 14, name: "꾸준한 달이", note: "매일 조금씩, 바다 친구들이 따라 배워요", icon: "glowing_star", scale: 1.04,
+    gift: "내 이름으로 진짜 나무 한 그루", preview: "노을공원에 홍길동님 이름으로 나무 한 그루를 심어요. (가상 연동)" },
 ];
 
 // 옷장. stage 단계가 되면 열림. 한 번에 하나만 입음

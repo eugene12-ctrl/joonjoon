@@ -433,3 +433,37 @@
 .dali-left { font-size: 12px; font-weight: 700; color: #8A7670; margin-left: 4px; }
 .dali-tag { font-style: normal; display: inline-block; padding: 0 5px; border-radius: 5px; background: #F3EAE2; color: #8A7670; font-size: 10.5px; vertical-align: 1px; }
 .dali-trees img { width: 26px; height: 26px; display: block; }
+
+/* 관리 탭: 키우는 이유. 단계마다 달이가 새로 해 주는 일 */
+.dali-card.grow > h3 { margin: 4px 0 2px; text-align: left; }
+.dali-card.grow > .dali-hint { text-align: left; margin-bottom: 8px; }
+.dali-ladder { list-style: none; margin: 0; padding: 0; text-align: left; }
+.dali-ladder li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #F3EAE2; }
+.dali-ladder li:first-child { border-top: 0; }
+.dali-ladder img { width: 30px; height: 30px; flex: 0 0 auto; }
+.dali-ladder div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dali-ladder small { font-size: 11px; color: #8A7670; }
+.dali-ladder b { font-size: 13.5px; }
+.dali-ladder .dali-link { margin: 0; }
+.dali-ladder .dali-bar { display: block; height: 6px; margin: 5px 0 0; }
+.dali-ladder li.now { background: #FFF6F3; margin: 0 -8px; padding: 8px; border-radius: 10px; border-top-color: transparent; }
+.dali-ladder li.now small { color: #C8202C; font-weight: 800; }
+.dali-ladder li.lock img { filter: grayscale(1); opacity: .4; }
+.dali-ladder li.lock b { color: #8A7670; font-weight: 600; }
+.dali-ladder li.next .dali-left { color: #C8202C; }
+.dali-ladder .dali-say { width: 100%; margin: 0; font-size: 12.5px; line-height: 1.5; }
+
+/* 관리 탭 첫 화면: 한 화면에 들어가게 */
+.dali-card.grow.compact { padding: 8px; }
+.dali-card.grow.compact .dali-sea { height: 150px; margin: 0 0 8px; }
+.dali-card.grow.compact .dali-float { width: 120px; height: 120px; margin-left: -60px; top: 10%; }
+.dali-next { display: flex; align-items: center; gap: 10px; width: 100%; padding: 4px 6px; text-align: left; }
+.dali-next img { width: 34px; height: 34px; flex: 0 0 auto; }
+.dali-next span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dali-next small { font-size: 11.5px; color: #8A7670; }
+.dali-next b { font-size: 14.5px; color: #2A1416; }
+.dali-next .dali-bar { display: block; height: 6px; margin: 5px 0 0; }
+.dali-next .dali-bar i { display: block; height: 100%; background: #C8202C; border-radius: 999px; }
+.dali-next em { font-style: normal; font-size: 22px; color: #8A7670; }
+.dali-card .dali-row-m + .dali-say, .dali-card .dali-row-m ~ .dali-q { margin-top: 2px; }
+.dali-sea { isolation: isolate; } /* 물결 z-index가 위에 덮는 화면을 뚫고 나오지 않게 */

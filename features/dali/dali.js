@@ -23,6 +23,7 @@
     quiz: {},
     forest: 72,
     wear: "ribbon",
+    gift: null, // 관리 탭에서 펼쳐 본 단계 선물
     fx: null, // 관리 탭을 다시 그린 뒤 보여 줄 연출 { gain, grew }
     editing: null,
     order: null, // { sym, side, qty } MTS 주문 화면
@@ -136,7 +137,8 @@
   /* --- 열고 닫기 --- */
   function open(tab) {
     if (tab) state.tab = tab;
-    state.lastQuiz = null; // 다시 열면 다음 문제
+    state.lastQuiz = null; // 다시 열면 다음 문제, 접힌 채로
+    state.quizOpen = false;
     state.open = true;
     sheet.classList.add("open");
     dim.classList.add("show");
@@ -216,21 +218,19 @@
         <img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>${right}
       </div>`;
   }
-  // 이번 주 한 문제: 한 번에 하나만. 방금 푼 문제는 답 한 줄을 보여 주고, 다음 문제는 다음에 열 때
-  function quizCard() {
+  // 이번 주 한 문제: 평소엔 한 줄, 눌러야 문제가 펼쳐짐. 한 번에 하나만
+  function quizRow() {
     const qs = DALI_MISSIONS.filter(m => m.quiz);
     const m = qs.find(x => x.id === state.lastQuiz) || qs.find(x => !state.done[x.id]);
-    const left = qs.filter(x => !state.done[x.id]).length;
-    if (!m) return `<article class="dali-card"><h3>이번 주 한 문제</h3><p class="dali-hint">이번 주 문제를 다 풀었어요</p></article>`;
-    const body = state.done[m.id] ? `<p class="dali-say">${m.quiz.after}</p>`
-      : `<p class="dali-q">${m.quiz.q}</p>` + m.quiz.options.map((o, i) =>
-        `<button type="button" class="dali-opt${state.quiz[m.id] === i ? " wrong" : ""}" data-act="quiz" data-id="${m.id}" data-i="${i}">${o}</button>`).join("");
-    return `
-      <article class="dali-card">
-        <h3>이번 주 한 문제 <small class="dali-left">${qs.length - left}/${qs.length}</small></h3>
-        <div class="dali-row-m"><img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span><span class="dali-reward">+${m.reward}</span></div>
-        ${body}
-      </article>`;
+    if (!m) return `<div class="dali-row-m done"><img src="${IMG("light_bulb")}" alt=""><span>이번 주 문제 다 풀었어요</span><span class="dali-check">✓</span></div>`;
+    const done = state.done[m.id];
+    const head = `
+      <div class="dali-row-m${done ? " done" : ""}"><img src="${IMG(m.icon)}" alt=""><span>한 문제, ${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>
+        ${done ? `<span class="dali-check">✓</span>` : state.quizOpen ? `<span class="dali-reward">+${m.reward}</span>` : `<button type="button" class="dali-btn small" data-act="quiz-open">풀기</button>`}</div>`;
+    if (done) return head + `<p class="dali-say">${m.quiz.after}</p>`;
+    if (!state.quizOpen) return head;
+    return head + `<p class="dali-q">${m.quiz.q}</p>` + m.quiz.options.map((o, i) =>
+      `<button type="button" class="dali-opt${state.quiz[m.id] === i ? " wrong" : ""}" data-act="quiz" data-id="${m.id}" data-i="${i}">${o}</button>`).join("");
   }
   // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
   function seaHTML() {
@@ -266,7 +266,7 @@
     if (fx.grew) {
       setTimeout(() => {
         layer.insertAdjacentHTML("beforeend", `
-          <div class="dali-grew"><img src="${IMG("party_popper")}" alt=""><b>달이가 자랐어요!</b><span>${stage().name}</span></div>`);
+          <div class="dali-grew"><img src="${IMG("party_popper")}" alt=""><b>달이가 자랐어요!</b><span>이제 ${stage().gift}</span></div>`);
         body.querySelector(".dali-otterbox")?.classList.add("grow-pop");
       }, 700);
     }
@@ -281,18 +281,48 @@
     layer.appendChild(h);
     setTimeout(() => h.remove(), 1200);
   }
+  // 관리 탭 첫 화면: 한 화면 안에 다 보이게. 바다, 다음 선물(왜 키우나), 오늘 할 일 3줄(어떻게), 한 문제 한 줄
   function manageHTML() {
+    const s = stage(), n = nextStage();
+    const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
+    return `
+      <article class="dali-card grow compact">
+        ${seaHTML()}
+        <button type="button" class="dali-next" data-act="grow-page">
+          <img src="${IMG((n || s).icon)}" alt="">
+          <span><small>${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 달이가` : "다 자란 달이가"}</small><b>${n ? n.gift : s.gift}</b>
+            <i class="dali-bar"><i style="width:${p}%"></i></i></span>
+          <em>›</em>
+        </button>
+      </article>
+      <article class="dali-card">
+        <h3>오늘 달이랑</h3>
+        ${DALI_MISSIONS.filter(m => !m.quiz && !m.hidden).map(missionRow).join("")}
+        ${quizRow()}
+      </article>`;
+  }
+  // 달이 키우기 자세히 (관리 탭의 다음 선물 줄을 누르면): 단계별 선물, 숲, 옷장
+  function growPage() {
     const s = stage(), n = nextStage(), si = stageAt(state.pebbles);
     const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
     return `
+      <header class="dali-page-head"><button type="button" class="dali-back" data-act="back" aria-label="뒤로">‹</button><strong>달이 키우기</strong></header>
+      <div class="dali-page-body">
       <article class="dali-card grow">
-        ${seaHTML()}
-        <ol class="dali-path">${DALI_STAGES.map((x, i) => `
-          <li class="${i < si ? "past" : i === si ? "now" : "lock"}"><span><img src="${IMG(x.icon)}" alt=""></span><small>${x.name.replace(" 달이", "")}</small></li>`).join("")}
-        </ol>
-        <h3>${s.name}</h3><p>${s.note}</p>
-        <div class="dali-bar"><span style="width:${p}%"></span></div>
-        <p class="dali-hint">${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요. 이제 매일 꾸준히만 하면 돼요"}</p>
+        <h3>달이가 자라면 더 많이 도와줘요</h3>
+        <p class="dali-hint">읽고, 돌아보고, 같이 걸으면 조약돌이 생겨요. 거래로는 생기지 않아요.</p>
+        <ol class="dali-ladder">${DALI_STAGES.map((x, i) => {
+          const cls = i < si ? "past" : i === si ? "now" : i === si + 1 ? "next" : "lock";
+          const right = i <= si ? `<button type="button" class="dali-link" data-act="gift" data-i="${i}">${state.gift === i ? "접기" : "보기"}</button>`
+            : `<span class="dali-left">${i === si + 1 ? `${x.min - state.pebbles}개 더` : `조약돌 ${x.min}`}</span>`;
+          return `
+          <li class="${cls}">
+            <img src="${IMG(x.icon)}" alt="">
+            <div><small>${x.name}</small><b>${x.gift}</b>${i === si + 1 ? `<span class="dali-bar"><span style="width:${p}%"></span></span>` : ""}</div>
+            ${right}
+            ${state.gift === i ? `<p class="dali-say">${x.preview}</p>` : ""}
+          </li>`;
+        }).join("")}</ol>
         <div class="dali-closet">${DALI_WEARS.map(w => {
           const open = si >= w.stage;
           return `<button type="button" class="${state.wear === w.id ? "on" : ""}" data-act="wear" data-id="${w.id}" ${open ? "" : "disabled"}>
@@ -304,9 +334,7 @@
         <div class="dali-trees" aria-label="달이네 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}"><img src="${IMG("tree")}" alt=""></span>`).join("")}</div>
         <p class="dali-hint">다 차면 노을공원에 진짜 나무 한 그루 (가상 연동)</p>
       </article>
-      <article class="dali-card"><h3>오늘 달이랑</h3>${DALI_MISSIONS.filter(m => !m.quiz && !m.hidden).map(missionRow).join("")}</article>
-      ${quizCard()}
-      <p class="dali-hint center">조약돌은 읽고, 돌아보고, 배울 때만 받아요. 거래로는 받지 않아요.</p>`;
+      </div>`;
   }
 
   /* --- 뉴스 읽기 화면 (헤더의 종목 이름을 누르면 주문창) --- */
@@ -471,11 +499,13 @@
     else if (state.fx && !state.fx.grew) state.fx = null;
     if (state.page) {
       // 같은 화면을 다시 그릴 때(뉴스, 공시 탭 전환, 공시 도착)는 스크롤 위치를 지킴
-      const same = !pageEl.hidden && pageEl.dataset.id === state.page.id;
-      const y = same ? pageEl.querySelector(".dali-page-body").scrollTop : 0;
-      pageEl.innerHTML = newsPage(state.page.id);
-      pageEl.dataset.id = state.page.id;
-      pageEl.querySelector(".dali-page-body").scrollTop = y;
+      const key = state.page.type === "grow" ? "grow" : state.page.id;
+      const same = !pageEl.hidden && pageEl.dataset.id === key;
+      const y = same ? pageEl.querySelector(".dali-page-body")?.scrollTop || 0 : 0;
+      pageEl.innerHTML = state.page.type === "grow" ? growPage() : newsPage(state.page.id);
+      pageEl.dataset.id = key;
+      const pb = pageEl.querySelector(".dali-page-body");
+      if (pb) pb.scrollTop = y;
       pageEl.hidden = false;
     } else pageEl.hidden = true;
     paintAlert();
@@ -513,6 +543,9 @@
     }
     else if (act === "pb") { t.pb = !t.pb; say(t.pb ? "담당 PB가 이 매매를 볼 수 있어요. 언제든 끌 수 있어요." : "공유를 껐어요."); render(); }
     else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
+    else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
+    else if (act === "quiz-open") { state.quizOpen = true; render(); }
+    else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
     else if (act === "pet") pet(b);
     else if (act === "mission") { complete(id); render(); }
     else if (act === "quiz") {
