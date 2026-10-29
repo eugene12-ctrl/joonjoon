@@ -239,6 +239,7 @@ function createScreen(host) {
     const ci = +tile.closest(".page").dataset.c;
     select(ci, +tile.dataset.t);
     if (tile.classList.contains("new")) openNewFeature(api);
+    else openTileLink(ci, tile.querySelector(".lbl").textContent);
   });
 
   // 펼쳐보기 / 접기

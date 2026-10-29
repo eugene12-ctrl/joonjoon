@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>관심종목·차트·주문·잔고 · 시연용 가상 화면</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/css/main.css">
+<link rel="stylesheet" href="css/mts.css">
+<link rel="stylesheet" href="../dali/dali.css">
+</head>
+<body>
+
+<main id="app"></main>
+
+<!-- 불러오는 순서가 중요합니다: 가상 데이터 → 공용 틀 → 화면들 → 시작 -->
+<script src="js/data.js"></script>
+<script src="js/common.js"></script>
+<script src="js/screens/watch.js"></script>
+<script src="js/screens/chart.js"></script>
+<script src="js/screens/order.js"></script>
+<script src="js/screens/balance.js"></script>
+<script src="js/main.js"></script>
+<!-- 달이(AI 비서): 화면 틀이 만들어진 뒤에 얹습니다 -->
+<script src="../dali/dali-data.js"></script>
+<script src="../dali/dali-chart.js"></script>
+<script src="../dali/dali.js"></script>
+</body>
+</html>
