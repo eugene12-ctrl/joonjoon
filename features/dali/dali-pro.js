@@ -315,7 +315,8 @@
      window.daliPro.addWatch(sym)로 부른다. 이미 보는 종목이면 아무 일도 없다 */
   const WKEY = "dali-watch";
   function addWatch(sym, quiet) {
-    if (typeof DALI_CATALOG === "undefined" || !DALI_CATALOG[sym] || DALI_SYMS[sym]) return false;
+    if (DALI_SYMS[sym]) { if (!quiet) toast(`${sym}은 달이가 이미 보고 있어요`); return true; }
+    if (typeof DALI_CATALOG === "undefined" || !DALI_CATALOG[sym]) return false;
     const k = DALI_CATALOG[sym];
     DALI_SYMS[sym] = { app: k.app, kind: "watch", price: k.price, chg: k.chg, code: k.code, name: k.name };
     Object.keys(k.pct).forEach(s => { if (M[s]) { M[s].pct[sym] = k.pct[s]; if (M[s].feat) M[s].feat[sym] = k.feat[s]; } });

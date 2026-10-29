@@ -14,6 +14,7 @@ const DALI_SYMS = {
   "SK하이닉스": { app: "stock", kind: "watch", price: 1487000, chg: 10.9, code: "000660" },
   "현대차": { app: "stock", kind: "hold", price: 297000, chg: 1.9, code: "005380" },
   "NAVER": { app: "stock", kind: "watch", price: 220500, chg: 1.8, code: "035420" },
+  "유진투자증권": { app: "stock", kind: "watch", price: 4820, chg: 1.15, code: "001200" },
   // 유진투자선물 앱(futures.html): CME 해외선물. 주식은 증권 앱에서 따라가므로 여기선 선물만.
   // 이름은 futures.html FUTS의 ko와 같게 (종목을 누르면 그 선물 화면으로 감). 마이크로 계약은 원 계약 이름으로 묶음
   // name: 화면에 보이는 이름(선물 코드 병기). 키는 그대로 두고 DALI_NAME(sym)으로 꺼내 쓴다
