@@ -87,6 +87,8 @@ const App = {
     const [name, sub] = location.hash.slice(1).split("/");
     this.current = Screens[name] ? name : "watch";
     this.params = { sub: sub ? decodeURIComponent(sub) : undefined };
+    // 주소에 종목코드가 붙어 오면(#order/005930) 그 종목으로. 달이에서 주문으로 넘어올 때 씀
+    if (sub && stockBy(sub) && sub !== this.code) { this.code = sub; if (Screens.order) Object.assign(Screens.order, { qty: 1, price: null }); }
     this.render();
   },
   render() {

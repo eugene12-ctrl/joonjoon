@@ -36,5 +36,9 @@
 <script src="../dali/dali-plus.js"></script>
 <script src="../dali/dali-intro.js"></script>
 <script src="../dali/dali-move.js"></script>
+<script>
+  // 달이에서 종목 이름을 누르면 이 앱의 주문 화면으로 (그 종목, 수량 1, 현재가)
+  window.DALI_ORDER = name => { const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) App.go("order", c); };
+</script>
 </body>
 </html>

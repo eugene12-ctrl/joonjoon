@@ -47,5 +47,9 @@
 <script src="features/dali/dali-plus.js"></script>
 <script src="features/dali/dali-intro.js"></script>
 <script src="features/dali/dali-move.js"></script>
+<script>
+  // 달이에서 종목 이름을 누르면 국내주식 MTS 주문 화면으로 (features/mts, 그 종목)
+  window.DALI_ORDER = name => { const c = DALI_SYMS[name] && DALI_SYMS[name].code; if (c) location.href = "features/mts/index.html#order/" + c; };
+</script>
 </body>
 </html>
