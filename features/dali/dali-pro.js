@@ -37,8 +37,8 @@
      따로 요약 화면을 두지 않는다. 달이가 본 것은 그 종목 줄 안에 해달 얼굴과 한 줄로 붙는다.
      시각(아침, 장중, 마감, 월말)에 따라 가격과 한 줄이 바뀐다. 줄을 누르면 그 종목 화면(주문까지 한 번)으로 */
   const FACE_S = `${BASE}dali-face.png`;
-  // 종목 로고: 주소로만 불러오고(저장소에 받아 두지 않음), 못 불러오면 그림을 지워 글자 동그라미가 보이게
-  const LOGO = code => `https://static.toss.im/png-icons/securities/icn-sec-fill-${code}.png`;
+  // 종목 로고: img/logo-<종목코드>.png. 못 불러오면 그림을 지워 글자 동그라미가 보이게
+  const LOGO = code => `${BASE}img/logo-${code}.png`;
   const logo = sym => (DALI_SYMS[sym] && DALI_SYMS[sym].code ? `<img src="${LOGO(DALI_SYMS[sym].code)}" alt="" onerror="this.remove()">` : "");
   function row(sym, sub, value, p, held) {
     const n = newsOf(sym);

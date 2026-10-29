@@ -174,42 +174,66 @@
       `<p class="dali-hint center">${state.app === "fut" ? "관심과 보유 계약을 달이가 알아서 따라가요. 느낌표는 큰 변동, 만기, 증거금일 때만." : "관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만."}</p>`;
   }
 
-  /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
+  /* --- 매매일지 탭: 거래내역처럼 한 줄씩. 줄을 누르면 그 아래에 차트 하나와 살 때, 팔 때 두 줄만 --- */
   // 나눠 산 기록: 평단보다 낮게 더 사면 물타기, 높게 더 사면 불타기. 좋다 나쁘다는 말하지 않고 사실만
-  function addLine(t) {
-    if (!t.buys || t.buys.length < 2) return "";
-    const plain = n => `${Math.round(n).toLocaleString("ko-KR")}원`;
+  function addInfo(t) {
+    if (!t.buys || t.buys.length < 2) return { kind: "", text: "" };
     let qty = 0, cost = 0, water = 0, fire = 0;
-    const first = t.buys[0].price;
     t.buys.forEach((b, i) => {
       if (i) (b.price < cost / qty ? water++ : fire++);
       qty += b.qty; cost += b.qty * b.price;
     });
-    const kind = [water ? `물타기 ${water}번` : "", fire ? `불타기 ${fire}번` : ""].filter(Boolean).join(", ");
-    const adds = t.buys.slice(1).map(b => `${b.date} ${b.qty}주 ${plain(b.price)}`).join(", ");
-    return `<p class="dali-add"><b>${kind}</b> <span>평단 ${(first).toLocaleString("ko-KR")} → ${plain(cost / qty)}</span><small>${adds}</small></p>`;
+    const last = t.buys[t.buys.length - 1];
+    return {
+      kind: water && fire ? "물타기, 불타기" : water ? "물타기" : "불타기",
+      text: `${last.date} ${last.qty}주 더 사서 평단 ${t.buys[0].price.toLocaleString("ko-KR")} → ${Math.round(cost / qty).toLocaleString("ko-KR")}원`,
+    };
   }
-  function tradeCard(t) {
-    const closed = !!t.sell;
-    const side = (label, x, extra = "") => `
-      <div class="dali-side-box"><p class="dali-side-label">${label} <span>${x ? x.date : ""}</span></p>
-        ${x ? `<p>${x.news}</p><p class="dali-mood">${x.mood}</p>` : `<p class="dali-mood">아직 보유 중</p>`}${extra}</div>`;
+  // 종목 그림: 국내주식은 로고 파일, 선물은 해외선물 화면과 같은 그림. 없으면 글자 동그라미
+  function symImg(sym) {
+    const s = DALI_SYMS[sym], src = s.code ? IMG(`logo-${s.code}`) : s.icon ? `${BASE}../futures/img/${s.icon}.png` : "";
+    return src ? `<img src="${src}" alt="" onerror="this.remove()">` : "";
+  }
+  function tradeRow(t) {
+    const open = state.openTrade === t.id, add = addInfo(t);
+    const sub = t.sell ? `${t.sell.date} 팜, ${t.qty}` : t.qty;
     return `
-      <article class="dali-trade${t.live ? " new" : ""}">
-        <header><b>${t.sym}</b><span>${t.qty}</span><span class="dali-state ${closed ? "done" : "hold"}">${closed ? "매매 완료" : "보유 중"}</span></header>
-        <p class="dali-pnl ${tone(t.pnl)}">${closed ? "" : "<small>지금 평가</small> "}${won(t.pnl)} <span>${pct(t.pct)}</span></p>
-        ${DaliChart.trade(t)}
-        <div class="dali-sides">${side("살 때", t.buy, addLine(t))}${side("팔 때", t.sell)}</div>
-      </article>`;
+      <li class="dali-jrow${open ? " open" : ""}${t.live ? " new" : ""}">
+        <button type="button" class="dali-jline" data-act="trade" data-id="${t.id}" aria-expanded="${open}">
+          <i class="dali-jlogo${DALI_SYMS[t.sym].icon ? " icon" : ""}">${t.sym[0]}${symImg(t.sym)}</i>
+          <span class="dali-jname"><b>${t.sym}${add.kind ? `<em>${add.kind}</em>` : ""}</b><small>${sub}</small></span>
+          <span class="dali-jval ${tone(t.pnl)}"><b>${won(t.pnl)}</b><small>${pct(t.pct)}</small></span>
+        </button>
+        ${open ? `<div class="dali-jmore">${DaliChart.trade(t)}
+          <p><b>살 때</b><span>${t.buy.news}${add.text ? `. ${add.text}` : ""}</span></p>
+          <p><b>팔 때</b><span>${t.sell ? t.sell.news : "아직 들고 있어요"}</span></p></div>` : ""}
+      </li>`;
+  }
+  // 10월 수익 달력: 판 날마다 그날 실현 손익을 만 원 단위로. 누르면 그날 판 줄이 펼쳐짐
+  function jcalHTML(closed) {
+    const byDay = {};
+    closed.forEach(t => { const [m, d] = (t.sell.date === "오늘" ? "10/29" : t.sell.date).split("/").map(Number); if (m !== 10) return; (byDay[d] = byDay[d] || []).push(t); });
+    const short = n => { if (state.app === "fut") return `${n > 0 ? "+" : n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`; const v = n / 10000; return `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(v) >= 10 ? Math.round(Math.abs(v)) : Math.abs(v).toFixed(1).replace(".0", "")}만`; };
+    const first = new Date(2026, 9, 1).getDay(), today = 29, cells = [];
+    for (let i = 0; i < first; i++) cells.push("<span></span>");
+    for (let d = 1; d <= 31; d++) {
+      const l = byDay[d], sum = l ? l.reduce((a, t) => a + t.pnl, 0) : 0;
+      cells.push(l
+        ? `<button type="button" class="dali-jday ${tone(sum)}${d === today ? " today" : ""}" data-act="jday" data-id="${l[0].id}"><i>${d}</i><b>${short(sum)}</b></button>`
+        : `<span class="dali-jday${d === today ? " today" : ""}"><i>${d}</i></span>`);
+    }
+    return `<div class="dali-jcal"><div class="dali-jweek">${"일월화수목금토".split("").map(w => `<i>${w}</i>`).join("")}</div><div class="dali-jgrid">${cells.join("")}</div></div>`;
   }
   function journalHTML() {
-    const list = mine(state.trades);
-    const closed = list.filter(t => t.sell);
+    const list = mine(state.trades), held = list.filter(t => !t.sell);
+    // 판 날짜가 최근인 것부터 (방금 판 "오늘"은 맨 위)
+    const key = t => (t.sell.date === "오늘" ? "99/99" : t.sell.date), closed = list.filter(t => t.sell).sort((a, b) => key(b).localeCompare(key(a)));
     const total = closed.reduce((a, t) => a + t.pnl, 0);
+    const group = (title, l) => l.length ? `<p class="dali-jsec">${title}</p><ul class="dali-jlist">${l.map(tradeRow).join("")}</ul>` : "";
     return `
-      <div class="dali-sum"><span>이번 달 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>매매 완료 ${closed.length}건, 보유 ${list.length - closed.length}건.</small>${DaliChart.pnlBars(list, won)}</div>
-      <p class="dali-hint">살 때와 팔 때의 뉴스, 분위기는 달이가 알아서 적어요. 메모는 쓰고 싶을 때만.</p>` +
-      list.map(tradeCard).join("");
+      <div class="dali-jsum"><span>10월 실현 손익</span><b class="${tone(total)}">${won(total)}</b><small>판 ${closed.length}번 중 ${closed.filter(t => t.pnl > 0).length}번 수익</small></div>
+      ${jcalHTML(closed)}
+      ${group("보유 중", held)}${group("10월에 판 것", closed)}`;
   }
 
   /* --- 관리 탭 --- */
@@ -560,6 +584,8 @@
     else if (act === "sub") { state.page.sub = b.dataset.v; render(); }
     else if (act === "order") openOrder(b.dataset.sym);
     else if (act === "wear") { state.wear = state.wear === id ? null : id; render(); }
+    else if (act === "trade") { state.openTrade = state.openTrade === id ? null : id; render(); }
+    else if (act === "jday") { state.openTrade = id; render(); sheet.querySelector(".dali-jrow.open")?.scrollIntoView({ block: "center", behavior: "smooth" }); }
     else if (act === "grow-page") { state.page = { type: "grow" }; render(); }
     else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
     else if (act === "pet") pet(b);
