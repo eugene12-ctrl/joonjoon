@@ -51,7 +51,8 @@
   const tone = n => (n > 0 ? "up" : n < 0 ? "down" : "flat");
   const priceText = sym => {
     const s = DALI_SYMS[sym];
-    return s.app === "fut" ? `$${s.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `${s.price.toLocaleString("ko-KR")}원`;
+    // 선물 시세는 호가 단위 그대로 (지수 포인트, 배럴당 달러 등). 손익만 달러로 씀
+    return s.app === "fut" ? s.price.toLocaleString("en-US", { minimumFractionDigits: s.dec ?? 2, maximumFractionDigits: s.dec ?? 2 }) : `${s.price.toLocaleString("ko-KR")}원`;
   };
   const quote = sym => `<span class="dali-quote ${tone(DALI_SYMS[sym].chg)}">${priceText(sym)} <b>${pct(DALI_SYMS[sym].chg)}</b></span>`;
   const stageAt = p => DALI_STAGES.findLastIndex(s => p >= s.min);
@@ -128,13 +129,14 @@
     const m = DALI_MISSIONS.find(x => x.id === id);
     state.done[id] = true;
     gain(m.reward);
-    state.forest = Math.min(100, state.forest + m.reward * 2);
-    say(`조약돌 ${m.reward}개! ${m.title.replace(" (안 해도 괜찮아요)", "")}`);
+    state.forest = Math.min(100, state.forest + (m.forest || m.reward * 2));
+    say(m.doneSay || `조약돌 ${m.reward}개! ${m.title.replace(" (안 해도 괜찮아요)", "")}`);
   }
 
   /* --- 열고 닫기 --- */
   function open(tab) {
     if (tab) state.tab = tab;
+    state.lastQuiz = null; // 다시 열면 다음 문제
     state.open = true;
     sheet.classList.add("open");
     dim.classList.add("show");
@@ -166,7 +168,7 @@
     return `
       <div class="dali-track"><span>자동 추적 중</span>${tracked.map(s => `<i class="${DALI_SYMS[s].kind}">${s}</i>`).join("")}</div>` +
       sorted.map(newsRow).join("") +
-      `<p class="dali-hint center">관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만.</p>`;
+      `<p class="dali-hint center">${state.app === "fut" ? "관심과 보유 계약을 달이가 알아서 따라가요. 느낌표는 큰 변동, 만기, 증거금일 때만." : "관심종목에 넣으면 달이가 알아서 따라가요. 느낌표는 공시, 실적, 큰 변동일 때만."}</p>`;
   }
 
   /* --- 매매일지 탭: 얼마 벌었나, 살 때, 팔 때, 메모 --- */
@@ -203,20 +205,32 @@
   }
 
   /* --- 관리 탭 --- */
+  // 오늘 할 일: 한 줄짜리. 자동으로 채워지는 건 버튼 없이 조약돌만
   function missionRow(m) {
     const done = state.done[m.id];
-    let action = "";
-    if (m.quiz && !done) {
-      action = `<p class="dali-q">${m.quiz.q}</p>` + m.quiz.options.map((o, i) =>
-        `<button type="button" class="dali-opt${state.quiz[m.id] === i ? " wrong" : ""}" data-act="quiz" data-id="${m.id}" data-i="${i}">${o}</button>`).join("");
-    } else if (m.quiz && done) action = `<p class="dali-say">${m.quiz.after}</p>`;
-    else if (!m.auto && !done) action = `<button type="button" class="dali-btn small" data-act="mission" data-id="${m.id}">하기</button>`;
+    const right = done ? `<span class="dali-check">✓</span>`
+      : m.auto ? `<span class="dali-reward">+${m.reward}</span>`
+      : `<button type="button" class="dali-btn small" data-act="mission" data-id="${m.id}">${m.btn || "하기"}</button>`;
     return `
-      <div class="dali-mission${done ? " done" : ""}">
-        <div class="dali-mission-top"><span>${done ? "✓ " : ""}${m.title}</span><span class="dali-reward">조약돌 ${m.reward}</span></div>
-        ${m.note ? `<p class="dali-hint">${m.note}</p>` : ""}
-        ${action}
+      <div class="dali-row-m${done ? " done" : ""}">
+        <img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span>${right}
       </div>`;
+  }
+  // 이번 주 한 문제: 한 번에 하나만. 방금 푼 문제는 답 한 줄을 보여 주고, 다음 문제는 다음에 열 때
+  function quizCard() {
+    const qs = DALI_MISSIONS.filter(m => m.quiz);
+    const m = qs.find(x => x.id === state.lastQuiz) || qs.find(x => !state.done[x.id]);
+    const left = qs.filter(x => !state.done[x.id]).length;
+    if (!m) return `<article class="dali-card"><h3>이번 주 한 문제</h3><p class="dali-hint">이번 주 문제를 다 풀었어요</p></article>`;
+    const body = state.done[m.id] ? `<p class="dali-say">${m.quiz.after}</p>`
+      : `<p class="dali-q">${m.quiz.q}</p>` + m.quiz.options.map((o, i) =>
+        `<button type="button" class="dali-opt${state.quiz[m.id] === i ? " wrong" : ""}" data-act="quiz" data-id="${m.id}" data-i="${i}">${o}</button>`).join("");
+    return `
+      <article class="dali-card">
+        <h3>이번 주 한 문제 <small class="dali-left">${qs.length - left}/${qs.length}</small></h3>
+        <div class="dali-row-m"><img src="${IMG(m.icon)}" alt=""><span>${m.title}${m.tag ? ` <i class="dali-tag">${m.tag}</i>` : ""}</span><span class="dali-reward">+${m.reward}</span></div>
+        ${body}
+      </article>`;
   }
   // 달이네 바다: 단계마다 크기와 주변 소품이 바뀜. 해달과 소품은 모두 Fluent 3D 이미지
   function seaHTML() {
@@ -270,7 +284,6 @@
   function manageHTML() {
     const s = stage(), n = nextStage(), si = stageAt(state.pebbles);
     const p = n ? Math.round((state.pebbles - s.min) / (n.min - s.min) * 100) : 100;
-    const groups = [...new Set(DALI_MISSIONS.map(m => m.group))];
     return `
       <article class="dali-card grow">
         ${seaHTML()}
@@ -278,7 +291,6 @@
           <li class="${i < si ? "past" : i === si ? "now" : "lock"}"><span><img src="${IMG(x.icon)}" alt=""></span><small>${x.name.replace(" 달이", "")}</small></li>`).join("")}
         </ol>
         <h3>${s.name}</h3><p>${s.note}</p>
-        <ol class="dali-steps">${DALI_STAGES.map(x => `<li class="${state.pebbles >= x.min ? "on" : ""}${x === s ? " now" : ""}"><span></span>${x.name}</li>`).join("")}</ol>
         <div class="dali-bar"><span style="width:${p}%"></span></div>
         <p class="dali-hint">${n ? `조약돌 ${n.min - state.pebbles}개 더 모으면 ${n.name}` : "다 자랐어요. 이제 매일 꾸준히만 하면 돼요"}</p>
         <div class="dali-closet">${DALI_WEARS.map(w => {
@@ -288,12 +300,12 @@
         }).join("")}</div>
       </article>
       <article class="dali-card forest">
-        <h3>유진의 숲</h3>
-        <p>모두의 조약돌이 다 차면 노을공원에 진짜 나무 한 그루를 심어요.</p>
-        <div class="dali-trees" aria-label="유진의 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}">🌳</span>`).join("")}</div>
-        <p class="dali-hint">이번 달 ${state.forest}% 찼어요</p>
+        <h3>달이네 숲 <small class="dali-left">${state.forest}%</small></h3>
+        <div class="dali-trees" aria-label="달이네 숲 ${state.forest}% 찼어요">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.floor(state.forest / 10) ? "on" : ""}"><img src="${IMG("tree")}" alt=""></span>`).join("")}</div>
+        <p class="dali-hint">다 차면 노을공원에 진짜 나무 한 그루 (가상 연동)</p>
       </article>
-      ${groups.map(g => `<article class="dali-card"><h3>${g}</h3>${DALI_MISSIONS.filter(m => m.group === g).map(missionRow).join("")}</article>`).join("")}
+      <article class="dali-card"><h3>오늘 달이랑</h3>${DALI_MISSIONS.filter(m => !m.quiz && !m.hidden).map(missionRow).join("")}</article>
+      ${quizCard()}
       <p class="dali-hint center">조약돌은 읽고, 돌아보고, 배울 때만 받아요. 거래로는 받지 않아요.</p>`;
   }
 
@@ -473,7 +485,7 @@
     else if (act === "mission") { complete(id); render(); }
     else if (act === "quiz") {
       const m = DALI_MISSIONS.find(x => x.id === id);
-      if (+b.dataset.i === m.quiz.answer) complete(id);
+      if (m.quiz.pick || +b.dataset.i === m.quiz.answer) { complete(id); state.lastQuiz = id; }
       else { state.quiz[id] = +b.dataset.i; say("괜찮아요, 다른 걸 골라 보세요."); }
       render();
     }

@@ -410,3 +410,14 @@
 .dali-trees { display: flex; justify-content: space-between; font-size: 22px; margin: 4px 0 6px; }
 .dali-trees span { filter: grayscale(1); opacity: .3; }
 .dali-trees span.on { filter: none; opacity: 1; }
+
+/* 관리 탭: 한 줄짜리 할 일, 캠페인 이름은 작은 칩으로만 */
+.dali-row-m { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #F3EAE2; font-size: 13.5px; }
+.dali-card h3 + .dali-row-m { border-top: 0; padding-top: 2px; }
+.dali-row-m img { width: 26px; height: 26px; flex: 0 0 auto; }
+.dali-row-m > span:first-of-type { flex: 1; min-width: 0; }
+.dali-row-m.done > span:first-of-type { color: #8A7670; }
+.dali-check { color: #3E8E5A; font-weight: 900; }
+.dali-left { font-size: 12px; font-weight: 700; color: #8A7670; margin-left: 4px; }
+.dali-tag { font-style: normal; display: inline-block; padding: 0 5px; border-radius: 5px; background: #F3EAE2; color: #8A7670; font-size: 10.5px; vertical-align: 1px; }
+.dali-trees img { width: 26px; height: 26px; display: block; }
