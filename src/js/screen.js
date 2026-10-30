@@ -43,8 +43,15 @@ function screenHTML() {
           <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 4.5 3.5 3.5 3.5-3.5"/></svg></button>
       </section>
       <div class="banners">
-        <button type="button" class="banner"><span><span class="chip">디지털</span><span class="btext"></span></span>${BANNER_ILLU[0]}</button>
-        <button type="button" class="banner"><span><span class="chip">디지털</span><span class="btext"></span></span>${BANNER_ILLU[1]}</button>
+        <button type="button" class="banner fut" aria-label="유진투자선물 화면으로 이동">
+          ${FUT_BANNER_LOGO}
+          <span class="fut-text">
+            <span class="fut-kicker">Options Hub × 유진투자선물</span>
+            <span class="fut-title">해외선물 · 옵션 바로가기</span>
+            <span class="fut-sub">종목 화면, 옵션 체인, 네 방향 전략, 가상계좌를 한곳에서</span>
+          </span>
+          <span class="fut-go">둘러보기<svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></span>
+        </button>
       </div>
     </div>
     <nav class="bottom" aria-label="하단 메뉴">
@@ -73,7 +80,8 @@ function createScreen(host) {
   const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
   const catsVp = $(".cats-vp"), catsGrid = $(".cats-grid"), vp = $(".vp"), track = $(".track"), panel = $(".panel"), toast = $(".toast");
   const menu = $(".menu"), sub = $(".sub");
-  const tabs = $$(".cat"), pages = $$(".page"), btexts = $$(".btext");
+  const tabs = $$(".cat"), pages = $$(".page");
+  document.querySelector(".banner.fut")?.addEventListener("click", openFuturesApp); // 유진투자선물 진입 배너
   const edgeL = $(".edge.l"), edgeR = $(".edge.r");
   const state = { cur: 0, sel: CATS.map(() => 0), expanded: false, subOpen: false };
   let toastTimer = null, suppressClick = false;
@@ -99,13 +107,6 @@ function createScreen(host) {
     vp.style.transition = animate ? "height .3s ease" : "none";
     vp.style.height = (pages[state.cur].offsetHeight + 10) + "px";
   }
-  function setBanners(animate) {
-    const name = CATS[state.cur].name;
-    const texts = [`${name} 가상 이벤트 배너 A`, `${name} 가상 이벤트 배너 B`];
-    if (!animate) { btexts.forEach((b, i) => b.textContent = texts[i]); return; }
-    btexts.forEach(b => b.classList.add("fade"));
-    setTimeout(() => btexts.forEach((b, i) => { b.textContent = texts[i]; b.classList.remove("fade"); }), 150);
-  }
   function paintSel(ci) {
     pages[ci].querySelectorAll(".tile").forEach(t => t.classList.toggle("on", +t.dataset.t === state.sel[ci]));
   }
@@ -128,7 +129,6 @@ function createScreen(host) {
       t.setAttribute("aria-current", on ? "true" : "false");
     });
     revealTab(animate);
-    setBanners(animate);
     fitHeight(animate);
   }
   function select(ci, ti) { state.sel[ci] = ti; paintSel(ci); }

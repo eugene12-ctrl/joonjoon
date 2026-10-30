@@ -110,8 +110,9 @@ const DALI_MISSIONS = [
   { id: "m-alert", icon: "newspaper", title: "느낌표 뉴스 보기", reward: 1, auto: true, hidden: true },
   { id: "m-read", icon: "open_book", title: "리포트 3줄 같이 읽기", reward: 1, tag: "독서클럽", btn: "읽기", pop: "read",
     doneSay: "끝까지 읽었어요! 달이 책장에 한 칸 쌓였어요." },
-  { id: "m-walk", icon: "footprints", title: "달이랑 산책 6,200보", reward: 1, forest: 10, tag: "가치걸음", btn: "보태기",
-    doneSay: "같이 걸었어요. 달이네 숲에 나무가 한 그루 자랐어요." },
+  // 출석체크: 하루 한 번 도장. (예전엔 가치걸음 캠페인의 산책 걸음 보태기였음)
+  { id: "m-walk", icon: "waving_hand", title: "오늘 출석 도장 찍기", reward: 1, forest: 10, tag: "출석", btn: "도장 찍기",
+    doneSay: "오늘도 왔네요! 달이네 숲에 나무가 한 그루 자랐어요." },
   { id: "m-remind", icon: "memo", title: "지난 매매 돌아보기", reward: 1, auto: true },
   { id: "m-comment", icon: "memo", title: "일지에 한 줄", reward: 1, auto: true, hidden: true },
   { id: "m-tennis", icon: "tennis", title: "테니스", reward: 2, tag: "서울오픈", quiz: {

@@ -67,7 +67,7 @@
 /* ---------- 5. 캠페인 태그 색 (팔레트 안: 민트는 기본, 모래색과 보라는 옅게 하나씩) ---------- */
 .phone .dali-sheet .dali-tag { padding: 1px 7px; font-size: 10.5px; }
 .phone .dali-sheet .dali-tag[data-tag="독서클럽"] { background: #E6F7F3; color: #005461; }
-.phone .dali-sheet .dali-tag[data-tag="가치걸음"] { background: #FFF3DF; color: #9A5B10; }
+.phone .dali-sheet .dali-tag[data-tag="출석"] { background: #FFF3DF; color: #9A5B10; }
 .phone .dali-sheet .dali-tag[data-tag="서울오픈"] { background: #EEF0FB; color: #3F4BA8; }
 .phone .dali-sheet .dali-tag[data-tag="자동"] { background: #EEF0FB; color: #3F4BA8; }
 

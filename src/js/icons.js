@@ -54,8 +54,7 @@ function iconSVG(label, accent, variant, isNew) {
 }
 const wbr = s => s.replace(/\//g, "/<wbr>");
 
-const BANNER_ILLU = [
-  `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="14" width="24" height="18" rx="4" fill="url(#gBlue)" transform="rotate(-10 18 23)"/><rect x="15" y="19" width="25" height="18" rx="4" fill="url(#glass)" stroke="#9CC7CF"/><path d="M19 30h9" stroke="#2F6FE0" stroke-width="2" stroke-linecap="round"/><path d="M38 6c.7 3.4 2 4.8 5.5 5.5-3.5.7-4.8 2-5.5 5.5-.7-3.5-2-4.8-5.5-5.5 3.5-.7 4.8-2.1 5.5-5.5Z" fill="url(#gOrange)"/></svg>`,
-  `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="22" width="28" height="18" rx="3" fill="url(#gOrange)"/><rect x="8" y="16" width="32" height="8" rx="2.5" fill="url(#gOrange)"/><rect x="21" y="16" width="6" height="24" fill="url(#gPurple)"/><path d="M24 16c-3-6-10-6-8-1.5 1 2 5 1.5 8 1.5Zm0 0c3-6 10-6 8-1.5-1 2-5 1.5-8 1.5Z" fill="url(#gPurple)"/><rect x="12" y="25" width="7" height="3" rx="1.5" fill="#fff" opacity=".45"/></svg>`,
-];
+// 유진투자선물 진입 배너 로고: 보라 둥근 네모 안 흰 고리 (시연용 가상 로고)
+const FUT_BANNER_LOGO = `<svg class="fut-logo" viewBox="0 0 56 56" aria-hidden="true"><defs><linearGradient id="gFutLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6D5DFF"/><stop offset="1" stop-color="#4A3BEA"/></linearGradient></defs><rect x="2" y="2" width="52" height="52" rx="14" fill="url(#gFutLogo)"/><circle cx="28" cy="28" r="12.5" fill="none" stroke="#fff" stroke-width="6"/><circle cx="28" cy="28" r="5" fill="#fff" opacity=".18"/></svg>`;
+
 
