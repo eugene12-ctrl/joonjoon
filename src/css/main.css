@@ -107,10 +107,24 @@ input, textarea, [contenteditable="true"] { user-select: text; -webkit-user-sele
   background: #fff; border-radius: 12px; padding: 11px 12px 11px 14px; text-align: left;
   box-shadow: 0 6px 14px -10px rgba(3, 35, 42, .5);
 }
-.chip { display: inline-block; padding: 2px 6px; border-radius: 4px; background: #1B5F6B; color: #fff; font-size: 10px; font-weight: 700; }
-.btext { display: block; margin-top: 5px; font-size: 14px; font-weight: 700; color: #1A1D1F; transition: opacity .15s ease; }
-.btext.fade { opacity: 0; }
 .banner svg { width: 44px; height: 44px; flex: 0 0 auto; }
+
+/* 유진투자선물 진입 배너: 작은 배너 두 장을 합친 높이(약 124px). 로고와 포인트만 보라, 나머지는 메인 화면 톤 */
+.banner.fut {
+  min-height: 124px; padding: 16px 14px 16px 16px; gap: 14px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F4F2FF 100%);
+  box-shadow: 0 10px 22px -14px rgba(74, 59, 234, .45), 0 0 0 1px rgba(91, 77, 255, .12);
+}
+.banner.fut svg.fut-logo { width: 56px; height: 56px; }
+.banner.fut .fut-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.banner.fut .fut-kicker { font-size: 11px; font-weight: 700; color: #5B4DFF; letter-spacing: .01em; }
+.banner.fut .fut-title { font-size: 16.5px; font-weight: 800; color: #1A1D1F; letter-spacing: -.01em; line-height: 1.25; word-break: keep-all; }
+.banner.fut .fut-sub { font-size: 12px; line-height: 1.45; color: #646F7C; word-break: keep-all; }
+.banner.fut .fut-go {
+  flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 9px 7px 11px; border-radius: 999px; background: #5B4DFF; color: #fff; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.banner.fut .fut-go svg { width: 6px; height: 10px; }
 
 .bottom { flex: 0 0 auto; display: flex; align-items: center; height: 58px; padding-bottom: env(safe-area-inset-bottom, 0px); box-sizing: content-box; border-top: 1px solid #E3E8EB; background: #fff; }
 .bottom button { position: relative; flex: 1 1 0; height: 100%; display: grid; place-items: center; font-size: 14px; color: #1A1D1F; }

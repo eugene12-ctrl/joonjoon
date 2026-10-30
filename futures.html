@@ -50,6 +50,15 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .comm i{width:16px;height:16px;border-radius:50%;background:var(--blue);display:inline-block;position:relative}
 .comm i:after{content:'';position:absolute;left:4px;top:5px;width:8px;height:2px;background:#fff;box-shadow:0 3px 0 #fff}
 .card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px}
+/* 증권 앱 진입 배너: 홈 맨 아래. 흰 바탕에 옅은 붉은 기운, 로고와 버튼만 빨강 (증권 메인의 보라 선물 배너와 같은 틀) */
+.xbanner{display:flex;align-items:center;gap:14px;width:100%;min-height:124px;margin:4px 0 12px;padding:16px 14px 16px 16px;border:0;border-radius:14px;text-align:left;cursor:pointer;font:inherit;color:var(--text);background:linear-gradient(135deg,#fff 0%,#fff1ef 100%);box-shadow:0 10px 22px -14px rgba(200,32,44,.4),0 0 0 1px rgba(200,32,44,.12)}
+.xbanner .xb-logo{width:56px;height:56px;flex:none}
+.xbanner .xb-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.xbanner .xb-kicker{font-size:11px;font-weight:700;color:#C8202C}
+.xbanner .xb-title{font-size:16.5px;font-weight:800;letter-spacing:-.01em;line-height:1.25;word-break:keep-all}
+.xbanner .xb-sub{font-size:12px;line-height:1.45;color:var(--sub);word-break:keep-all}
+.xbanner .xb-go{flex:none;display:inline-flex;align-items:center;gap:4px;padding:7px 9px 7px 11px;border-radius:999px;background:#C8202C;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+.xbanner .xb-go svg{width:6px;height:10px}
 /* asset */
 .asset .lbl{font-size:12px;color:var(--sub)}
 .asset .amt{font-size:24px;font-weight:700;margin:2px 0 12px}
@@ -452,6 +461,16 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
         <div id="topList"></div>
         <div class="more">더보기 ›</div>
       </div>
+      <!-- 유진투자증권 앱으로 가는 진입 배너 (증권 메인의 선물 배너와 짝). 로고는 시연용 가상 -->
+      <button type="button" class="xbanner" onclick="window.goPage ? window.goPage('index.html') : (location.href = 'index.html')" aria-label="유진투자증권 화면으로 이동">
+        <svg class="xb-logo" viewBox="0 0 56 56" aria-hidden="true"><defs><linearGradient id="gXbLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F04E45"/><stop offset="1" stop-color="#B4121C"/></linearGradient></defs><rect x="2" y="2" width="52" height="52" rx="14" fill="url(#gXbLogo)"/><path d="M36 17c4-5 9-5 11-2-2 5-6 7-10 8z" fill="#fff" opacity=".95"/><circle cx="27" cy="31" r="12.5" fill="#fff"/><circle cx="22.5" cy="29.5" r="2.3" fill="#B4121C"/><circle cx="31.5" cy="29.5" r="2.3" fill="#B4121C"/><path d="M23 36c2.4 2 5.6 2 8 0" fill="none" stroke="#B4121C" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="xb-text">
+          <span class="xb-kicker">스마트챔피언 × 유진투자증권</span>
+          <span class="xb-title">주식 · 투자 바로가기</span>
+          <span class="xb-sub">국내/해외주식, ETF, 금융상품, 계좌개설까지 한 곳에서</span>
+        </span>
+        <span class="xb-go">둘러보기<svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m1 1 6 6-6 6"/></svg></span>
+      </button>
     </div>
 
     <div class="scroll" id="tab-watch" style="display:none">

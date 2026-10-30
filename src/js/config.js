@@ -27,6 +27,12 @@ function openTileLink(ci, label) {
   return true;
 }
 
+/* 화면 연결: 메인 화면의 유진투자선물 진입 배너를 누르면 선물 앱(futures.html)으로 이동합니다. */
+function openFuturesApp() {
+  const url = "futures.html";
+  window.goPage ? window.goPage(url) : (location.href = url);
+}
+
 /* 신규 기능 페이지 본문. 기능이 정해지면 이 함수 안쪽을 바꾸면 됩니다. */
 function newFeatureHTML() {
   return `
