@@ -37,7 +37,8 @@
 .dali-n2 .dali-pro-val small { color: var(--d-sub, #646F7C); }
 
 /* 읽기 화면은 시트 머리와 탭 아래에서 열림 (위쪽 머리가 그대로 남게) */
-.phone .dali-sheet .dali-page { top: var(--dali-page-top, 0px); }
+/* 읽기 화면 위치는 .dali-stage(dali.css) 구조로 정해지므로 더는 JS가 잰 값을 쓰지 않는다 */
+.phone .dali-sheet .dali-page { top: 0; }
 
 /* 지금가 옆 등락: 시세 색 (빨강 오름, 파랑 내림) */
 .dali-n2-slide .dali-pro-act-big small { margin-left: 10px; font-size: 18px; font-weight: 700; }

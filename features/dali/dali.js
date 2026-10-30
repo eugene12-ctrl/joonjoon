@@ -128,8 +128,10 @@
       ${[["news", "뉴스"], ["journal", "매매일지"], ["manage", "관리"]]
         .map(([k, l]) => `<button type="button" role="tab" data-tab="${k}">${l}</button>`).join("")}
     </nav>
-    <div class="dali-body"></div>
-    <div class="dali-page" hidden></div>`;
+    <div class="dali-stage">
+      <div class="dali-body"></div>
+      <div class="dali-page" hidden></div>
+    </div>`;
 
   phone.append(fut, dim, fab, bubble, sheet);
   const body = sheet.querySelector(".dali-body");
