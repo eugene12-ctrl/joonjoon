@@ -110,19 +110,40 @@
     <p class="mixl">내 자산</p><div class="mix">${a.mix.map(([k, sym, v, hot]) => `<span class="${hot ? "hot" : ""}" style="flex:${v}"><b>${k} ${v}%</b><small>${sym}</small></span>`).join("")}</div></div>`;
   /* 맨 위 한 장: 계좌 상태를 읽고 달이가 고른 것 하나 (DaliRules.state). 라벨, 큰 숫자, 한 줄, 버튼 하나뿐.
      크게 움직인 종목이면 특징뉴스 한 줄을 더한다. 히어로 아래 내 자산, 보유, 현금, 관심 목록은 그대로 둔다 */
-  function hero() {
-    const m = R.money(pro.sc), day = R.dayLabel(pro.sc), a = R.state(pro.sc).cards[0], [go] = a.btns;
-    const held = m.pos.map(p => row(p.sym, `${p.qty}주`, p.value, p.pct, true));
-    const watch = C.watch.map(s => row(s, "관심", R.nowPrice(s, pro.sc), R.todayPct(s, pro.sc), false));
-    return `
-      <section class="dali-pro-act sc-${pro.sc} st-${a.k}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>
+  // 히어로 한 장: 장면 sc의 카드 a (DaliRules.state가 고른 첫 장)
+  function actHTML(a, sc) {
+    const [go] = a.btns;
+    return `<section class="dali-pro-act sc-${sc} st-${a.k}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>
         ${a.art ? `<figure class="dali-pro-act-art ${a.art.cls}"><img src="${a.art.img}" alt="" onerror="${a.art.alt ? `this.onerror=null;this.src='${a.art.alt}'` : "this.parentNode.remove()"}"></figure>` : ""}
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
         <p class="dali-pro-act-big">${a.big}</p>
         <h2>${a.title}</h2>
         ${a.feat ? `<p class="dali-pro-act-feat"><span>특징뉴스</span>${a.feat}</p>` : ""}
         <div class="dali-pro-act-btns"><button type="button" data-go="${go[0]}" data-sym="${go[1]}">${go[2]}</button></div>
-      </section>
+      </section>`;
+  }
+  // 장면 네 장을 옆으로 넘기는 트랙 (dali-scene-track.js)
+  function sceneTrack() {
+    const slides = SCENES.map(([k]) => actHTML(R.state(k).cards[0], k));
+    return window.DaliSceneTrack ? DaliSceneTrack.html(slides, SCENES.findIndex(([k]) => k === pro.sc)) : actHTML(R.state(pro.sc).cards[0], pro.sc);
+  }
+  function mountTrack() {
+    if (window.DaliSceneTrack) DaliSceneTrack.mount(body, SCENES, pro.sc, pro.prevSc, setSceneFromTrack);
+    pro.prevSc = null;
+  }
+  // 트랙을 넘겨서 장면이 바뀌면 발표자 버튼을 누른 것과 같게 (버튼 표시, 목록 숫자). 미끄러지는 연출은 없음
+  function setSceneFromTrack(k) {
+    pro.fromTrack = true;
+    const b = demo && demo.querySelector(`[data-scene="${k}"]`);
+    if (b) b.click(); else { pro.sc = k; paint(); }
+    pro.fromTrack = false;
+  }
+  function hero() {
+    const m = R.money(pro.sc), day = R.dayLabel(pro.sc);
+    const held = m.pos.map(p => row(p.sym, `${p.qty}주`, p.value, p.pct, true));
+    const watch = C.watch.map(s => row(s, "관심", R.nowPrice(s, pro.sc), R.todayPct(s, pro.sc), false));
+    return `
+      ${sceneTrack()}
       <section class="dali-pro-head">
         <p>내 자산</p>
         <b>${won(m.total)}</b>
@@ -190,6 +211,7 @@
     });
     const y = body.querySelector(".dali-pro") ? body.scrollTop : 0;
     body.innerHTML = html();
+    mountTrack();
     const replay = pro.play;
     pro.play = false; // 띠 그리는 연출은 열 때와 장면 바꿀 때만
     body.scrollTop = y;
@@ -286,6 +308,7 @@
     box.addEventListener("click", e => {
       const b = e.target.closest("[data-scene]");
       if (!b) return;
+      pro.prevSc = pro.fromTrack ? null : pro.sc; // 버튼으로 바꾸면 트랙이 직전 장에서 미끄러짐. 트랙에서 온 변경이면 그대로
       pro.sc = b.dataset.scene;
       pro.open = {};
       pro.more = false;

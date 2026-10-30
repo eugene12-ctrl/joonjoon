@@ -112,19 +112,40 @@
       <span class="dali-pro-val"><b>${val}</b><small class="${tone(chg)}">${pct(chg)}</small></span>
     </button></li>`;
   }
-  function hero() {
-    const sc = pro.sc, m = money(sc), a = action(), day = sc === "morning" || sc === "close" ? "밤사이" : "오늘";
-    const held = m.pos.map(p => row(p.sym, `${C.code[p.sym]} ${p.qty}계약 · 진입 ${fmtP(p.sym, p.avg)}`, usd(p.pnl), p.pnlPct));
-    const watch = C.watch.map(s => row(s, sc === "close" && s === C.pending.sym ? `${C.code[s]} ${C.pending.qty}계약 · 진입 ${fmtP(s, C.pending.price)}` : "관심", fmtP(s, nowPrice(s, sc)), todayPct(s, sc)));
-    return `
-      <section class="dali-pro-act sc-${sc}${a.k ? ` st-${a.k}` : ""}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>
+  // 히어로 한 장: 장면 sc의 카드 a
+  function actHTML(a, sc) {
+    return `<section class="dali-pro-act sc-${sc}${a.k ? ` st-${a.k}` : ""}"${a.bg ? ` style="--ev-bg0:${a.bg[0]};--ev-bg1:${a.bg[1]}"` : ""}>
         ${a.art ? `<figure class="dali-pro-act-art ${a.art.cls}"><img src="${a.art.img}" alt="" onerror="${a.art.alt ? `this.onerror=null;this.src='${a.art.alt}'` : "this.parentNode.remove()"}"></figure>` : ""}
         <p class="dali-pro-act-top"><img src="${FACE_S}" alt="달이">${a.top}</p>
         <p class="dali-pro-act-big">${a.big}</p>
         <h2>${a.title}</h2>
         ${a.sub ? `<p class="dali-pro-act-sub">${a.sub}</p>` : ""}
         <div class="dali-pro-act-btns">${a.btns.map(([k, sym, label], i) => `<button type="button" class="${i ? "ghost" : ""}" data-go="${k}" data-sym="${sym}">${label}</button>`).join("")}</div>
-      </section>
+      </section>`;
+  }
+  // 장면 네 장을 옆으로 넘기는 트랙 (dali-scene-track.js). 다른 장면의 카드는 pro.sc를 잠시 바꿔 계산
+  function sceneTrack() {
+    const cur = pro.sc;
+    const slides = SCENES.map(([k]) => { pro.sc = k; try { return actHTML(action(), k); } finally { pro.sc = cur; } });
+    return window.DaliSceneTrack ? DaliSceneTrack.html(slides, SCENES.findIndex(([k]) => k === cur)) : actHTML(action(), cur);
+  }
+  function mountTrack() {
+    if (window.DaliSceneTrack) DaliSceneTrack.mount(body, SCENES, pro.sc, pro.prevSc, setSceneFromTrack);
+    pro.prevSc = null;
+  }
+  // 트랙을 넘겨서 장면이 바뀌면 발표자 버튼을 누른 것과 같게 (버튼 표시, 목록 숫자). 미끄러지는 연출은 없음
+  function setSceneFromTrack(k) {
+    pro.fromTrack = true;
+    const b = demo && demo.querySelector(`[data-scene="${k}"]`);
+    if (b) b.click(); else { pro.sc = k; paint(); }
+    pro.fromTrack = false;
+  }
+  function hero() {
+    const sc = pro.sc, m = money(sc), day = sc === "morning" || sc === "close" ? "밤사이" : "오늘";
+    const held = m.pos.map(p => row(p.sym, `${C.code[p.sym]} ${p.qty}계약 · 진입 ${fmtP(p.sym, p.avg)}`, usd(p.pnl), p.pnlPct));
+    const watch = C.watch.map(s => row(s, sc === "close" && s === C.pending.sym ? `${C.code[s]} ${C.pending.qty}계약 · 진입 ${fmtP(s, C.pending.price)}` : "관심", fmtP(s, nowPrice(s, sc)), todayPct(s, sc)));
+    return `
+      ${sceneTrack()}
       <section class="dali-pro-head">
         <p>내 계좌</p>
         <b>${plainUsd(m.total)}</b>
@@ -153,6 +174,7 @@
     });
     const y = body.querySelector(".dali-pro") ? body.scrollTop : 0;
     body.innerHTML = html();
+    mountTrack();
     body.scrollTop = y;
   }
   function show() { pro.on = true; paint(); }
@@ -213,6 +235,7 @@
     box.addEventListener("click", e => {
       const b = e.target.closest("[data-scene]");
       if (!b) return;
+      pro.prevSc = pro.fromTrack ? null : pro.sc; // 버튼으로 바꾸면 트랙이 직전 장에서 미끄러짐. 트랙에서 온 변경이면 그대로
       pro.sc = b.dataset.scene;
       box.querySelectorAll("[data-scene]").forEach(x => x.classList.toggle("on", x === b));
       if (pro.on && sheet.classList.contains("open")) { body.scrollTop = 0; paint(); }
