@@ -31,7 +31,7 @@
   #intro { position: fixed; inset: 0; background: #000; display: none; z-index: 10; }
   #intro.on { display: block; }
   #intro iframe { width: 100%; height: 100%; border: 0; display: block; }
-  #intro-close { position: absolute; right: 18px; top: 14px; padding: 8px 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.18); color: #fff; font: 700 14px 'Noto Sans KR', Arial, sans-serif; cursor: pointer; }
+  #intro-close { position: absolute; left: 18px; top: 14px; padding: 8px 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.18); color: #fff; font: 700 14px 'Noto Sans KR', Arial, sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -278,7 +278,7 @@
 </div>
 <div id="hud"><span><b id="hud-n">1</b> / 10</span><span>←→ 넘기기</span><span>F 전체화면</span><span>N 노트</span></div>
 <div id="notes"></div>
-<div id="intro"><iframe id="intro-frame" title="달이 인트로" allow="autoplay"></iframe><button type="button" id="intro-close">건너뛰기 ✕</button></div>
+<div id="intro"><iframe id="intro-frame" title="달이 인트로" allow="autoplay"></iframe><button type="button" id="intro-close">덱으로 ✕</button></div>
 <script>
 (function () {
   var stage = document.getElementById('stage');
@@ -301,7 +301,8 @@
     notes.textContent = a ? a.textContent : '';
     location.hash = String(i + 1);
     var v = document.getElementById('demo-video');
-    if (v && slides[i].id !== 'v-demo') v.pause();
+    // 영상 장에 오면 바로 재생(소리 없음이라 자동재생 허용), 떠나면 멈춤
+    if (v) { if (slides[i].id === 'v-demo') v.play().catch(function () {}); else v.pause(); }
   }
   function openIntro() {
     frame.src = INTRO_SRC;
