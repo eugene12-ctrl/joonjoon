@@ -358,6 +358,11 @@
   function dotsHTML(s, n) {
     if (!n) return "";
     const total = n.min - s.min, have = state.pebbles - s.min;
+    // 다음 단계까지 10개가 넘으면(꾸준한 달이는 100개) 점을 다 놓을 수 없어 막대로
+    if (total > 10) {
+      const p = Math.max(0, Math.min(100, Math.round(have / total * 100)));
+      return `<span class="dali-dots dali-progress" aria-label="조약돌 ${have}/${total}"><i class="dali-track"><b style="width:${p}%"></b></i><small>${have} / ${total}</small></span>`;
+    }
     const dots = Array.from({ length: total }, (_, i) => `<i class="${i < have ? "" : i === have ? "dali-dot-empty dali-dot-next" : "dali-dot-empty"}"></i>`).join("");
     return `<span class="dali-dots" aria-label="조약돌 ${have}/${total}">${dots}<small>${have} / ${total}</small></span>`;
   }
