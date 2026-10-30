@@ -82,6 +82,36 @@
   .phone .dali-sheet .dali-sea::before, .phone .dali-sheet .dali-dots i, .phone .dali-sheet .dali-check { animation: none !important; }
 }
 
+/* ---------- 8. 리포트 3줄 팝업 (dali.js의 readPopHTML 짝) ----------
+   시트 안에 떠서 시트 머리까지 덮음. 카드 흰색, 번호는 조약돌 점과 같은 그라데이션, 버튼은 테마 청록 */
+.phone .dali-sheet .dali-pop { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; }
+.phone .dali-sheet .dali-pop[hidden] { display: none; }
+.phone .dali-sheet .dali-pop-dim { position: absolute; inset: 0; background: rgba(0, 54, 61, .45); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); animation: dali-pop-fade .2s ease; }
+.phone .dali-sheet .dali-pop-card {
+  position: relative; width: 100%; max-width: 330px; box-sizing: border-box; padding: 18px 18px 16px; border-radius: 22px; background: #fff;
+  box-shadow: 0 24px 48px -20px rgba(0, 61, 71, .55); animation: dali-pop-in .28s cubic-bezier(.2, .9, .3, 1.2);
+}
+.phone .dali-sheet .dali-pop-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.phone .dali-sheet .dali-pop-head img { width: 40px; height: 40px; padding: 7px; box-sizing: border-box; border-radius: 50%; background: #E6F7F3; display: block; flex: 0 0 auto; }
+.phone .dali-sheet .dali-pop-head div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.phone .dali-sheet .dali-pop-head small { font-size: 11.5px; font-weight: 700; color: #0C7779; }
+.phone .dali-sheet .dali-pop-head b { font-size: 17px; font-weight: 900; letter-spacing: -.01em; line-height: 1.3; color: #1A1D1F; }
+.phone .dali-sheet .dali-pop-x { width: 32px; height: 32px; margin: -4px -8px 0 0; border: 0; background: none; color: #646F7C; font-size: 17px; cursor: pointer; flex: 0 0 auto; }
+.phone .dali-sheet .dali-pop-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.phone .dali-sheet .dali-pop-lines li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: #F4FAF9; }
+.phone .dali-sheet .dali-pop-lines i {
+  flex: 0 0 22px; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; display: grid; place-items: center;
+  font-style: normal; font-size: 12px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #3BC1A8, #0C7779); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12);
+}
+.phone .dali-sheet .dali-pop-lines span { font-size: 14.5px; line-height: 1.55; color: #1A1D1F; word-break: keep-all; }
+.phone .dali-sheet .dali-pop-note { margin: 12px 2px 14px; font-size: 12px; line-height: 1.5; color: #646F7C; }
+.phone .dali-sheet .dali-pop-btn { width: 100%; padding: 13px 14px; border-radius: 14px; font-size: 15px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.phone .dali-sheet .dali-pop-btn em { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px 2px 5px; border-radius: 999px; background: rgba(255, 255, 255, .22); font-style: normal; font-size: 12.5px; font-weight: 800; }
+.phone .dali-sheet .dali-pop-btn em img { width: 16px; height: 16px; display: block; }
+@keyframes dali-pop-fade { from { opacity: 0; } }
+@keyframes dali-pop-in { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .phone .dali-sheet .dali-pop-dim, .phone .dali-sheet .dali-pop-card { animation: none; } }
+
 /* ---------- 7. 제목 위계, 오늘 날짜 ---------- */
 .phone .dali-sheet .dali-next b { font-size: 17px; font-weight: 900; letter-spacing: -.01em; line-height: 1.3; }
 .phone .dali-sheet .dali-card.todo h3 { display: flex; align-items: baseline; gap: 8px; font-size: 16px; font-weight: 900; }
