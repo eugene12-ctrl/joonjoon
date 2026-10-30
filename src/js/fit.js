@@ -4,7 +4,7 @@
    휴대폰 안에서 마우스 좌표(clientX/Y)와 요소 위치(style left/top)를 섞는 코드는 window.phoneZoom()으로 나눠 쓴다.
    각 페이지 <head>의 다른 스크립트보다 먼저 불러온다. */
 (function () {
-  const BASE_W = 375, BASE_H = 780, GAP = 40;
+  const BASE_W = 375, BASE_H = 780, GAP = 48; // GAP은 body 위아래 여백(24px씩)과 같아야 폰이 창을 넘기지 않음 (40이면 8px 넘쳐 페이지 스크롤이 생김)
   const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   // 맞추기 전에는 휴대폰을 숨겨서 원래 크기로 한 번 그려졌다가 툭 바뀌는 게 안 보이게
   const css = document.createElement("style");

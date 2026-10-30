@@ -869,7 +869,11 @@
     if (b) openOrder(b.dataset.sym);
   });
 
-  /* --- 발표자용 시연 버튼 (휴대폰 화면 밖) --- */
+  /* --- 발표자용 시연 버튼 상자 (휴대폰 화면 밖). 지금은 화면에 보이지 않는다(hidden).
+     장면 버튼은 오늘 탭 히어로를 옆으로 넘기는 트랙이, 앱 전환은 메인 화면 배너가 대신한다.
+     상자 자체를 지우지 않는 이유: dali-pro, dali-event, dali-news2, dali-intro, dali-after가 이 상자의 버튼을
+     장면·앱 상태의 공용 스위치로 쓰고, 트랙이 장면을 바꿀 때도 이 버튼을 누르기 때문. 다시 보이게 하려면 아래 hidden 한 줄만 지우면 된다.
+     「시연용 가상 화면」 한 줄 표시는 화면 밖에 따로 둔다(.dali-stage-note). --- */
   const demo = document.createElement("aside");
   demo.className = "dali-demo";
   demo.innerHTML = `
@@ -879,7 +883,12 @@
     <button type="button" data-demo="alert">의미 있는 뉴스 도착</button>
     <button type="button" data-demo="pebble">조약돌 3개 주기</button>
     <button type="button" data-demo="reset" class="ghost">처음으로</button>`;
+  demo.hidden = true;
   document.body.appendChild(demo);
+  const stageNote = document.createElement("p");
+  stageNote.className = "dali-stage-note";
+  stageNote.textContent = "시연용 가상 화면입니다";
+  document.body.appendChild(stageNote);
 
   function setApp(app) {
     // 두 앱 페이지는 저장소 맨 위에 있음. 어느 화면에서 눌러도 맞게 이 파일 위치 기준으로 찾음

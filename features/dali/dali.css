@@ -254,7 +254,11 @@
 .dali-go { font-size: 20px; color: #8A7670; }
 .dali-fut-note { margin: 14px 16px; font-size: 12px; color: #8A7670; }
 
-/* 발표자용 시연 버튼 (휴대폰 밖) */
+/* 발표자용 시연 버튼 (휴대폰 밖). dali.js가 hidden으로 두어 보이지 않음. 화면 밖 한 줄 표시는 .dali-stage-note */
+.dali-demo[hidden] { display: none; }
+/* 폰 아래 여백(24px)에 고정. 실제 폰 폭에서는 폰이 화면을 다 채우니 오른쪽 위 작은 알약으로 */
+.dali-stage-note { position: fixed; left: 50%; bottom: 2px; z-index: 5; margin: 0; padding: 0 12px; transform: translateX(-50%); font-size: 11px; line-height: 1.2; color: #8A7670; text-align: center; pointer-events: none; white-space: nowrap; }
+@media (max-width: 480px) { .dali-stage-note { left: auto; right: 8px; top: 8px; bottom: auto; transform: none; padding: 3px 8px; border-radius: 999px; background: rgba(255, 255, 255, .85); color: #5A4A45; } }
 .dali-demo { display: flex; flex-direction: column; gap: 8px; width: 200px; margin: 16px auto 0; padding: 14px; background: #fff; border-radius: 14px; box-shadow: 0 10px 24px -14px rgba(0, 0, 0, .4); font-size: 13px; }
 .dali-demo-title { margin: 0 0 2px; font-weight: 700; color: #5A4A45; }
 .dali-demo-note { margin: -4px 0 4px; font-size: 11.5px; color: #8A7670; }
