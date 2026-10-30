@@ -31,24 +31,30 @@
   #intro { position: fixed; inset: 0; background: #000; display: none; z-index: 10; }
   #intro.on { display: block; }
   #intro iframe { width: 100%; height: 100%; border: 0; display: block; }
-  #intro-close { position: absolute; right: 18px; top: 14px; padding: 8px 14px; border: 0; border-radius: 999px; background: rgba(255,255,255,.18); color: #fff; font: 700 14px 'Noto Sans KR', Arial, sans-serif; cursor: pointer; }
+  #intro-close { position: absolute; left: 18px; top: 64px; padding: 8px 14px; border: 1px solid #D5DDE0; border-radius: 999px; background: rgba(255,255,255,.9); color: #0B1A20; box-shadow: 0 2px 8px rgba(0,0,0,.12); font: 700 14px 'Noto Sans KR', Arial, sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
 <div id="stage">
-<section id="v-cover" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:128px 160px 160px 200px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:80px">
+<section id="v-cover" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:88px 160px 128px 200px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:64px">
 <x-shape kind="rect" style="position:absolute;left:0;top:0;width:40px;height:1080px;background:#137986"></x-shape>
-<div style="display:flex;flex-direction:column;gap:40px;width:1080px">
+<div style="display:flex;flex-direction:column;gap:40px;width:820px">
 <p style="font-size:28px;font-weight:700;color:#137986">유진 AX 고객경험 해커톤</p>
 <h1 style="font-size:96px;font-weight:900;line-height:1.15;letter-spacing:-3px">나를 제일 잘 아는<br>AI 투자비서, 달이</h1>
-<p style="font-size:36px;color:#5F737A;line-height:1.5">찾지 않아도, 지금 필요한 정보와 다음 행동이 먼저 와요.<br>챔피언 MTS와 유진투자선물 앱 안에서, 확인부터 주문까지.</p>
+<p style="font-size:34px;color:#5F737A;line-height:1.5">찾지 않아도, 지금 필요한 정보와<br>다음 행동이 먼저 와요.<br>챔피언 MTS와 유진투자선물 앱 안에서,<br>확인부터 주문까지.</p>
 <div style="display:flex;flex-direction:column;gap:8px;border-top:2px solid #D5DDE0;padding:28px 0 0 0">
 <p style="font-size:28px;font-weight:700">유진투자선물 팀 준준</p>
 <p style="font-size:24px;color:#5F737A">2026년 10월</p>
 </div>
 </div>
-<img src="img/dali-body.png" alt="조약돌을 안은 해달 캐릭터 달이" style="width:440px;height:440px;object-fit:contain">
-<button type="button" id="intro-btn" style="position:absolute;right:160px;bottom:150px;width:440px;padding:22px 0;border:0;border-radius:18px;background:#137986;color:#fff;font:inherit;font-size:30px;font-weight:900;cursor:pointer;box-shadow:0 14px 30px rgba(19,121,134,.28)">인트로 재생하기 ▶</button>
+<div style="flex:none;width:700px;display:flex;flex-direction:column;align-items:center;gap:20px">
+<div style="position:relative;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:40px;padding:32px;box-shadow:0 18px 40px rgba(11,26,32,.10)">
+<img src="img/main-qr.png" alt="시연 사이트 QR, eugene12-ctrl.github.io/joonjoon" style="width:600px;height:600px;object-fit:contain;image-rendering:pixelated">
+<img src="img/dali-body.png" alt="" style="position:absolute;right:-80px;top:-92px;width:180px;height:180px;object-fit:contain">
+</div>
+<p style="font-size:32px;font-weight:900;letter-spacing:-1px">휴대폰으로 직접 써 보세요</p>
+<button type="button" id="intro-btn" style="width:664px;padding:20px 0;border:0;border-radius:18px;background:#137986;color:#fff;font:inherit;font-size:30px;font-weight:900;cursor:pointer;box-shadow:0 14px 30px rgba(19,121,134,.28)">인트로 재생하기 ▶</button>
+</div>
 <p style="position:absolute;right:160px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
 <aside>안녕하세요, 유진투자선물 리테일영업팀과 스마트채널팀이 모인 팀 준준이에요. 저희는 매일 고객을 직접 만나요. 오늘 보여 드릴 건 나를 제일 잘 아는 AI 투자비서, 달이예요. 고객이 늘 묻는 세 가지, 왜 오르지, 왜 떨어지지, 어떻게 대응하지에 챔피언 MTS와 유진투자선물 앱이 먼저 답하게 만들었어요. 고객을 만나서 들은 이야기부터 시작할게요.</aside>
 </section>
@@ -62,17 +68,17 @@
 <p style="font-size:96px;font-weight:900;line-height:1.15;letter-spacing:-4px">“거래할 때만 들어와요.”</p>
 </div>
 <div style="display:flex;flex-direction:column;gap:16px">
-<p style="font-size:24px;font-weight:700;color:#5F737A">2026년 상반기 고객인터뷰 결과, 5명, 1인 60분</p>
+<p style="font-size:24px;font-weight:700;color:#5F737A">2026년 상반기 고객인터뷰 결과, 1인 60분</p>
 <div style="display:flex;flex-direction:row;gap:24px;align-items:stretch">
 <div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:24px;padding:28px 36px"><p style="font-size:72px;font-weight:900;letter-spacing:-3px;color:#E5333D;line-height:1">100%</p><p style="font-size:28px;font-weight:700;line-height:1.35">분석은 다른 앱에서 끝내고<br>여기서는 매수 버튼만</p></div>
-<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:24px;padding:28px 36px"><p style="font-size:72px;font-weight:900;letter-spacing:-3px;color:#E5333D;line-height:1">100%</p><p style="font-size:28px;font-weight:700;line-height:1.35">왜 올랐는지, 남들은 뭘 사는지<br>보고 싶은데 앱엔 없어요</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:24px;padding:28px 36px"><p style="font-size:72px;font-weight:900;letter-spacing:-3px;color:#E5333D;line-height:1">100%</p><p style="font-size:28px;font-weight:700;line-height:1.35">왜 올랐는지, 실적 발표 때 반응<br>보고 싶은데 앱엔 없어요</p></div>
 <div style="flex:1.1;display:flex;flex-direction:column;justify-content:center;gap:10px;background:#0B1A20;color:#FFFFFF;border-radius:24px;padding:28px 36px"><p style="font-size:24px;font-weight:700;color:#BFC9CD">그래서 위기예요</p><p style="font-size:30px;font-weight:900;line-height:1.35">매수 버튼은 어느 앱에나 있어요.<br>주문만 남으면, <span style="color:#FF8A8F">갈아탈 이유만</span> 남아요</p></div>
 </div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">지금 유진을 쓰는 이유는 주문이 안정적이고, 담당 직원이 챙겨 주고, 오래 거래해서예요. 비율은 인터뷰한 고객 기준</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
 <p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">2</p>
-<aside>고객을 직접 만나 한 시간씩 물어봤어요. 다섯 분이에요. 챔피언 MTS를 언제 사용하시냐고 묻자 답은 하나였어요. 거래할 때만 들어와요. 왜 올랐는지, 내 종목 일정이 언제인지 앱 안에서 바로 보이지 않으니까요. 그래서 만난 고객 모두가 분석은 다른 앱에서 끝내고 와서 여기서는 매수 버튼만 눌러요. 모두가 왜 올랐는지, 다른 고객은 뭘 사는지 보고 싶어 했는데 앱엔 없었어요. 지금 유진을 쓰는 이유는 주문이 안정적이고, 담당 직원이 챙겨 주고, 오래 거래해서예요. 고객의 눈높이는 매일 높아져요. 그런데 매수 버튼은 어느 증권사 앱에나 있어요. 고객이 판단하는 자리가 전부 밖에 있으면 유진에 남는 건 주문뿐이고, 다른 데서 같은 주문이 되는 순간 갈아탈 이유만 남아요. 이게 저희가 출발한 위기감이에요.</aside>
+<aside>고객을 직접 만나 한 분에 한 시간씩 물어봤어요. 챔피언 MTS를 언제 사용하시냐고 묻자 답은 하나였어요. 거래할 때만 들어와요. 왜 올랐는지, 내 종목 일정이 언제인지 앱 안에서 바로 보이지 않으니까요. 그래서 만난 고객 모두가 분석은 다른 앱에서 끝내고 와서 여기서는 매수 버튼만 눌러요. 모두가 왜 올랐는지, 실적 발표 때 시장 반응은 어땠는지 보고 싶어 했는데 앱엔 없었어요. 지금 유진을 쓰는 이유는 주문이 안정적이고, 담당 직원이 챙겨 주고, 오래 거래해서예요. 고객의 눈높이는 매일 높아져요. 그런데 매수 버튼은 어느 증권사 앱에나 있어요. 고객이 판단하는 자리가 전부 밖에 있으면 유진에 남는 건 주문뿐이고, 다른 데서 같은 주문이 되는 순간 갈아탈 이유만 남아요. 이게 저희가 출발한 위기감이에요.</aside>
 </section>
 <section id="v-what" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px">
 <div style="display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid #D5DDE0;padding:0 0 18px 0">
@@ -88,6 +94,24 @@
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
 <p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">3</p>
 <aside>그래서 우리가 주는 가치는 하나예요. 고객이 늘 묻는 세 가지에 묻기 전에 답이 와 있는 거예요. 왜 올랐지. 관심 종목이 오르면 이유 한 줄이 붙어 있어요. 왜 떨어졌지. 보유 종목이 빠지면 그날 특징뉴스가 맨 위에 있어요. 어떻게 대응하지. 실적 발표 전에 최근 4번 결과를 작은 차트로 보여 주고, 달이가 한 줄로 써 줘요. 지금은 검색하고, 커뮤니티와 차트 앱을 본 다음에야 챔피언 MTS를 열어요. 앱 4개, 30분이에요. 달이는 앱 1개, 1분이에요. 고객은 누르기만 해요. 사라, 팔라는 추천이 아니라 다음에 볼 것과 갈 화면을 먼저 열어 두는 거예요. 판단은 고객이 해요. 찾고, 다른 앱으로 옮기고, 혼자 짐작하던 투자 경험이 열면 보이는 쉬운 경험이 돼요.</aside>
+</section>
+<section id="v-news" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid #D5DDE0;padding:0 0 18px 0">
+<p style="font-size:24px;font-weight:900;letter-spacing:6px;color:#137986">WHAT</p><p style="font-size:22px;font-weight:700;color:#137986;background:#E8F3F4;padding:4px 16px;border-radius:999px;white-space:nowrap">고객가치</p>
+<h2 style="font-size:44px;font-weight:700;line-height:1.3;letter-spacing:-1px;padding:0 0 0 12px">내 종목 소식은 <span style="color:#137986">실시간으로 먼저 와요</span></h2>
+</div>
+<div style="flex:1;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:120px">
+<img src="img/70-news.png" alt="달이 뉴스 탭, SK하이닉스 1,487,000원 +10.9% 반도체 대형주 나란히 급등, 아래 모든 소식" style="width:376px;height:780px;object-fit:cover;object-position:top;border-radius:40px;border:7px solid #0B1A20">
+<div style="width:820px;display:flex;flex-direction:column;border-top:2px solid #0B1A20">
+<div style="display:flex;flex-direction:column;gap:10px;padding:40px 0;border-bottom:1px solid #D5DDE0"><p style="font-size:24px;font-weight:900;color:#137986">자동으로</p><p style="font-size:40px;font-weight:700;line-height:1.3">보유, 관심 종목 소식만 모아요</p></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:40px 0;border-bottom:1px solid #D5DDE0"><p style="font-size:24px;font-weight:900;color:#137986">실시간으로</p><p style="font-size:40px;font-weight:700;line-height:1.3">크게 움직인 종목이 맨 위에 와요</p></div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:40px 0;border-bottom:1px solid #D5DDE0"><p style="font-size:24px;font-weight:900;color:#137986">한 줄로</p><p style="font-size:40px;font-weight:700;line-height:1.3">지금 가격과 이유를 같이 봐요</p></div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">검색하지 않아도 돼요. 달이를 열면 내 종목 소식이 이미 와 있어요</p>
+<p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">4</p>
+<aside>뉴스도 실시간으로 먼저 와요. 고객이 종목 이름을 검색하지 않아도, 달이가 보유 종목과 관심 종목 소식만 자동으로 모아요. 크게 움직인 종목은 맨 위에 지금 가격과 함께 이유 한 줄로 올라와요. 아래에는 모든 소식이 시간 순서로 쌓여 있어요. 다른 앱에서 찾던 이유가 챔피언 MTS 안에 먼저 와 있는 거예요.</aside>
 </section>
 <section id="v-eugene" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px">
 <div style="display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid #D5DDE0;padding:0 0 18px 0">
@@ -108,7 +132,7 @@
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">새 앱을 깔지 않아요. 두 앱 메인 오른쪽 아래, 같은 자리에 달이가 있어요</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">4</p>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">5</p>
 <aside>왜 유진이어야 하느냐. 나를 제일 잘 아는 비서는 내 계좌를 아는 회사만 만들 수 있어요. 달이의 입력은 보유 종목, 관심 종목, 매매 기록, 어제 걸어 둔 주문이에요. 전부 유진이 이미 가진 것이에요. 둘째, 유진은 증권과 선물을 다 해요. 챔피언 MTS에서는 내 종목 일정을, 유진투자선물 앱에서는 미국 금리 결정을 같은 달이가 같은 틀로 보여 줘요. 셋째, 달이가 쓰는 한 줄 아래에는 근거가 붙는데, 리포트 3줄 같이 읽기는 유진 리서치가 있어서 가능해요. 넷째, 고객이 유진에 남는 이유는 담당 직원이에요. 저희 리테일영업팀이 매일 듣는 질문, 왜 올랐어요, 언제 발표예요, 이걸 달이가 앱 안에서 먼저 답해요. 직원을 대신하는 게 아니라 직원이 없는 시간을 채우는 거예요.</aside>
 </section>
 <section id="v-ai" data-transition="fade" style="display:flex; flex-direction:column; gap:36px; padding:80px 128px 160px; background:#fcfdfd">
@@ -162,14 +186,29 @@
 <x-shape kind="arrow-right" style="width:40px;height:30px;background:#1E95A3;flex:none"></x-shape>
 <div style="display:flex;flex-direction:column;align-items:center;gap:12px"><img src="img/02-morning.png" alt="달이 오늘 탭, 내 종목 일정, 삼성전자 실적 발표" style="width:324px;height:700px;object-fit:cover;object-position:top;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:26px;font-weight:700;text-align:center">내 종목 일정이 맨 위에</p></div>
 <x-shape kind="arrow-right" style="width:40px;height:30px;background:#1E95A3;flex:none"></x-shape>
-<div style="display:flex;flex-direction:column;align-items:center;gap:12px"><img src="img/40-ev-order-btn.png" alt="지난 결과는? 화면 맨 아래 삼성전자 주문 버튼" style="width:324px;height:700px;object-fit:cover;object-position:bottom;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:26px;font-weight:700;text-align:center">최근 4번 보고 주문 버튼</p></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px"><img src="img/40-ev-order-btn.png" alt="지난 결과는? 화면 맨 아래 삼성전자 주문 버튼" style="width:324px;height:700px;object-fit:cover;object-position:bottom;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:26px;font-weight:700;text-align:center">필요한 정보 확인하고 주문하기</p></div>
 <x-shape kind="arrow-right" style="width:40px;height:30px;background:#1E95A3;flex:none"></x-shape>
 <div style="display:flex;flex-direction:column;align-items:center;gap:12px"><img src="img/41-order.png" alt="챔피언 MTS 삼성전자 주문 화면, 오른쪽 위 달이 버튼" style="width:324px;height:700px;object-fit:cover;object-position:top;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:26px;font-weight:700;text-align:center">주문 화면</p></div>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">새 앱을 깔지 않아요. 주문 화면 오른쪽 위 달이 버튼으로 다시 돌아와요. 유진투자선물 앱도 같은 흐름이에요</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">6</p>
-<aside>고객은 챔피언 MTS를 떠나지 않아요. 메인 화면 오른쪽 아래 달이를 누르면 오늘 내 종목 일정이 맨 위에 있어요. 지난 결과는? 으로 최근 4번을 보고, 맨 아래 주문 버튼을 누르면 챔피언 MTS 주문 화면으로 바로 가요. 주문 화면 오른쪽 위 달이 버튼으로 다시 돌아오고요. 유진투자선물 앱도 같은 틀이에요. 미국 금리 결정 앞에서 나스닥 지난 결과를 보여 줘요. 이 흐름을 지금 바로 시연으로 보여 드릴게요.</aside>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">7</p>
+<aside>고객은 챔피언 MTS를 떠나지 않아요. 메인 화면 오른쪽 아래 달이를 누르면 오늘 내 종목 일정이 맨 위에 있어요. 필요한 정보를 확인하고, 맨 아래 주문 버튼을 누르면 챔피언 MTS 주문 화면으로 바로 가요. 주문 화면 오른쪽 위 달이 버튼으로 다시 돌아오고요. 유진투자선물 앱도 같은 틀이에요. 미국 금리 결정 앞에서 나스닥 지난 결과를 보여 줘요. 이 흐름을 지금 바로 시연으로 보여 드릴게요.</aside>
+</section>
+<section id="v-care" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid #D5DDE0;padding:0 0 18px 0">
+<p style="font-size:24px;font-weight:900;letter-spacing:6px;color:#137986">HOW</p><p style="font-size:22px;font-weight:700;color:#137986;background:#E8F3F4;padding:4px 16px;border-radius:999px;white-space:nowrap">고객가치</p>
+<h2 style="font-size:44px;font-weight:700;line-height:1.3;letter-spacing:-1px;padding:0 0 0 12px">매일 오는 이유는, <span style="color:#137986">배우고 돌아보고 나누는 것</span></h2>
+</div>
+<div style="display:flex;flex-direction:row;justify-content:center;gap:96px">
+<div style="display:flex;flex-direction:column;gap:14px;align-items:center"><img src="img/60-manage.png" alt="달이 키우기, 조약돌 7, 오늘 달이랑 리포트 3줄 같이 읽기와 산책" style="width:318px;height:640px;object-fit:cover;object-position:top;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:34px;font-weight:900;letter-spacing:-1px;color:#137986">달이 키우기</p><p style="font-size:24px;font-weight:700;color:#5F737A">리포트 읽고 같이 걸으면 자라요</p></div>
+<div style="display:flex;flex-direction:column;gap:14px;align-items:center"><img src="img/66-report-end.png" alt="10월 습관 리포트, 달이가 본 것, 리포트를 읽은 날에 산 건 2번" style="width:318px;height:640px;object-fit:cover;object-position:top;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:34px;font-weight:900;letter-spacing:-1px;color:#137986">AI 투자습관 진단</p><p style="font-size:24px;font-weight:700;color:#5F737A">읽은 날과 산 날을 같이 돌아봐요</p></div>
+<div style="display:flex;flex-direction:column;gap:14px;align-items:center"><img src="img/64-grow-forest.png" alt="달이네 숲 84%, 다 차면 노을공원에 진짜 나무 한 그루" style="width:318px;height:640px;object-fit:cover;object-position:bottom;border-radius:34px;border:6px solid #0B1A20"><p style="font-size:34px;font-weight:900;letter-spacing:-1px;color:#137986">사회적가치</p><p style="font-size:24px;font-weight:700;color:#5F737A">숲이 차면 노을공원에 진짜 나무</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">달이는 지켰는지 따지지 않아요. 본 것만 적어 둬요</p>
+<p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">8</p>
+<aside>달이에게는 매일 들르는 이유가 세 가지 있어요. 하나, 달이 키우기. 리포트 3줄을 같이 읽고 같이 걸으면 조약돌이 모이고 달이가 자라요. 둘, AI 투자습관 진단. 한 달 동안 리포트를 읽은 날과 산 날을 AI가 같이 놓고 보여 줘요. 잘했다 못했다 따지지 않고 본 것만 적어요. 셋, 사회적가치. 달이네 숲이 다 차면 노을공원에 고객 이름으로 진짜 나무 한 그루를 심어요.</aside>
 </section>
 <section id="v-grow" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px">
 <div style="display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid #D5DDE0;padding:0 0 18px 0">
@@ -195,7 +234,7 @@
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:18px;color:#5F737A;line-height:1.4">비즈니스포스트 2025.4.15, T사 기술 블로그, 글로벌이코노믹 2026.10.22, 이용자 공개 캡처와 T사 공개 이미지. 달이 화면과 숫자는 가상</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">7</p>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">9</p>
 <aside>키우기는 사람을 매일 오게 만들어요. T사가 이미 증명했어요. 고양이 키우기는 한 달에 175만 명이 쓰고 55%가 매일 들어오고, 시작 4개월 만에 1인당 이익이 흑자로 돌아섰어요. 다람쥐를 키우는 키워봐요 적금은 두 달 반 만에 60만 계좌가 열렸고, 94%가 가입 당일 첫 미션을 했어요. 다만 조건이 있어요. 보상마다 광고를 봐야 하고, 결제해야 완료되는 미션이 있어요. 다람쥐는 자동이체가 없어서 매일 직접 넣어야 하고, 하루 빠지면 금리가 내려가요. 달이는 매일 오게 만드는 힘은 가져오고, 광고와 결제 미션은 하나도 넣지 않아요. 리포트 3줄을 읽고, AI가 투자 습관을 점검하고, 같이 걸으면 가치걸음과 노을공원 나무로 이어져요. 광고 대신 배움으로 키우는 것, 금융회사의 키우기예요.</aside>
 </section>
 <section id="v-learn" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:80px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
@@ -208,55 +247,38 @@
 <div style="display:flex;align-items:center"><x-shape kind="arrow-right" style="width:56px;height:40px;background:#1E95A3"></x-shape></div>
 <div style="flex:1.3;display:flex;flex-direction:column;gap:14px;background:#E8F3F4;border:2px solid #137986;border-radius:28px;padding:40px 44px"><p style="font-size:26px;font-weight:900;color:#137986">바꾼 기획</p><p style="font-size:38px;font-weight:700;line-height:1.4">우리 고객의 연령대와 증권 앱을 쓰는 패턴을 듣고 나서,<br>게임이 아니라 <span style="color:#137986">먼저 오는 한 줄</span>로 바꿨어요</p></div>
 </div>
-<div style="display:flex;flex-direction:row;gap:24px">
-<div style="flex:1;border-top:3px solid #137986;padding:14px 4px 0"><p style="font-size:22px;font-weight:700;color:#5F737A">만들면서 배운 것 1</p><p style="font-size:28px;font-weight:900;line-height:1.3">숫자는 규칙이, 문장만 AI가</p></div>
-<div style="flex:1;border-top:3px solid #137986;padding:14px 4px 0"><p style="font-size:22px;font-weight:700;color:#5F737A">만들면서 배운 것 2</p><p style="font-size:28px;font-weight:900;line-height:1.3">근거 없는 날은 비워요</p></div>
-<div style="flex:1;border-top:3px solid #137986;padding:14px 4px 0"><p style="font-size:22px;font-weight:700;color:#5F737A">만들면서 배운 것 3</p><p style="font-size:28px;font-weight:900;line-height:1.3">권유로 읽히는 말은 기계가 막아요</p></div>
-</div>
 <p style="font-size:40px;font-weight:900;line-height:1.35;letter-spacing:-1px">AI 시대가 되어도 고객경험의 출발은<br><span style="color:#137986">고객의 목소리에 귀 기울이는 것</span>이에요</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#5F737A">PR 48개. 고친 것의 대부분은 기능이 아니라 문구와 크기였어요. 실제 회사의 공시와 실적은 지어내지 않았어요</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">8</p>
-<aside>직접 만들면서 알게 된 건 이거예요. 고객경험은 우리가 주고 싶은 것이 아니라, 고객이 받고 싶은 것을 주는 일이었어요. 처음에는 제가 좋아하는 게임을 MTS 안에 만들려고 했어요. 그런데 우리 고객이 누구인지, 어떤 연령대가 증권 앱을 어떤 패턴으로 쓰는지 듣고 나니 그게 아니었어요. 그래서 기획을 바꿨어요. 게임이 아니라, 열면 먼저 와 있는 한 줄이에요. 만들면서 배운 것도 있어요. 숫자는 규칙이 뽑고 AI는 문장만 쓰게 했어요. AI가 숫자까지 말하면 볼 때마다 달라지니까요. 판 6번 중 3번 수익 같은 자랑하는 숫자는 뺐고, 투자 권유로 읽힐 말은 검사 스크립트가 막아요. 기사 제목을 그대로 넣었더니 아무도 안 읽어서 한 줄로 줄였고, 근거가 없는 날은 AI 줄을 비웠어요. 매매일지가 다른 앱에서 온 것 같아서 띠 높이와 줄 하나까지 맞추니 그제야 하나의 앱이 됐어요. PR 48개 중 대부분은 기능이 아니라 문구와 크기를 고친 것이었어요. 실제 회사의 공시와 실적은 지어내지 않았어요. AI 시대가 되어도 고객경험의 출발은 고객의 목소리에 귀 기울이는 것이라는 걸 잊지 않으려고 해요.</aside>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">10</p>
+<aside>직접 만들면서 알게 된 건 이거예요. 고객경험은 우리가 주고 싶은 것이 아니라, 고객이 받고 싶은 것을 주는 일이었어요. 처음에는 제가 좋아하는 게임을 MTS 안에 만들려고 했어요. 그런데 우리 고객이 누구인지, 어떤 연령대가 증권 앱을 어떤 패턴으로 쓰는지 듣고 나니 그게 아니었어요. 그래서 기획을 바꿨어요. 게임이 아니라, 열면 먼저 와 있는 한 줄이에요. PR 48개 중 대부분은 기능이 아니라 문구와 크기를 고친 것이었어요. 실제 회사의 공시와 실적은 지어내지 않았어요. AI 시대가 되어도 고객경험의 출발은 고객의 목소리에 귀 기울이는 것이라는 걸 잊지 않으려고 해요.</aside>
 </section>
-<section id="v-money" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:80px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<section id="v-road" data-transition="fade" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:80px 128px 160px;display:flex;flex-direction:column;gap:40px">
 <div style="display:flex;flex-direction:column;gap:14px;border-bottom:2px solid #D5DDE0;padding:0 0 28px 0">
-<div style="display:flex;flex-direction:row;align-items:center;gap:20px"><p style="font-size:24px;font-weight:900;letter-spacing:6px;color:#137986">NEXT</p><p style="font-size:22px;font-weight:700;color:#137986;background:#E8F3F4;padding:4px 16px;border-radius:999px">BM과 다음 단계</p></div>
-<h2 style="font-size:52px;font-weight:700;line-height:1.3;letter-spacing:-1px">긍정적인 경험이 쌓이면 고객이 남아요.<br><span style="color:#137986">연 1.8억 원으로 7.4억 원의 수익을 지켜요</span></h2>
+<div style="display:flex;flex-direction:row;align-items:center;gap:20px"><p style="font-size:24px;font-weight:900;letter-spacing:6px;color:#137986">NEXT</p><p style="font-size:22px;font-weight:700;color:#137986;background:#E8F3F4;padding:4px 16px;border-radius:999px">고객경험 혁신 로드맵</p></div>
+<h2 style="font-size:52px;font-weight:700;line-height:1.3;letter-spacing:-1px">찾지 않아도 먼저 오는 경험을,<br><span style="color:#137986">챔피언 MTS에서 시작해 유진의 모든 앱으로</span></h2>
 </div>
-<div style="display:flex;flex-direction:row;gap:64px;align-items:flex-start">
-<div style="width:420px;display:flex;flex-direction:column;gap:16px">
-<p style="font-size:24px;font-weight:700;color:#5F737A">연간 금액, 억 원</p>
-<div style="display:flex;flex-direction:row;align-items:flex-end;gap:56px;height:360px;border-bottom:2px solid #0B1A20;padding:0 0 0 24px">
-<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><p style="font-size:44px;font-weight:900;color:#5F737A">1.8</p><div style="width:140px;height:74px;background:#BFD2D6"></div></div>
-<div style="display:flex;flex-direction:column;align-items:center;gap:10px"><p style="font-size:44px;font-weight:900;color:#137986">7.4</p><div style="width:140px;height:300px;background:#137986"></div></div>
+<div style="display:flex;flex-direction:row;gap:28px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:18px;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:28px;padding:36px 40px">
+<div style="display:flex;flex-direction:row;align-items:baseline;gap:16px"><p style="font-size:56px;font-weight:900;line-height:1;color:#137986">1</p><p style="font-size:24px;font-weight:700;color:#5F737A">시범 3개월</p></div>
+<p style="font-size:36px;font-weight:900;line-height:1.3;letter-spacing:-1px">챔피언 MTS에서 먼저</p>
+<div style="display:flex;flex-direction:column;border-top:1px solid #BFC9CD"><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">오늘, 뉴스, 매매일지</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">일부 고객 A/B 테스트</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">비거래일 접속률, 알림 뒤 앱 열기</p></div>
 </div>
-<div style="display:flex;flex-direction:row;gap:56px;padding:0 0 0 24px"><p style="width:140px;font-size:24px;text-align:center;color:#5F737A">드는 비용</p><p style="width:140px;font-size:24px;text-align:center;color:#5F737A">지키는 수익</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:18px;background:#FFFFFF;border:2px solid #D5DDE0;border-radius:28px;padding:36px 40px">
+<div style="display:flex;flex-direction:row;align-items:baseline;gap:16px"><p style="font-size:56px;font-weight:900;line-height:1;color:#137986">2</p><p style="font-size:24px;font-weight:700;color:#5F737A">확대 6개월</p></div>
+<p style="font-size:36px;font-weight:900;line-height:1.3;letter-spacing:-1px">유진투자선물 앱에도 같은 달이</p>
+<div style="display:flex;flex-direction:column;border-top:1px solid #BFC9CD"><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">달이 키우기, AI 투자습관 진단</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">휴면 전환율, 계좌 이전 출고율</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">노을공원 나무 심기 시작</p></div>
 </div>
-<div style="flex:1;display:flex;flex-direction:column;gap:14px">
-<p style="font-size:24px;font-weight:700;color:#5F737A">계산 가정</p>
-<table style="width:100%;border-collapse:collapse">
-<tr><td style="font-size:26px;padding:17px 0;border-top:2px solid #0B1A20;border-bottom:1px solid #D5DDE0">활성 리테일 고객</td><td style="font-size:26px;font-weight:700;text-align:right;padding:17px 0;border-top:2px solid #0B1A20;border-bottom:1px solid #D5DDE0;white-space:nowrap">17만 명 (추정)</td></tr>
-<tr><td style="font-size:26px;padding:17px 0;border-bottom:1px solid #D5DDE0">1인당 연 위탁매매 순이익</td><td style="font-size:26px;font-weight:700;text-align:right;padding:17px 0;border-bottom:1px solid #D5DDE0;white-space:nowrap">29만 원 (추정)</td></tr>
-<tr><td style="font-size:26px;padding:17px 0;border-bottom:1px solid #D5DDE0">달이 참여, 그중 남는 고객</td><td style="font-size:26px;font-weight:700;text-align:right;padding:17px 0;border-bottom:1px solid #D5DDE0;white-space:nowrap">30%, 5% (가정)</td></tr>
-<tr><td style="font-size:26px;padding:17px 0;border-bottom:1px solid #D5DDE0">비금전 보상</td><td style="font-size:26px;font-weight:700;text-align:right;padding:17px 0;border-bottom:1px solid #D5DDE0;white-space:nowrap">1인 월 300원 (가정)</td></tr>
-<tr><td style="font-size:26px;padding:17px 0;border-bottom:1px solid #D5DDE0">AI 요약 비용, 종목 단위라 고객 수와 무관</td><td style="font-size:26px;font-weight:700;text-align:right;padding:17px 0;border-bottom:1px solid #D5DDE0;white-space:nowrap">연 1천만 원 안팎 (추정)</td></tr>
-</table>
-<p style="font-size:22px;color:#5F737A;line-height:1.5">참여를 T사 수준 9%로 낮춰도 0.55억 원으로 2.2억 원, 같은 4배예요</p>
-</div>
-<div style="width:430px;display:flex;flex-direction:column;gap:20px">
-<p style="font-size:24px;font-weight:700;color:#5F737A">다음 단계</p>
-<div style="background:#137986;color:#FFFFFF;border-radius:24px;padding:34px 36px;display:flex;flex-direction:column;gap:14px">
-<p style="font-size:32px;font-weight:900">3개월 A/B 테스트</p>
-<p style="font-size:24px;color:#BFE8EC;line-height:1.6">비거래일 접속률<br>알림 뒤 앱 열기 비율<br>휴면 전환율<br>계좌 이전 출고율</p>
-</div>
-<p style="font-size:32px;font-weight:900;line-height:1.35">궁금할 때,<br><span style="color:#137986">다른 앱 말고 챔피언 MTS.</span></p>
+<div style="flex:1;display:flex;flex-direction:column;gap:18px;background:#E8F3F4;border:2px solid #137986;border-radius:28px;padding:36px 40px">
+<div style="display:flex;flex-direction:row;align-items:baseline;gap:16px"><p style="font-size:56px;font-weight:900;line-height:1;color:#137986">3</p><p style="font-size:24px;font-weight:700;color:#5F737A">연결 1년</p></div>
+<p style="font-size:36px;font-weight:900;line-height:1.3;letter-spacing:-1px">매매일지가 상담으로 이어져요</p>
+<div style="display:flex;flex-direction:column;border-top:1px solid #BFC9CD"><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">고객이 동의하면 담당 직원과 같이 봐요</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">직원이 없는 시간은 달이가 채워요</p><p style="font-size:26px;font-weight:500;line-height:1.4;padding:14px 0;border-bottom:1px solid #D5DDE0">궁금할 때, 다른 앱 말고 챔피언 MTS</p></div>
 </div>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5F737A">유진투자증권 사업보고서 기반 추정, 자본시장연구원, 금융감독원. AI 비용은 소형 모델 공개 단가로 추정. 거래량은 재지 않아요</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5F737A">거래량은 재지 않아요. 고객이 앱을 여는 이유가 늘었는지를 재요</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">9</p>
-<aside>돈으로 보면 이래요. 주문만 남은 고객은 다른 데서 같은 주문이 되면 그냥 떠나요. 업계가 고객 유치에 쓰던 이벤트 611억 원은 금융감독원이 막았고요. 그래서 지금 고객에게 긍정적인 경험을 쌓게 해서 남게 해야 해요. 묻기 전에 온 답, 저절로 남은 매매일지, 같이 키운 달이. 떠나면 사라지는 것들이라 떠날 이유가 줄어요. 공시 숫자로 추정한 활성 리테일 고객 약 17만 명, 한 명당 연 위탁매매 순이익 약 29만 원. 30%가 달이를 쓰고 그중 5%가 남으면 연 7.4억 원을 지켜요. 비용은 비금전 보상 1인 월 300원으로 연 1.8억 원이고, AI 요약은 종목 단위라 고객이 늘어도 비용이 같이 늘지 않아요. 연 1천만 원 안팎이에요. 참여를 T사 수준 9%로 낮춰도 같은 4배예요. 다음 단계로 3개월 A/B 테스트를 제안해요. 비거래일 접속률, 알림 뒤 앱 열기, 휴면 전환율, 계좌 이전 출고율로 증명할게요. 거래량은 재지 않아요. 같은 달이가 선물 앱에도 들어가고, 매매일지는 자산관리 상담으로 이어져요. 궁금할 때, 다른 앱 말고 챔피언 MTS. 감사합니다.</aside>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">11</p>
+<aside>다음 단계예요. 고객경험 혁신을 세 단계로 넓혀요. 먼저 챔피언 MTS에서 오늘, 뉴스, 매매일지를 일부 고객에게 3개월 열고, 비거래일 접속률과 알림 뒤 앱을 여는 비율로 확인해요. 다음 6개월은 유진투자선물 앱에도 같은 달이를 넣고, 달이 키우기와 AI 투자습관 진단을 열어요. 휴면 전환율과 계좌 이전 출고율을 보고, 노을공원 나무 심기도 시작해요. 1년 뒤에는 고객이 동의하면 매매일지를 담당 직원과 같이 보며 상담으로 이어요. 직원이 없는 시간은 달이가 채워요. 거래량은 재지 않아요. 고객이 앱을 여는 이유가 늘었는지를 재요. 궁금할 때, 다른 앱 말고 챔피언 MTS.</aside>
 </section>
 <section id="v-demo" style="background:#0B1A20;color:#FCFDFD;font-family:'Noto Sans KR', Arial, sans-serif;padding:64px 128px 150px;display:flex;flex-direction:column;gap:22px;align-items:center">
 <div style="width:100%;display:flex;flex-direction:row;align-items:center;gap:20px;border-bottom:2px solid rgba(255,255,255,.18);padding:0 0 18px 0">
@@ -266,13 +288,34 @@
 <video id="demo-video" src="media/dali-demo.mp4" muted playsinline controls preload="metadata" style="width:1280px;height:720px;background:#000;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)"></video>
 <p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:rgba(255,255,255,.6)">1분 56초, 소리 없음. 화면 안 이름과 숫자는 전부 가상이에요</p>
 <p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#0B1A20;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
-<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:rgba(255,255,255,.6);text-align:right">10</p>
-<aside>이제 실제로 돌아가는 화면이에요. 메인 오른쪽 아래 달이를 눌러서, 오늘 내 종목 일정을 보고, 지난 결과를 보고, 주문까지 가요.</aside>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:rgba(255,255,255,.6);text-align:right">12</p>
+<aside>이제 실제로 돌아가는 화면이에요. 메인 오른쪽 아래 달이를 눌러서, 오늘 내 종목 일정을 보고, 지난 결과를 보고, 주문까지 가요. 고객이 묻기 전에 답이 와 있는 앱. 궁금할 때, 다른 앱 말고 챔피언 MTS.</aside>
+</section>
+<section id="v-thanks" style="background:#FCFDFD;color:#0B1A20;font-family:'Noto Sans KR', Arial, sans-serif;padding:128px 160px 160px 200px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:80px">
+<x-shape kind="rect" style="position:absolute;left:0;top:0;width:40px;height:1080px;background:#137986"></x-shape>
+<div style="display:flex;flex-direction:column;gap:40px;width:1000px">
+<img src="img/dali-body.png" alt="조약돌을 안은 해달 캐릭터 달이" style="width:220px;height:220px;object-fit:contain">
+<h1 style="font-size:140px;font-weight:900;line-height:1.1;letter-spacing:-4px">감사합니다</h1>
+<p style="font-size:36px;color:#5F737A;line-height:1.5">나를 제일 잘 아는 AI 투자비서, <span style="color:#137986;font-weight:700">달이</span></p>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:2px solid #D5DDE0;padding:28px 0 0 0">
+<p style="font-size:28px;font-weight:700">유진투자선물 팀 준준</p>
+<p style="font-size:24px;color:#5F737A">2026년 10월</p>
+</div>
+</div>
+<div style="flex:none;width:460px;display:flex;flex-direction:column;align-items:center;gap:22px">
+<div style="background:#FFFFFF;border:2px solid #D5DDE0;border-radius:32px;padding:26px;box-shadow:0 18px 40px rgba(11,26,32,.10)">
+<img src="img/main-qr.png" alt="시연 사이트 QR, eugene12-ctrl.github.io/joonjoon" style="width:380px;height:380px;object-fit:contain;image-rendering:pixelated">
+</div>
+<p style="font-size:30px;font-weight:900;letter-spacing:-1px">휴대폰으로 직접 써 보세요</p>
+</div>
+<p style="position:absolute;right:208px;bottom:64px;font-size:24px;color:#5F737A;background:#E8F3F4;padding:6px 20px;border-radius:999px">시연용 가상 화면</p>
+<p style="position:absolute;right:128px;bottom:64px;width:60px;font-size:24px;color:#5F737A;text-align:right">13</p>
+<aside>감사합니다. 궁금할 때, 다른 앱 말고 챔피언 MTS. 화면의 QR로 직접 써 보실 수 있어요.</aside>
 </section>
 </div>
-<div id="hud"><span><b id="hud-n">1</b> / 10</span><span>←→ 넘기기</span><span>F 전체화면</span><span>N 노트</span></div>
+<div id="hud"><span><b id="hud-n">1</b> / 13</span><span>←→ 넘기기</span><span>F 전체화면</span><span>N 노트</span></div>
 <div id="notes"></div>
-<div id="intro"><iframe id="intro-frame" title="달이 인트로" allow="autoplay"></iframe><button type="button" id="intro-close">건너뛰기 ✕</button></div>
+<div id="intro"><iframe id="intro-frame" title="달이 인트로" allow="autoplay"></iframe><button type="button" id="intro-close">덱으로 ✕</button></div>
 <script>
 (function () {
   var stage = document.getElementById('stage');
@@ -295,7 +338,8 @@
     notes.textContent = a ? a.textContent : '';
     location.hash = String(i + 1);
     var v = document.getElementById('demo-video');
-    if (v && slides[i].id !== 'v-demo') v.pause();
+    // 영상 장에 오면 바로 재생(소리 없음이라 자동재생 허용), 떠나면 멈춤
+    if (v) { if (slides[i].id === 'v-demo') v.play().catch(function () {}); else v.pause(); }
   }
   function openIntro() {
     frame.src = INTRO_SRC;
@@ -309,6 +353,8 @@
     if (next) show(1);
     window.focus();
   }
+  // 시연 영상이 끝나면 감사합니다 장으로
+  document.getElementById('demo-video').addEventListener('ended', function () { if (slides[i].id === 'v-demo') show(i + 1); });
   document.getElementById('intro-btn').addEventListener('click', openIntro);
   document.getElementById('intro-close').addEventListener('click', function () { closeIntro(true); });
   addEventListener('message', function (e) { if (e.data && e.data.type === 'dali-intro-done') closeIntro(true); });
