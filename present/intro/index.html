@@ -431,6 +431,12 @@ html.intro,html.intro body{overflow:hidden}
 .fan img{position:absolute;top:0;height:100%;width:auto;aspect-ratio:924/1920;border-radius:4.6cqh;box-shadow:0 4cqh 10cqh rgba(11,26,32,.2);opacity:0}
 .fan img:nth-child(1){left:0;--r:-9deg} .fan img:nth-child(2){left:30%;--r:0deg;z-index:2} .fan img:nth-child(3){left:60%;--r:9deg}
 .sc.on .fan img{animation:fan .7s cubic-bezier(.2,1.1,.3,1) var(--d) forwards}
+.duo{display:flex;gap:clamp(16px,3cqw,48px);align-items:flex-start}
+.duo figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:1.8cqh;opacity:0}
+.sc.on .duo figure{animation:fan .7s cubic-bezier(.2,1.1,.3,1) var(--d) forwards}
+.duo .ph{position:relative;height:min(72cqh,780px);aspect-ratio:924/1920;border-radius:4.6cqh;overflow:hidden;background:#0B1A20;box-shadow:0 5cqh 10cqh rgba(11,26,32,.22),0 1cqh 2cqh rgba(11,26,32,.12)}
+.duo .ph img{position:absolute;inset:.9cqh;width:calc(100% - 1.8cqh);height:calc(100% - 1.8cqh);border-radius:4cqh;object-fit:cover;object-position:top}
+.duo figcaption{font-size:clamp(13px,2.8cqh,26px);font-weight:700}
 @keyframes fan{from{opacity:0;transform:translateY(30cqh)}to{opacity:1;transform:rotate(var(--r))}}
 
 @media (max-aspect-ratio:4/5){
@@ -448,6 +454,7 @@ html.intro,html.intro body{overflow:hidden}
   .vs li{font-size:2.2cqh} .vs ul{gap:1cqh}
   .endw{grid-template-columns:1fr;justify-items:center;text-align:center}
   .fan{width:62cqw;height:44cqh}
+  .duo .ph{height:40cqh}
 }
 
 /* ================= 랜딩 ================= */
@@ -778,7 +785,7 @@ footer{max-width:1200px;margin:0 auto;padding-block:32px 56px;border-top:1px sol
         <p class="big" style="font-size:clamp(34px,min(9cqh,7cqw),104px)"><span class="rv"><span style="--d:.2s">궁금할 때,</span></span><span class="rv"><span style="--d:.4s"><span class="teal">다른 앱 말고</span></span></span><span class="rv"><span style="--d:.6s"><span class="teal">챔피언 MTS.</span></span></span></p>
         <p class="cap fd" style="--d:1s;margin-top:2cqh">나를 제일 잘 아는 AI 투자비서, 달이<br><span class="mutx">유진투자증권과 유진투자선물에서</span></p>
       </div>
-      <div class="fan"><img style="--d:.15s" src="img/02-morning.png" alt=""><img style="--d:.3s" src="img/03-intraday.png" alt=""><img style="--d:.45s" src="img/04-close.png" alt=""></div>
+      <div class="duo"><figure style="--d:.15s"><div class="ph"><img src="img/20-menu-fab.png" alt="챔피언 MTS 전체메뉴, 오른쪽 아래에 달이"></div><figcaption>유진투자증권</figcaption></figure><figure style="--d:.35s"><div class="ph"><img src="img/32-fut-main.png" alt="유진투자선물 앱 메인 화면, 오른쪽 아래에 달이"></div><figcaption>유진투자선물</figcaption></figure></div>
     </div>
   </section>
 
