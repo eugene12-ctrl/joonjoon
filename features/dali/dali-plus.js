@@ -149,7 +149,8 @@
   // 깃발 방식이면 다음 정상 터치까지 삼켜 버린다. 그래서 시각으로 제한한다.
   let swipe = null, swallowUntil = 0;
   body.addEventListener("pointerdown", e => {
-    if (e.target.closest("textarea, input, .dali-chart")) return;
+    // 옆으로 넘기는 띠(뉴스 띠, 오늘 탭 장면 트랙) 위에서 시작한 끌기는 띠가 맡고, 탭 밀기로 치지 않음
+    if (e.target.closest("textarea, input, .dali-chart, .dali-n2-track, .dali-sc-track")) return;
     swipe = { x: e.clientX, y: e.clientY };
   });
   body.addEventListener("pointerup", e => {

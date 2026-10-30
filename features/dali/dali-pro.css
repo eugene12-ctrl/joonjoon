@@ -420,7 +420,7 @@
 .phone .dali-sheet .dali-sc-track::-webkit-scrollbar { display: none; }
 .phone .dali-sheet .dali-sc-track:active { cursor: grabbing; }
 .phone .dali-sheet .dali-sc-track > .dali-pro-act { flex: 0 0 100%; width: 100%; min-width: 100%; margin: 0; scroll-snap-align: start; scroll-snap-stop: always; }
-/* 뉴스 띠와 같은 배치: 버튼을 14px 올려 아래 여백에 점이 들어감 */
-.phone .dali-sheet .dali-sc-track > .dali-pro-act:not(.dali-read-act) > .dali-pro-act-btns { margin-bottom: 14px; }
-.phone .dali-sheet .dali-sc-dots { position: absolute; left: 0; right: 0; bottom: 7px; display: flex; justify-content: center; gap: 6px; margin: 0; pointer-events: none; }
+/* 버튼을 6px 올리고 점은 아래 여백(16px) 안에: 버튼 아래 22px 띠에 점이 들어감 */
+.phone .dali-sheet .dali-sc-track > .dali-pro-act:not(.dali-read-act) > .dali-pro-act-btns { margin-bottom: 6px; } /* 점 자리만큼만 살짝 올림 (본문과 버튼 사이 숨 쉴 틈은 지킴) */
+.phone .dali-sheet .dali-sc-dots { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: center; gap: 6px; margin: 0; pointer-events: none; }
 .phone .dali-sheet .dali-sc-dots i { pointer-events: auto; padding: 0; height: 6px; } /* 뉴스 띠(.dali-n2-act .dali-n2-dots i)와 같은 점: 6px 둥근 점, 현재 점은 16px로 늘어남 */
