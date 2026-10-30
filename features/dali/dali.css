@@ -45,7 +45,11 @@
 .dali-tabs { display: flex; gap: 4px; padding: 0 12px 8px; border-bottom: 1px solid #EDE3DA; }
 .dali-tabs button { flex: 1; padding: 8px 0; border-radius: 10px; font-size: 13.5px; color: #8A7670; }
 .dali-tabs button.on { background: #2A1416; color: #fff; font-weight: 700; }
-.dali-body { flex: 1; overflow-y: auto; padding: 10px 12px 20px; display: flex; flex-direction: column; gap: 10px; }
+/* 탭 아래 무대: 본문(.dali-body)과 읽기 화면(.dali-page)을 같이 담는다. 읽기 화면은 이 안에서 absolute로 덮으므로
+   시트 머리와 탭은 언제나 그대로 보인다. (예전엔 JS가 탭의 offsetTop을 재서 top을 줬는데, 폰을 CSS zoom으로 키운 상태에선
+   브라우저에 따라 그 값이 어긋나 읽기 화면이 탭을 덮어 잘려 보였다) */
+.dali-stage { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.dali-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 12px 20px; display: flex; flex-direction: column; gap: 10px; }
 
 .dali-chips { display: flex; gap: 6px; }
 .dali-chips button { padding: 5px 12px; border-radius: 999px; background: #F3EAE2; font-size: 12.5px; color: #5A4A45; }

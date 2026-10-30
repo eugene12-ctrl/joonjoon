@@ -127,11 +127,8 @@
     setTimeout(() => tabs.querySelector('[data-tab="news"]').click(), 0);
   });
 
-  // 읽기 화면(뉴스 상세, 달이 키우기)은 시트 머리와 탭 아래부터 덮음. 탭을 누르면 읽기 화면을 닫고 그 탭으로
+  // 읽기 화면(뉴스 상세, 달이 키우기)은 탭 아래 무대(.dali-stage) 안에서 덮으므로 위치를 따로 재지 않는다. 탭을 누르면 읽기 화면을 닫고 그 탭으로
   const page = sheet.querySelector(".dali-page");
-  const placePage = () => sheet.style.setProperty("--dali-page-top", `${tabs.offsetTop + tabs.offsetHeight}px`);
-  placePage();
-  new ResizeObserver(placePage).observe(tabs);
   tabs.addEventListener("click", e => {
     if (!e.target.closest("[data-tab]") || !page || page.hidden) return;
     page.querySelector('[data-act="back"]')?.click();
