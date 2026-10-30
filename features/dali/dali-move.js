@@ -1,7 +1,7 @@
 /* ---------- 달이 옮기기 ----------
    떠 있는 달이를 끌어서 화면 안 어디든 놓을 수 있음 (가장자리에 붙이지 않음).
    오른쪽으로 밀어 넘기면 화면 밖으로 살짝 숨고, 가장자리의 < 버튼을 누르면 오른쪽 벽에 붙어 다시 나옴 (높이는 숨기 전 그대로).
-   위치는 보는 사람 브라우저에만 저장 (페이지를 옮겨 다녀도 같은 자리). */
+   위치는 저장하지 않음. 새로고침, 페이지 이동, 새 탭 모두 원래 자리(오른쪽 아래)에서 시작. */
 (function () {
   const phone = document.querySelector(".phone");
   const fab = phone && phone.querySelector(".dali-fab");
@@ -9,8 +9,8 @@
   if (!fab) return;
 
   const KEY = "dali-pos", GAP = 12, TOP = 56, BOTTOM = 84;
-  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } };
-  const save = p => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* 저장 못 해도 동작은 같음 */ } };
+  // 자리는 저장하지 않음: 페이지를 열 때마다(새로고침, 페이지 이동, 새 탭 모두) 원래 자리(오른쪽 아래)에서 시작. 옮긴 자리는 그 페이지에 있는 동안만
+  const save = () => {};
 
   const tab = document.createElement("button");
   tab.type = "button";
@@ -20,7 +20,9 @@
   phone.append(tab);
 
   // 위치: x, y는 달이 왼쪽 위 모서리, tucked는 숨김 (숨긴 동안 x, y는 꺼낼 때 나올 자리 = 오른쪽 벽, 숨기 전 높이)
-  let pos = load();
+  // 예전 코드가 브라우저에 남긴 자리는 지움
+  try { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); } catch (e) { /* 무시 */ }
+  let pos = null;
   const size = () => fab.offsetWidth || 62;
   const W = () => phone.clientWidth, H = () => phone.clientHeight;
   const clampY = y => Math.max(TOP, Math.min(H() - size() - BOTTOM, y));
