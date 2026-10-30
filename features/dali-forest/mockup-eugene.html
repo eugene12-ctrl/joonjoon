@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유진다움 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* ===== 유진다움 화면 목업 두 장 (정적, 데이터 없음) =====
+   왼쪽: 달이가 유진에게 배운 네 가지 (관리 탭을 덮는 화면). 회사가 고객 프로그램마다 써 온 한 문장을 머리글로, 회사 활동과 달이 기능을 짝지음.
+   오른쪽: 달이네 숲, 나이테. 한 달 꾸준하면 나이테 한 줄. 유진의 숲 13줄과 나란히. 진짜 심기는 모두의 조약돌만큼 회사가 더 심음.
+   색은 dali-palette.css와 같은 넷: #005461 #0C7779 #249E94 #3BC1A8, 옅은 바탕 #E6F7F3.
+   화면 안 내 숫자는 모두 가상. 회사 활동의 연도, 횟수, 문장은 유진에버 공개 기사 기준(docs/research-eugene-ever.md). */
+:root { --brand: #005461; --brand-d: #003D47; --brand-m: #0C7779; --mid: #249E94; --mint: #3BC1A8; --tint: #E6F7F3; --ink: #1A1D1F; --ink2: #4E5968; --sub: #646F7C; --line: #EEF0F2; --band: #F4F6F8; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 12px; background: #EEF2F3; font-family: Pretendard, "Malgun Gothic", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; word-break: keep-all;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.row { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.col > .lb { font-size: 12.5px; font-weight: 700; color: var(--sub); letter-spacing: .02em; }
+
+/* 휴대폰 틀 (src/css/main.css .phone과 같음) */
+.phone { position: relative; width: 375px; height: 780px; background: #FBF7F3; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 30px 60px -24px rgba(11, 51, 64, .45), 0 0 0 1px rgba(0,0,0,.05); }
+.head { display: flex; align-items: center; gap: 10px; padding: 18px 16px 10px; background: #fff; }
+.head img { width: 36px; height: 36px; border-radius: 50%; }
+.head b { display: block; font-size: 17px; }
+.head small { font-size: 12px; color: var(--sub); }
+.head .x { margin-left: auto; font-size: 20px; color: var(--ink2); }
+.tabs { display: flex; padding: 0 8px; background: #fff; border-bottom: 1px solid var(--line); }
+.tabs span { flex: 1; text-align: center; padding: 12px 0 11px; font-size: 15px; color: var(--sub); font-weight: 500; }
+.tabs span.on { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--ink); }
+.ph { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #fff; border-bottom: 1px solid var(--line); }
+.ph .back { font-size: 22px; line-height: 1; color: var(--ink2); padding: 0 4px; }
+.ph strong { font-size: 16px; }
+.ph .r { margin-left: auto; font-size: 13px; color: var(--brand); font-weight: 600; }
+.body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+.body::-webkit-scrollbar { display: none; }
+.body > * { flex: none; }
+.card { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px -8px rgba(42, 20, 22, .35); font-size: 13.5px; line-height: 1.55; }
+.card h3 { margin: 0 0 8px; font-size: 14.5px; display: flex; align-items: center; gap: 6px; }
+.card h3 small { font-weight: 600; font-size: 12px; color: var(--sub); margin-left: auto; }
+.hint { color: var(--sub); font-size: 12.5px; margin: 0; }
+.say { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--tint); color: var(--ink2); font-size: 13px; }
+.say img { width: 26px; height: 26px; border-radius: 50%; flex: none; }
+
+/* ---------- A. 유진에게 배운 네 가지 ---------- */
+.quote { position: relative; overflow: hidden; border-radius: 14px; padding: 20px 18px 18px; color: #fff; background: linear-gradient(160deg, var(--brand-d) 0%, var(--brand) 60%, var(--brand-m) 100%); box-shadow: 0 12px 24px -16px rgba(0, 61, 71, .7); }
+.quote small { display: block; font-size: 12px; color: rgba(255,255,255,.72); }
+.quote .q { margin: 8px 0 0; font-size: 21px; font-weight: 800; line-height: 1.35; letter-spacing: -.4px; }
+.quote .q::before { content: "“"; color: var(--mint); margin-right: 2px; }
+.quote .q::after { content: "”"; color: var(--mint); margin-left: 2px; }
+.quote .who { margin: 10px 0 0; font-size: 12px; color: rgba(255,255,255,.8); }
+.quote .mark { position: absolute; right: -10px; bottom: -22px; font-size: 120px; font-weight: 900; color: rgba(255,255,255,.06); line-height: 1; }
+.four { list-style: none; margin: 0; padding: 0; }
+.four li { display: grid; grid-template-columns: 34px 1fr auto; column-gap: 10px; row-gap: 2px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+.four li:first-child { border-top: 0; padding-top: 2px; }
+.four li > img { width: 32px; height: 32px; grid-row: 1 / 3; }
+.four .k { font-size: 11.5px; color: var(--brand); font-weight: 700; letter-spacing: .02em; }
+.four .k em { display: block; font-style: normal; color: var(--sub); font-weight: 500; margin: 1px 0 2px; } /* 회사 활동 이름은 제 줄에 */
+.four .d { font-size: 14px; font-weight: 700; color: var(--ink); grid-column: 2; }
+.four .me { grid-column: 3; grid-row: 1 / 3; align-self: center; font-size: 12px; font-weight: 700; color: var(--brand); background: var(--tint); padding: 4px 9px; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.four .me.off { color: var(--sub); background: var(--band); }
+.four .u { grid-column: 2 / 4; font-size: 12px; color: var(--sub); }
+
+/* ---------- B. 달이네 숲, 나이테 ---------- */
+.rings { position: relative; overflow: hidden; border-radius: 14px; padding: 16px 14px 14px; color: #fff; background: linear-gradient(160deg, var(--brand-d) 0%, var(--brand) 55%, var(--brand-m) 100%); box-shadow: 0 12px 24px -16px rgba(0, 61, 71, .7); }
+.rings .top { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,.8); margin: 0 0 10px; }
+.rings .top i { font-style: normal; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); color: #fff; font-weight: 700; }
+.rings .top i img { width: 14px; height: 14px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+.pair figure { margin: 0; text-align: center; }
+.pair svg { width: 100%; height: auto; display: block; }
+.pair figcaption small { display: block; font-size: 11.5px; color: rgba(255,255,255,.72); margin-top: 6px; }
+.pair figcaption b { font-size: 15px; font-weight: 800; }
+.pair figcaption b em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--mint); margin-left: 4px; }
+.pair .vs { position: absolute; left: 50%; top: 52%; translate: -50% -50%; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.3); display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+.rings .cap { margin: 12px 0 0; font-size: 13px; color: rgba(255,255,255,.9); text-align: center; }
+.bar { height: 10px; border-radius: 999px; background: var(--band); overflow: hidden; margin: 6px 0; }
+.bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--mint), var(--brand-m)); }
+.days { display: flex; gap: 4px; margin: 8px 0 4px; }
+.days i { flex: 1; height: 18px; border-radius: 5px; background: var(--band); }
+.days i.on { background: var(--mid); }
+.days i.today { background: #fff; box-shadow: inset 0 0 0 2px var(--mid); }
+.kv { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--sub); margin: 0; }
+.kv b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.gauge { height: 12px; border-radius: 999px; background: var(--band); overflow: hidden; display: flex; margin: 6px 0; }
+.gauge i { display: block; height: 100%; }
+.gauge .base { width: 62%; background: var(--brand-m); }
+.gauge .plus { width: 24%; background: var(--mint); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--sub); margin: 0; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.legend .a i { background: var(--brand-m); } .legend .b i { background: var(--mint); }
+.rule { margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--tint); color: var(--brand-d); font-size: 12.5px; font-weight: 600; }
+.photo { position: relative; height: 110px; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, #CFEFE8 0%, #8FD6C5 60%, #249E94 100%); margin: 2px 0 8px; }
+.photo .trees { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
+.photo .trees img { width: 30px; height: 30px; }
+.photo .trees img:nth-child(odd) { width: 36px; height: 36px; }
+.photo .tag { position: absolute; left: 10px; top: 10px; padding: 3px 8px; border-radius: 999px; background: rgba(0,61,71,.75); color: #fff; font-size: 11.5px; font-weight: 700; }
+.links { display: flex; gap: 8px; }
+.links span { flex: 1; text-align: center; padding: 10px; border-radius: 10px; background: var(--band); font-size: 13px; font-weight: 600; color: var(--ink); }
+.links span.on { background: var(--brand); color: #fff; }
+
+/* 발표자 상자: 화면 밖 */
+.demo { display: flex; flex-direction: column; gap: 8px; width: 250px; margin: 0; padding: 14px; background: #fff; border-radius: 14px; box-shadow: 0 10px 24px -14px rgba(0, 0, 0, .4); font-size: 13px; line-height: 1.5; }
+.demo .t { margin: 0 0 2px; font-weight: 700; color: #5A4A45; }
+.demo .n { margin: -4px 0 4px; font-size: 11.5px; color: #8A7670; }
+.demo p { margin: 0; color: #4E5968; font-size: 12.5px; }
+.demo p b { color: #2A1416; }
+.demo p.s { margin-top: 4px; padding-top: 8px; border-top: 1px solid #EEE6DE; font-size: 11.5px; color: #8A7670; }
+</style>
+</head>
+<body>
+<div class="row">
+
+<!-- ========== A. 달이가 유진에게 배운 네 가지 ========== -->
+<div class="col"><span class="lb">A. 관리 탭 › 달이가 배운 네 가지</span>
+<div class="phone">
+  <div class="head"><img src="../dali/dali-face.png" alt=""><div><b>달이</b><small>유진투자증권 앱에서</small></div><span class="x">✕</span></div>
+  <div class="tabs"><span>오늘</span><span>뉴스</span><span>매매일지</span><span class="on">관리</span></div>
+  <div class="ph"><span class="back">‹</span><strong>달이가 배운 네 가지</strong></div>
+  <div class="body">
+    <section class="quote">
+      <small>유진투자증권이 고객 프로그램마다 적어 온 문장</small>
+      <p class="q">건강한 생활이 건강한 투자를 만든다</p>
+      <p class="who">달이는 이 문장으로 자랐어요. 아래 네 가지가 달이가 하는 일의 전부예요.</p>
+      <span class="mark">4</span>
+    </section>
+
+    <section class="card">
+      <ul class="four">
+        <li>
+          <img src="../dali/img/open_book.png" alt="">
+          <span class="k">읽기 <em>유진 독서클럽 · 텍스트의 해상도를 높이다</em></span>
+          <span class="d">리포트 3줄, 끝까지 같이 읽기</span>
+          <span class="me">이번 달 12번</span>
+          <span class="u">쏟아지는 정보 속에서 제대로 읽는 힘. 임직원이 매일 인증하며 읽듯, 달이는 고객과 리포트를 읽어요.</span>
+        </li>
+        <li>
+          <img src="../dali/img/memo.png" alt="">
+          <span class="k">돌아보기 <em>다짐하고 응원받고 · 연말 돌아보기</em></span>
+          <span class="d">매매일지, 산 순간 사진</span>
+          <span class="me">매매 2건 모두 기록</span>
+          <span class="u">잘했는지 따지지 않고 "그때 무엇을 보고 샀나"만 남겨요. 연말엔 다짐을 같이 돌아봐요.</span>
+        </li>
+        <li>
+          <img src="../dali/img/tree.png" alt="">
+          <span class="k">꾸준히 <em>유진의 숲 13년째 · 가치걸음</em></span>
+          <span class="d">매일 아침 한 줄, 달이네 숲</span>
+          <span class="me">연속 9일</span>
+          <span class="u">회사가 2014년부터 걸어서 나무를 심어 왔듯, 달이는 하루 한 줄을 13년처럼 쌓아요.</span>
+        </li>
+        <li>
+          <img src="../dali/img/rock.png" alt="">
+          <span class="k">함께 <em>기부 시무식 10년 · 착한경매 10회</em></span>
+          <span class="d">모두의 조약돌이 차면 나무 한 그루 더</span>
+          <span class="me">내 조약돌 11</span>
+          <span class="u">혼자 잘하기보다 같이 모아요. 고객 조약돌이 차면 유진이 숲에 한 그루 더 심어요.</span>
+        </li>
+      </ul>
+    </section>
+
+    <p class="say"><img src="../dali/dali-face.png" alt=""><span>저는 유진이 임직원과 해 온 일을 고객인 홍길동님과도 같이 하려고 태어났어요. 광고는 안 해요. 같이 할 뿐이에요.</span></p>
+    <div class="links"><span>유진이 하는 일 더 보기</span><span class="on">달이네 숲 가기</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ========== B. 달이네 숲, 나이테 ========== -->
+<div class="col"><span class="lb">B. 관리 탭 › 달이네 숲 (나이테)</span>
+<div class="phone">
+  <div class="head"><img src="../dali/dali-face.png" alt=""><div><b>달이</b><small>유진투자증권 앱에서</small></div><span class="x">✕</span></div>
+  <div class="tabs"><span>오늘</span><span>뉴스</span><span>매매일지</span><span class="on">관리</span></div>
+  <div class="ph"><span class="back">‹</span><strong>달이네 숲</strong><span class="r">숲 소식 받는 중</span></div>
+  <div class="body">
+    <section class="rings">
+      <p class="top"><i><img src="../dali/img/rock.png" alt="">조약돌 11</i><i><img src="../dali/img/tree.png" alt="">나이테 3줄</i><span style="margin-left:auto">꾸준함의 기록</span></p>
+      <div class="pair" style="position:relative">
+        <figure>
+          <svg viewBox="0 0 120 120" aria-label="홍길동님 나무 나이테 3줄">
+            <circle cx="60" cy="60" r="56" fill="#E6F7F3" opacity=".12"/>
+            <circle cx="60" cy="60" r="14" fill="none" stroke="#3BC1A8" stroke-width="3"/>
+            <circle cx="60" cy="60" r="26" fill="none" stroke="#3BC1A8" stroke-width="3"/>
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#3BC1A8" stroke-width="3"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 6" opacity=".6"/>
+            <circle cx="60" cy="60" r="4" fill="#fff"/>
+          </svg>
+          <figcaption><b>홍길동님 나무<em>3줄</em></b><small>8월 · 9월 · 10월 꾸준히</small></figcaption>
+        </figure>
+        <figure>
+          <svg viewBox="0 0 120 120" aria-label="유진의 숲 나이테 13줄">
+            <circle cx="60" cy="60" r="56" fill="#E6F7F3" opacity=".12"/>
+            <g fill="none" stroke="#9FE3D4" stroke-width="2">
+              <circle cx="60" cy="60" r="8"/><circle cx="60" cy="60" r="12"/><circle cx="60" cy="60" r="16"/><circle cx="60" cy="60" r="20"/>
+              <circle cx="60" cy="60" r="24"/><circle cx="60" cy="60" r="28"/><circle cx="60" cy="60" r="32"/><circle cx="60" cy="60" r="36"/>
+              <circle cx="60" cy="60" r="40"/><circle cx="60" cy="60" r="44"/><circle cx="60" cy="60" r="48"/><circle cx="60" cy="60" r="52"/>
+            </g>
+            <circle cx="60" cy="60" r="56" fill="none" stroke="#fff" stroke-width="2.5"/>
+            <circle cx="60" cy="60" r="4" fill="#fff"/>
+          </svg>
+          <figcaption><b>유진의 숲<em>13줄</em></b><small>2014년부터 올해까지</small></figcaption>
+        </figure>
+        <span class="vs">&amp;</span>
+      </div>
+      <p class="cap">한 달을 꾸준히 하면 나이테 한 줄. 유진은 13년을 이렇게 쌓았어요.</p>
+    </section>
+
+    <section class="card">
+      <h3>10월 나이테까지 <small>꾸준히 12일 / 20일</small></h3>
+      <div class="days">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="today"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <p class="kv"><span>아침 한 줄 읽기, 매매일지, 미션 중 하나면 하루로 쳐요</span><b>8일 남음</b></p>
+    </section>
+
+    <section class="card">
+      <h3>모두의 조약돌, 한 그루 더 <small>10월 1일 ~ 31일</small></h3>
+      <div class="gauge"><i class="base"></i><i class="plus"></i></div>
+      <p class="legend"><span class="a"><i></i>임직원 걷기로 심는 기본 몫</span><span class="b"><i></i>고객 조약돌로 더 심는 몫</span></p>
+      <p class="rule">고객 조약돌 2,140 / 3,000 → 차면 유진이 노을공원에 10그루 더 심어요</p>
+    </section>
+
+    <section class="card">
+      <h3>숲 소식</h3>
+      <div class="photo"><span class="tag">2026년 봄 · 심는 날</span>
+        <div class="trees"><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""><img src="../dali/img/tree.png" alt=""></div>
+      </div>
+      <p class="hint" style="margin-bottom:8px">600여 명이 1억 1,561만 보를 걸어 노을공원에 400그루를 심었어요. 다음 심는 날 사진도 달이가 가져와요.</p>
+      <div class="links"><span>숲 위치 지도</span><span>심던 날 기사 보기</span></div>
+    </section>
+    <p class="say"><img src="../dali/dali-face.png" alt=""><span>숲은 보여 드리고, 꾸준함은 같이 쌓아요. 홍길동님 나이테 4줄째가 8일 남았어요.</span></p>
+  </div>
+</div>
+</div>
+
+<!-- 발표자 상자 -->
+<aside class="demo">
+  <p class="t">발표자용 메모 · 유진다움</p>
+  <p class="n">시연용 가상 화면입니다</p>
+  <p><b>A. 배운 네 가지</b>: 회사가 고객 프로그램마다 써 온 문장 "건강한 생활이 건강한 투자를 만든다"를 머리글로 두고, 회사 활동 넷(독서클럽, 다짐하고 응원받고, 유진의 숲·가치걸음, 기부 시무식·착한경매)과 달이 기능 넷(읽기, 돌아보기, 꾸준히, 함께)을 한 줄씩 짝지음. 심사위원은 10초 안에 "회사 가치 = 캐릭터 원칙"을 읽음.</p>
+  <p><b>B. 나이테</b>: 나무 심기를 "꾸준함"으로 다시 읽음. 고객은 한 달 꾸준하면 나이테 한 줄, 옆에 회사의 13줄. 걸음 데이터, 이름 팻말, 현장 초대는 뺌. 진짜 심기는 고객 조약돌이 차면 회사가 더 심는 구조로, 고객이 받는 혜택이 없어 규제 부담이 가벼움.</p>
+  <p class="s">내 조약돌, 나이테, 꾸준한 날, 이번 시즌 숫자는 가상. 회사 문장과 활동의 연도·횟수·그루 수는 유진에버 공개 기사 기준 (docs/research-eugene-ever.md).</p>
+</aside>
+
+</div>
+</body>
+</html>
