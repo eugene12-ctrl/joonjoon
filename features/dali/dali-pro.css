@@ -412,3 +412,15 @@
 /* 뉴스 띠: 넘김 점은 아래 여백 안에 띄워서 버튼 자리를 다른 히어로와 같게 */
 .phone .dali-sheet .dali-n2-act { position: relative; padding: 0 0 20px; }
 .phone .dali-sheet .dali-n2-act .dali-n2-dots { position: absolute; left: 0; right: 0; bottom: 7px; margin: 0; }
+
+/* ===== 장면 트랙 (dali-scene-track.js): 오늘 탭 맨 위 히어로를 장면 네 장으로 옆으로 넘김. 점은 뉴스 띠와 같은 모양 =====
+   장마다 .dali-pro-act 한 장이라 높이(224px)와 배경(장면·이벤트 색)은 그대로. 점은 아래 여백(16px) 안에 떠서 버튼 자리를 건드리지 않음 */
+.phone .dali-sheet .dali-sc { position: relative; }
+.phone .dali-sheet .dali-sc-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: pan-y; }
+.phone .dali-sheet .dali-sc-track::-webkit-scrollbar { display: none; }
+.phone .dali-sheet .dali-sc-track:active { cursor: grabbing; }
+.phone .dali-sheet .dali-sc-track > .dali-pro-act { flex: 0 0 100%; width: 100%; min-width: 100%; margin: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+/* 뉴스 띠와 같은 배치: 버튼을 14px 올려 아래 여백에 점이 들어감 */
+.phone .dali-sheet .dali-sc-track > .dali-pro-act:not(.dali-read-act) > .dali-pro-act-btns { margin-bottom: 14px; }
+.phone .dali-sheet .dali-sc-dots { position: absolute; left: 0; right: 0; bottom: 7px; display: flex; justify-content: center; gap: 6px; margin: 0; pointer-events: none; }
+.phone .dali-sheet .dali-sc-dots i { pointer-events: auto; padding: 0; height: 6px; } /* 뉴스 띠(.dali-n2-act .dali-n2-dots i)와 같은 점: 6px 둥근 점, 현재 점은 16px로 늘어남 */
