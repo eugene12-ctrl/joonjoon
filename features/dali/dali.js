@@ -32,6 +32,7 @@
     fx: null, // 관리 탭을 다시 그린 뒤 보여 줄 연출 { gain, grew }
     editing: null,
     order: null, // { sym, side, qty } MTS 주문 화면
+    pop: null, // 관리 탭 위에 뜨는 작은 팝업: "read" (리포트 3줄)
   };
 
   const SHARED = ["pebbles", "done", "forest", "worn", "owned", "spent", "shells"];
@@ -133,6 +134,8 @@
   phone.append(fut, dim, fab, bubble, sheet);
   const body = sheet.querySelector(".dali-body");
   const pageEl = sheet.querySelector(".dali-page");
+  const popEl = document.createElement("div"); // 관리 탭 위에 뜨는 작은 팝업 (리포트 3줄). 시트 안에 두어 시트와 같이 움직임
+  popEl.className = "dali-pop"; popEl.hidden = true; sheet.append(popEl);
   // 옷을 바꾸면 다시 그려지지 않는 두 자리(플로팅 버튼, 시트 머리)의 장식을 맞춤. 바다는 render()가 새로 그림
   function syncWear() {
     [fab, sheet.querySelector(".dali-sheet-head .dali-face")].forEach(el => {
@@ -411,6 +414,22 @@
     h.style.left = `${42 + Math.random() * 16}%`;
     layer.appendChild(h);
     setTimeout(() => h.remove(), 1200);
+  }
+  // 리포트 3줄 팝업: 읽기 버튼을 누르면 관리 탭 위에 뜸. 다 읽었어요를 누르면 미션 완료 (조약돌 +1)
+  function readPopHTML() {
+    const r = DALI_READ[state.app] || DALI_READ.stock, done = state.done["m-read"];
+    return `
+      <div class="dali-pop-dim" data-act="pop-close"></div>
+      <section class="dali-pop-card" role="dialog" aria-modal="true" aria-label="리포트 3줄">
+        <header class="dali-pop-head">
+          <img src="${IMG("open_book")}" alt="">
+          <div><small>${todayLabel()} · 독서클럽</small><b>${r.title}</b></div>
+          <button type="button" class="dali-pop-x" data-act="pop-close" aria-label="닫기">✕</button>
+        </header>
+        <ol class="dali-pop-lines">${r.lines.map((l, i) => `<li><i>${i + 1}</i><span>${l}</span></li>`).join("")}</ol>
+        <p class="dali-pop-note">${r.note}</p>
+        <button type="button" class="dali-btn dali-pop-btn" data-act="${done ? "pop-close" : "pop-done"}" data-id="m-read">${done ? "닫기" : `다 읽었어요 <em><img src="${IMG("rock")}" alt="">+1</em>`}</button>
+      </section>`;
   }
   // 관리 탭 첫 화면: 한 화면 안에 다 보이게. 바다, 다음 선물(왜 키우나), 오늘 할 일 3줄(어떻게), 한 문제 한 줄
   function manageHTML() {
@@ -785,6 +804,7 @@
       if (pb) pb.scrollTop = y;
       pageEl.hidden = false;
     } else pageEl.hidden = true;
+    if (state.pop === "read") { popEl.innerHTML = readPopHTML(); popEl.hidden = false; } else popEl.hidden = true;
     paintAlert();
   }
 
@@ -831,7 +851,9 @@
     else if (act === "week") { state.page = { type: "week", from: state.page }; render(); }
     else if (act === "gift") { const i = +b.dataset.i; state.gift = state.gift === i ? null : i; render(); }
     else if (act === "pet") pet(b);
-    else if (act === "mission") { complete(id); render(); }
+    else if (act === "mission") { const m = DALI_MISSIONS.find(x => x.id === id); if (m && m.pop) state.pop = m.pop; else complete(id); render(); }
+    else if (act === "pop-done") { state.pop = null; complete(id); render(); }
+    else if (act === "pop-close") { state.pop = null; render(); }
   });
   sheet.addEventListener("pointermove", DaliChart.hover);
   sheet.addEventListener("pointerleave", () => DaliChart.unhover(sheet));
